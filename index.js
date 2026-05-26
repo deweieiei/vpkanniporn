@@ -7,6 +7,7 @@ const session = require('express-session');
 
 const pagesRouter = require('./routes/pages');
 const authRouter = require('./routes/auth');
+const usersRouter = require('./routes/users');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,16 +26,18 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'change-me-in-production',
   resave: false,
   saveUninitialized: false,
+  rolling: true,
   cookie: {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
-    maxAge: 1000 * 60 * 60 * 8,
+    maxAge: 1000 * 60 * 15,
   },
 }));
 
 app.use('/', pagesRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/users', usersRouter);
 
 app.use(express.static(path.join(__dirname, 'public'), {
   extensions: ['html'],

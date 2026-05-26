@@ -445,27 +445,78 @@
             return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         }
 
+        // ตรวจว่าหน้านี้ดูใคร: /profile = ตัวเอง / /agent/:id = คนอื่น
+        const pathMatch = window.location.pathname.match(/^\/agent\/(\d+)/);
+        const viewingAgentId = pathMatch ? Number(pathMatch[1]) : null;
+        const isViewingOther = viewingAgentId !== null;
+
+        // ซ่อนปุ่ม edit + logout ถ้าดูคนอื่น
+        if (isViewingOther) {
+            const editBtn = document.getElementById('edit-profile-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            if (editBtn) editBtn.style.display = 'none';
+            if (logoutBtn) logoutBtn.textContent = '← กลับหน้าหลัก';
+        }
+
         async function loadProfile() {
             try {
-                const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
-                const data = await res.json();
-                if (!data.authenticated) {
-                    window.location.href = '/login';
-                    return;
+                if (isViewingOther) {
+                    const res = await fetch(`/api/users/${viewingAgentId}`);
+                    if (!res.ok) {
+                        document.querySelector('main').innerHTML = `
+                            <div class="bg-white p-8 rounded-2xl shadow text-center text-gray-500">
+                                <p class="text-4xl mb-3">😔</p>
+                                <p class="font-bold text-lg">ไม่พบตัวแทนรายนี้</p>
+                                <a href="/" class="text-orange-500 hover:underline text-sm mt-3 inline-block">← กลับหน้าหลัก</a>
+                            </div>`;
+                        return;
+                    }
+                    const data = await res.json();
+                    renderProfile(data.user);
+                } else {
+                    const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
+                    const data = await res.json();
+                    if (!data.authenticated) {
+                        window.location.href = '/login';
+                        return;
+                    }
+                    renderProfile(data.user);
+                    startIdleTimer();
                 }
-                renderProfile(data.user);
             } catch (e) {
                 console.error('load profile failed', e);
             }
         }
         loadProfile();
 
-        // Logout
+        // Logout button → ถ้าดูคนอื่น = กลับหน้าหลัก, ถ้าตัวเอง = logout
         document.getElementById('logout-btn').addEventListener('click', async () => {
+            if (isViewingOther) {
+                window.location.href = '/';
+                return;
+            }
             try {
                 await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
             } finally { window.location.href = '/login'; }
         });
+
+        // ============ Idle Timer (auto-logout 15 นาที) ============
+        const IDLE_LIMIT_MS = 15 * 60 * 1000;
+        let idleTimer = null;
+        function resetIdleTimer() {
+            if (idleTimer) clearTimeout(idleTimer);
+            idleTimer = setTimeout(async () => {
+                try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' }); } catch {}
+                alert('หมดเวลาใช้งาน (15 นาที) กรุณาเข้าสู่ระบบใหม่');
+                window.location.href = '/login';
+            }, IDLE_LIMIT_MS);
+        }
+        function startIdleTimer() {
+            ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'].forEach(ev => {
+                document.addEventListener(ev, resetIdleTimer, { passive: true });
+            });
+            resetIdleTimer();
+        }
 
         // Edit modal
         const modal = document.getElementById('edit-modal');
