@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ - FWD Agent Office</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+        .fwd-bg-gradient {
+            background: linear-gradient(135deg, #FFF3EB 0%, #FF6B00 60%, #D45500 100%);
+        }
+    </style>
+</head>
+<body class="fwd-bg-gradient min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-md">
+        <!-- Logo Header -->
+        <div class="text-center mb-6">
+            <div class="inline-flex items-center bg-white/20 backdrop-blur rounded-2xl px-5 py-3 shadow-lg">
+                <span class="text-4xl font-black text-white tracking-wider">FWD</span>
+                <span class="ml-2 text-amber-200 text-3xl">🛡️</span>
+            </div>
+            <p class="text-white mt-3 font-semibold text-sm">FWD Agent Office Portal</p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="bg-white rounded-3xl shadow-2xl p-8">
+            <div class="text-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">เข้าสู่ระบบ</h1>
+                <p class="text-xs text-gray-500 mt-1">สำหรับตัวแทน FWD เท่านั้น</p>
+            </div>
+
+            <!-- Toggle Login / Register -->
+            <div class="flex bg-gray-100 rounded-full p-1 mb-6 text-xs font-bold">
+                <button id="tab-login" class="flex-1 py-2 rounded-full bg-orange-500 text-white shadow transition">เข้าสู่ระบบ</button>
+                <button id="tab-register" class="flex-1 py-2 rounded-full text-gray-500 transition">สมัครสมาชิก</button>
+            </div>
+
+            <!-- Alert -->
+            <div id="alert" class="hidden mb-4 p-3 rounded-lg text-xs font-medium"></div>
+
+            <!-- Login Form -->
+            <form id="form-login" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Username</label>
+                    <input type="text" name="username" required autocomplete="username"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
+                        placeholder="กรอก username">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Password</label>
+                    <input type="password" name="password" required autocomplete="current-password"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
+                        placeholder="••••••••">
+                </div>
+                <button type="submit"
+                    class="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm disabled:opacity-50">
+                    <span class="btn-text">เข้าสู่ระบบ</span>
+                    <span class="btn-spinner hidden animate-spin">⏳</span>
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="form-register" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">ชื่อ-นามสกุล</label>
+                    <input type="text" name="full_name"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
+                        placeholder="เช่น กวิสรา จงเจริญ">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Email</label>
+                    <input type="email" name="email"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
+                        placeholder="you@example.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Username</label>
+                    <input type="text" name="username" required minlength="3"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
+                        placeholder="อย่างน้อย 3 ตัวอักษร">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Password</label>
+                    <input type="password" name="password" required minlength="6"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
+                        placeholder="อย่างน้อย 6 ตัวอักษร">
+                </div>
+                <button type="submit"
+                    class="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm disabled:opacity-50">
+                    <span class="btn-text">สมัครสมาชิก</span>
+                    <span class="btn-spinner hidden animate-spin">⏳</span>
+                </button>
+            </form>
+
+            <p class="text-center text-[11px] text-gray-400 mt-6">
+                © 2026 FWD Insurance Agent Office
+            </p>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/" class="text-white/80 hover:text-white text-xs underline">← กลับหน้าหลัก</a>
+        </div>
+    </div>
+
+    <script>
+        const tabLogin = document.getElementById('tab-login');
+        const tabRegister = document.getElementById('tab-register');
+        const formLogin = document.getElementById('form-login');
+        const formRegister = document.getElementById('form-register');
+        const alertBox = document.getElementById('alert');
+
+        function switchTab(target) {
+            const isLogin = target === 'login';
+            tabLogin.className = `flex-1 py-2 rounded-full transition ${isLogin ? 'bg-orange-500 text-white shadow' : 'text-gray-500'}`;
+            tabRegister.className = `flex-1 py-2 rounded-full transition ${!isLogin ? 'bg-orange-500 text-white shadow' : 'text-gray-500'}`;
+            formLogin.classList.toggle('hidden', !isLogin);
+            formRegister.classList.toggle('hidden', isLogin);
+            hideAlert();
+        }
+
+        tabLogin.addEventListener('click', () => switchTab('login'));
+        tabRegister.addEventListener('click', () => switchTab('register'));
+
+        function showAlert(msg, type) {
+            const styles = {
+                error: 'bg-red-50 text-red-700 border border-red-200',
+                success: 'bg-green-50 text-green-700 border border-green-200',
+            };
+            alertBox.className = `mb-4 p-3 rounded-lg text-xs font-medium ${styles[type] || styles.error}`;
+            alertBox.textContent = msg;
+            alertBox.classList.remove('hidden');
+        }
+        function hideAlert() { alertBox.classList.add('hidden'); }
+
+        function toggleSubmit(form, loading) {
+            const btn = form.querySelector('button[type="submit"]');
+            btn.disabled = loading;
+            btn.querySelector('.btn-text').classList.toggle('hidden', loading);
+            btn.querySelector('.btn-spinner').classList.toggle('hidden', !loading);
+        }
+
+        async function submitForm(form, endpoint) {
+            hideAlert();
+            toggleSubmit(form, true);
+            try {
+                const data = Object.fromEntries(new FormData(form).entries());
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify(data),
+                });
+                const body = await res.json();
+                if (!res.ok) {
+                    showAlert(body.error || 'เกิดข้อผิดพลาด', 'error');
+                    return;
+                }
+                showAlert('สำเร็จ! กำลังพาคุณไปหน้าโปรไฟล์...', 'success');
+                setTimeout(() => { window.location.href = '/profile'; }, 600);
+            } catch (err) {
+                showAlert('ไม่สามารถเชื่อมต่อ server ได้', 'error');
+            } finally {
+                toggleSubmit(form, false);
+            }
+        }
+
+        formLogin.addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitForm(formLogin, '/api/auth/login');
+        });
+        formRegister.addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitForm(formRegister, '/api/auth/register');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FWD Office - VP Kanniporn</title>
+    <!-- นำเข้า Tailwind CSS เพื่อการจัด Layout ที่ยืดหยุ่น -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+        .fwd-orange { color: #FF6B00; }
+        .fwd-bg-orange { background-color: #FF6B00; }
+        .fwd-gradient-hero {
+            background: linear-gradient(135deg, #FFF3EB 0%, #FF6B00 55%, #D45500 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+    <!-- ==================== 1. HEADER ZONE ==================== -->
+    <header class="bg-white shadow-sm border-b border-gray-100">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- โลโก้ และ ชื่อสำนักงาน -->
+            <div class="flex items-center space-x-4">
+                <div class="text-3xl font-black text-slate-800 tracking-wider">FWD</div>
+                <div class="border-l-2 border-gray-200 pl-3">
+                    <p class="font-bold text-sm text-orange-600">สำนักงานตัวแทน FWD</p>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-semibold text-gray-600">VP Kanniporn</span>
+                        <span class="bg-amber-500/20 text-amber-800 text-[9px] px-2 py-0.5 rounded-full font-bold">Elite Agent Office</span>
+                    </div>
+                </div>
+            </div>
+            <!-- ปุ่มล็อกอินสีส้มกลมขวาบน -->
+            <a href="/login" class="w-9 h-9 rounded-full fwd-bg-orange text-white flex items-center justify-center font-bold shadow-md hover:bg-orange-600 transition" title="เข้าสู่ระบบ">
+                ➔
+            </a>
+        </div>
+    </header>
+
+    <!-- เมนูแถบส้มด้านล่าง Header (หน้าหลัก) -->
+    <div class="max-w-6xl mx-auto px-4 mt-3">
+        <button class="bg-gradient-to-r from-orange-500 to-orange-600 text-white font-medium text-xs px-4 py-2 rounded-lg shadow-sm flex items-center gap-1">
+            🏠 หน้าหลัก
+        </button>
+    </div>
+
+
+    <!-- ==================== 2. HERO BANNER ZONE ==================== -->
+    <section class="max-w-6xl mx-auto px-4 mt-3">
+        <div class="rounded-3xl text-white relative overflow-hidden p-6 md:p-10 min-h-[360px] flex items-center shadow-lg bg-cover bg-center" style="background-image: url('./src/S__12566769.jpg');">
+            
+            <!-- ชั้นโปร่งใสทับ gradient สีส้ม -->
+            <div class="absolute inset-0 fwd-gradient-hero opacity-80"></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center w-full relative z-10">
+                <!-- ฝั่งซ้าย: ข้อความต้อนรับ -->
+                <div class="md:col-span-7 space-y-4 text-center md:text-left">
+                    <div class="space-y-1">
+                        <p class="text-sm font-medium tracking-wide text-orange-100 flex items-center justify-center md:justify-start gap-1">
+                            ยินดีต้อนรับ 👋
+                        </p>
+                        <h1 class="text-3xl md:text-4xl font-extrabold tracking-wide">VP Kanniporn</h1>
+                        <p class="text-base font-semibold text-amber-200">ตัวแทนประกันชีวิต FWD</p>
+                    </div>
+
+                    <p class="italic text-sm md:text-base text-orange-50 font-light">
+                        “ ดูแลวันนี้ เพื่อชีวิตที่คุณเลือกได้ ”
+                    </p>
+
+                    <!-- บล็อกปุ่มข้อมูลติดต่อ -->
+                    <div class="pt-2 flex flex-col sm:flex-row gap-2 justify-center md:justify-start text-xs text-slate-800">
+                        <span class="bg-white/90 backdrop-blur px-4 py-2 rounded-full font-medium flex items-center gap-2 shadow-sm">
+                            📞 062-239-7362
+                        </span>
+                        <span class="bg-white/90 backdrop-blur px-4 py-2 rounded-full font-medium flex items-center gap-2 shadow-sm">
+                            ✉️ kanniporn.fwd@gmail.com
+                        </span>
+                    </div>
+                </div>
+
+                <!-- ฝั่งขวา: โล่ทองคำสัญลักษณ์เด่นประจำภาพ (FWD Shield) -->
+                <div class="md:col-span-5 flex justify-center">
+                    <div class="w-36 h-40 md:w-44 md:h-48 bg-gradient-to-b from-amber-300 via-amber-500 to-amber-600 rounded-2xl shadow-2xl flex flex-col items-center justify-center border-4 border-amber-200/50 relative group">
+                        <div class="absolute inset-2 border border-amber-300/30 rounded-xl"></div>
+                        <span class="text-3xl">🛡️</span>
+                        <span class="text-xl font-black tracking-widest text-slate-900 mt-2">FWD</span>
+                        <div class="absolute -inset-1 bg-amber-400 rounded-2xl blur opacity-20 group-hover:opacity-40 transition"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- แถบ 3 ปุ่มช่วยเหลือด้านล่างแบนเนอร์ -->
+    <div class="max-w-4xl mx-auto px-4 -mt-5 relative z-20">
+        <div class="bg-white rounded-2xl shadow-md border border-gray-100 grid grid-cols-3 divide-x divide-gray-100 p-1 text-center text-[11px] md:text-xs text-gray-700">
+            <div class="py-3 hover:bg-orange-50/50 cursor-pointer transition rounded-l-2xl flex flex-col items-center justify-center gap-1">
+                <span class="text-base">🧭</span>
+                <span class="font-bold">ค้นหาตัวแทน FWD</span>
+            </div>
+            <div class="py-3 hover:bg-orange-50/50 cursor-pointer transition flex flex-col items-center justify-center gap-1">
+                <span class="text-base">📄</span>
+                <span class="font-bold">เอกสาร/แบบฟอร์มที่ใช้บ่อย</span>
+            </div>
+            <div class="py-3 hover:bg-orange-50/50 cursor-pointer transition rounded-r-2xl flex flex-col items-center justify-center gap-1">
+                <span class="text-base">🎧</span>
+                <span class="font-bold">ศูนย์ช่วยเหลือ (Support)</span>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==================== 3. PRODUCTS & SERVICES ZONE ==================== -->
+    <main class="max-w-6xl mx-auto px-4 py-12 space-y-12">
+        
+        <!-- หัวข้อหลัก -->
+        <div class="text-center space-y-2 max-w-2xl mx-auto">
+            <h2 class="text-xl md:text-2xl font-bold text-gray-800 flex items-center justify-center gap-2">
+                <span class="text-orange-400">•••</span> ผลิตภัณฑ์และบริการ <span class="text-orange-400">•••</span>
+            </h2>
+            <p class="text-xs text-gray-500 leading-relaxed">
+                ไทยประกันชีวิต บริษัทประกันชีวิตแห่งแรกของคนไทย มุ่งมั่นสร้างสรรค์ผลิตภัณฑ์ด้านประกันภัย ครอบคลุม ประกันภัย ประกันชีวิต ประกันสุขภาพ และบริการด้านออมเงินออมทรัพย์
+            </p>
+        </div>
+
+        <!-- การ์ดผลิตภัณฑ์ 5 ใบรีวิวตามสไตล์ Layout ต้นฉบับ -->
+        <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            
+            <!-- การ์ด 1: ประกันชีวิต -->
+            <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition text-center flex flex-col justify-between items-center group relative cursor-pointer">
+                <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-lg mb-3">🧡</div>
+                <div>
+                    <h4 class="font-bold text-xs text-gray-800">ประกันชีวิต</h4>
+                    <p class="text-[10px] text-gray-400 mt-1">วางแผนอนาคตให้คนที่คุณรัก</p>
+                </div>
+                <div class="text-orange-400 text-xs mt-3 group-hover:translate-x-1 transition">➔</div>
+            </div>
+
+            <!-- การ์ด 2: ประกันสุขภาพ -->
+            <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition text-center flex flex-col justify-between items-center group relative cursor-pointer">
+                <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-lg mb-3">➕</div>
+                <div>
+                    <h4 class="font-bold text-xs text-gray-800">ประกันสุขภาพ</h4>
+                    <p class="text-[10px] text-gray-400 mt-1">คุ้มครองค่ารักษาและสุขภาพ</p>
+                </div>
+                <div class="text-orange-400 text-xs mt-3 group-hover:translate-x-1 transition">➔</div>
+            </div>
+
+            <!-- การ์ด 3: ประกันสะสมทรัพย์ -->
+            <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition text-center flex flex-col justify-between items-center group relative cursor-pointer">
+                <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-lg mb-3">💰</div>
+                <div>
+                    <h4 class="font-bold text-xs text-gray-800">ประกันสะสมทรัพย์</h4>
+                    <p class="text-[10px] text-gray-400 mt-1">ออมระยะยาว มั่นคง ปลอดภัย</p>
+                </div>
+                <div class="text-orange-400 text-xs mt-3 group-hover:translate-x-1 transition">➔</div>
+            </div>
+
+            <!-- การ์ด 4: ประกันบำนาญ -->
+            <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition text-center flex flex-col justify-between items-center group relative cursor-pointer">
+                <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-lg mb-3">👴</div>
+                <div>
+                    <h4 class="font-bold text-xs text-gray-800">ประกันบำนาญ</h4>
+                    <p class="text-[10px] text-gray-400 mt-1">วางแผนเกษียณใช้ชีวิตอย่างมีคุณภาพ</p>
+                </div>
+                <div class="text-orange-400 text-xs mt-3 group-hover:translate-x-1 transition">➔</div>
+            </div>
+
+            <!-- การ์ด 5: ประกันกลุ่ม -->
+            <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition text-center flex flex-col justify-between items-center group relative cursor-pointer">
+                <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-lg mb-3">🏢</div>
+                <div>
+                    <h4 class="font-bold text-xs text-gray-800">ประกันกลุ่ม</h4>
+                    <p class="text-[10px] text-gray-400 mt-1">คุ้มครองพนักงานองค์กรของคุณ</p>
+                </div>
+                <div class="text-orange-400 text-xs mt-3 group-hover:translate-x-1 transition">➔</div>
+            </div>
+
+        </section>
+
+
+        <!-- ==================== 4. BANNER CAROUSEL / HIGHLIGHTS ==================== -->
+        <section class="relative">
+            
+            <!-- ปุ่มกดสไลด์จำลอง ซ้าย-ขวา ข้างๆ จอ -->
+            <button class="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow border border-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 z-10 text-xs">‹</button>
+            <button class="absolute -right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow border border-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 z-10 text-xs">›</button>
+
+            <!-- กล่องสไลด์ 3 บล็อกใหญ่ด้านล่าง -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- บล็อกย่อยที่ 1: ตอบทุกโจทย์คนวัยทำงาน -->
+                <div class="rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col justify-between min-h-[180px] p-5 relative bg-gradient-to-br from-amber-500 to-orange-600 text-white">
+                    <div class="relative z-10 space-y-1">
+                        <span class="text-xs font-black tracking-wider opacity-70">FWD</span>
+                        <h3 class="text-base font-bold leading-snug">ตอบทุกโจทย์<br>คนวัยทำงาน!</h3>
+                    </div>
+                    <!-- จำลองรูปภาพด้วยพื้นที่สีเทาใสตัดสลับ -->
+                    <div class="absolute bottom-0 right-0 w-1/2 h-full bg-white/10 rounded-tl-full pointer-events-none"></div>
+                    <div class="relative z-10">
+                        <button class="bg-white text-orange-600 text-[10px] font-bold px-4 py-1.5 rounded-full shadow hover:bg-orange-50 transition">
+                            ดูเพิ่มเติม ➔
+                        </button>
+                    </div>
+                </div>
+
+                <!-- บล็อกย่อยที่ 2: แนะนำ วางแผนประกันชีวิต -->
+                <div class="rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col justify-between min-h-[180px] p-5 relative bg-slate-900 text-white">
+                    <div class="absolute top-3 left-3 bg-orange-500 text-white text-[9px] font-bold px-2 py-0.5 rounded">
+                        แนะนำ
+                    </div>
+                    <div class="relative z-10 mt-4">
+                        <h3 class="text-base font-bold leading-snug">วางแผนประกันชีวิต<br>เพื่อคนที่คุณรัก</h3>
+                    </div>
+                    <!-- ลวดลายกราฟิกจำลอง -->
+                    <div class="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-orange-500/20 to-transparent"></div>
+                    <div class="relative z-10">
+                        <button class="fwd-bg-orange text-white text-[10px] font-bold px-4 py-1.5 rounded-full shadow hover:fwd-bg-orange/90 transition">
+                            ดูเพิ่มเติม ➔
+                        </button>
+                    </div>
+                </div>
+
+                <!-- บล็อกย่อยที่ 3: บริการออนไลน์ 24 ชม. -->
+                <div class="rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col justify-between min-h-[180px] p-5 relative bg-gradient-to-tr from-stone-800 to-amber-700 text-white">
+                    <div class="relative z-10 space-y-1">
+                        <h3 class="text-base font-bold leading-snug">บริการออนไลน์ สะดวกรวดเร็ว ปลอดภัย 24 ชม.</h3>
+                    </div>
+                    <!-- สัญลักษณ์ไอคอนความปลอดภัยจำลองขวาล่าง -->
+                    <div class="absolute bottom-4 right-4 text-4xl opacity-20">🛡️</div>
+                    <div class="relative z-10">
+                        <button class="bg-white/20 backdrop-blur text-white text-[10px] font-bold px-4 py-1.5 rounded-full shadow hover:bg-white/30 transition border border-white/20">
+                            ดูเพิ่มเติม ➔
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- ==================== 5. STICKY FOOTER ACTION ==================== -->
+    <!-- แถบสีส้มมุมล่างขวาสำหรับกดคุย/สอบถามเจ้าหน้าที่ เพิ่มมิติของเว็บ -->
+    <div class="fixed bottom-4 right-4 z-50">
+        <button class="fwd-bg-orange text-white px-4 py-2.5 rounded-full shadow-xl hover:bg-orange-600 transition flex items-center gap-2 text-xs font-bold">
+            <span>🎧</span> สอบถามเจ้าหน้าที่
+        </button>
+    </div>
+
+    <!-- โลโก้ความปลอดภัยมุมล่างซ้าย -->
+    <div class="fixed bottom-4 left-4 z-50 bg-orange-600 text-white p-2 rounded-xl shadow-lg text-xs">
+        🛡️
+    </div>
+
+</body>
+</html>

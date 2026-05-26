@@ -1,0 +1,31 @@
+{
+  "name": "fwd-agent-office",
+  "version": "1.0.0",
+  "description": "FWD Agent Office - Node.js/Express web application",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["fwd", "insurance", "agent"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.16.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.0",
+    "express-session": "^1.18.0",
+    "form-data": "^4.0.5",
+    "mssql": "^12.5.4",
+    "multer": "^2.1.1",
+    "mysql2": "^3.22.3",
+    "pg": "^8.21.0",
+    "tedious": "^19.2.1"
+  }
+}

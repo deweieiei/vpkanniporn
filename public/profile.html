@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FWD Agent Profile - อัปเดต</title>
+    <!-- นำเข้า Tailwind CSS สำหรับการจัดเลย์เอาต์ -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+        .fwd-orange { color: #FF6B00; }
+        .fwd-bg-orange { background-color: #FF6B00; }
+        .fwd-bg-gradient {
+            background: linear-gradient(135deg, #FFF3EB 0%, #FF6B00 60%, #E65C00 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- 1. Header Navigation -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div class="text-3xl font-extrabold text-slate-800 tracking-wider flex items-center">
+                    FWD<span class="text-orange-500 text-4xl leading-none">.</span>
+                </div>
+                <div class="border-l pl-3 text-sm text-gray-500 hidden md:block">
+                    <p class="font-semibold fwd-orange">ตัวแทนประกันชีวิต FWD</p>
+                    <p class="text-xs text-gray-400">FWD Agent Office</p>
+                </div>
+            </div>
+            <nav class="hidden lg:flex space-x-6 text-sm font-medium text-gray-600">
+                <a href="#" class="fwd-orange border-b-2 border-orange-500 pb-1">หน้าหลัก</a>
+                <a href="#" class="hover:text-orange-500">ผลิตภัณฑ์และบริการ</a>
+                <a href="#" class="hover:text-orange-500">แนะนำอาชีพ</a>
+                <a href="#" class="hover:text-orange-500">วิดีโอ/บทความที่น่าสนใจ</a>
+                <a href="#" class="hover:text-orange-500">ข่าว/กิจกรรม</a>
+                <a href="#" class="hover:text-orange-500">ติดต่อตัวแทน</a>
+            </nav>
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-sm">⚙️</div>
+                <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm relative">
+                    🔔<span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                </div>
+                <div class="flex items-center space-x-1 cursor-pointer">
+                    <div class="w-8 h-8 rounded-full bg-gray-300 overflow-hidden"></div>
+                    <span id="user-name" class="text-xs font-medium text-gray-700 hidden sm:inline">กวิสรา จงเจริญ ฿</span>
+                </div>
+                <button id="logout-btn" class="text-xs font-semibold text-orange-600 hover:text-orange-700 border border-orange-200 hover:border-orange-400 px-3 py-1.5 rounded-full transition">
+                    ออกจากระบบ
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. Hero Banner (ปรับดีไซน์พื้นหลังและข้อความตามรูปภาพใหม่) -->
+    <section class="fwd-bg-gradient text-white relative overflow-hidden py-10 px-4 min-h-[400px] flex items-center">
+        <!-- แสงเอฟเฟกต์พื้นหลังประกายสีทอง -->
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-yellow-200 via-transparent to-transparent"></div>
+        
+        <div class="max-w-5xl mx-auto w-full relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            
+            <!-- ฝั่งซ้าย: ข้อมูลตัวแทน -->
+            <div class="md:col-span-7 text-center md:text-left space-y-4">
+                <div class="space-y-1">
+                    <span class="text-3xl text-amber-300 font-serif block md:inline">“</span>
+                    <h2 class="text-2xl md:text-4xl font-bold tracking-wide text-white inline-block px-2">ดูแลวันนี้ เพื่อชีวิตที่คุณเลือกได้</h2>
+                    <span class="text-3xl text-amber-300 font-serif block md:inline">”</span>
+                </div>
+                
+                <div class="space-y-1 bg-black/10 p-4 rounded-xl backdrop-blur-sm inline-block w-full md:w-auto md:pr-12">
+                    <p class="text-xl md:text-2xl font-bold flex items-center justify-center md:justify-start gap-2">
+                        👤 กวิสรา จงเจริญ
+                    </p>
+                    <p class="text-xs md:text-sm text-orange-100 pl-6">ใบอนุญาตเลขที่: 6601045081</p>
+                    <p class="text-xs md:text-sm text-orange-100 pl-6">ตำแหน่ง: Unit Manager บมจ.เอฟดับบลิวดี ประกันชีวิต</p>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-4 text-xs md:text-sm justify-center md:justify-start pt-1">
+                    <span class="bg-white/20 px-3 py-1.5 rounded-full flex items-center gap-1">📞 062-2397362</span>
+                    <span class="bg-white/20 px-3 py-1.5 rounded-full flex items-center gap-1">✉️ kavisara.fwd@gmail.com</span>
+                </div>
+                
+                <div class="pt-2">
+                    <button class="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-900 font-bold px-8 py-2.5 rounded-full text-xs shadow-lg transition flex items-center gap-1 mx-auto md:mx-0">
+                        🛡️ ตัวแทนผู้รับผิดชอบ
+                    </button>
+                </div>
+            </div>
+
+            <!-- ฝั่งขวา: พื้นที่สำหรับรูปภาพสแตนดี้ตัวแทนบิ๊กไซส์ -->
+            <div class="md:col-span-5 flex justify-center items-end h-full pt-6 md:pt-0">
+                <div class="w-56 h-72 md:w-64 md:h-80 bg-slate-200/40 border-2 border-white/50 rounded-2xl flex items-center justify-center text-white text-sm font-light backdrop-blur-md shadow-2xl relative">
+                    <span>Main Profile Photo</span>
+                    <!-- ตกแต่งฐานขอบส้มล่าง -->
+                    <div class="absolute bottom-0 inset-x-0 h-8 bg-gradient-to-t from-orange-600 to-transparent rounded-b-2xl"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- แท็บตัวเลือกด่วนด้านล่างแบนเนอร์ (สนใจทำประกันชีวิต / สนใจเป็นตัวแทน) -->
+    <div class="max-w-4xl mx-auto px-4 -mt-6 relative z-20">
+        <div class="bg-white rounded-xl shadow-md grid grid-cols-2 divide-x divide-gray-100 p-2 text-center text-xs md:text-sm">
+            <div class="py-3 hover:bg-orange-50/50 cursor-pointer transition rounded-l-xl flex flex-col sm:flex-row justify-center items-center gap-2">
+                <span class="text-xl text-orange-500">🛡️</span>
+                <div>
+                    <p class="font-bold text-gray-800">สนใจทำประกันชีวิต</p>
+                    <p class="text-[10px] text-gray-400">วางแผนคุ้มครอง</p>
+                </div>
+            </div>
+            <div class="py-3 hover:bg-orange-50/50 cursor-pointer transition rounded-r-xl flex flex-col sm:flex-row justify-center items-center gap-2">
+                <span class="text-xl text-orange-500">👥</span>
+                <div>
+                    <p class="font-bold text-gray-800">สนใจเป็นตัวแทน FWD</p>
+                    <p class="text-[10px] text-gray-400">เริ่มสร้างรายได้กับเรา</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Main Content Container -->
+    <main class="max-w-4xl mx-auto px-4 py-10 space-y-10">
+        
+        <!-- ส่วน Profile การ์ดวงกลมทอง และ ตารางข้อมูลติดต่อ -->
+        <section class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <!-- รูปโปรไฟล์วงกลมกรอบทอง -->
+            <div class="md:col-span-4 flex flex-col items-center space-y-2">
+                <div class="w-36 h-36 rounded-full border-4 border-amber-400 p-1 bg-gradient-to-b from-amber-100 to-white shadow-inner flex items-center justify-center">
+                    <div class="w-full h-full rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-400">Profile Circular</div>
+                </div>
+                <div class="bg-gradient-to-r from-amber-400 to-amber-500 text-slate-900 text-[10px] font-bold px-4 py-1 rounded-full shadow-sm uppercase">
+                    FWD Elite Agent
+                </div>
+                <div class="text-xs font-black text-slate-800 tracking-widest pt-1">FWD Insurance</div>
+            </div>
+
+            <!-- รายละเอียดในตาราง -->
+            <div class="md:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center sm:text-left pt-4 sm:pt-0">
+                <div class="sm:border-r border-gray-100 pr-2">
+                    <h4 class="text-gray-400 text-xs font-semibold">ตำแหน่ง</h4>
+                    <p class="text-base font-bold text-orange-500 mt-0.5">ผู้บริหารศูนย์</p>
+                    
+                    <h4 class="text-gray-400 text-xs font-semibold mt-4">Social Media</h4>
+                    <div class="mt-1 flex justify-center sm:justify-start space-x-1.5">
+                        <span class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold cursor-pointer">f</span>
+                        <span class="w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold cursor-pointer">L</span>
+                        <span class="w-7 h-7 rounded-full bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 text-white flex items-center justify-center text-xs font-bold cursor-pointer">i</span>
+                    </div>
+                </div>
+                
+                <div class="sm:border-r border-gray-100 pr-2">
+                    <h4 class="text-gray-400 text-xs font-semibold">สาขา</h4>
+                    <p class="text-base font-bold text-gray-700 mt-0.5">บางนา</p>
+                    
+                    <h4 class="text-gray-400 text-xs font-semibold mt-4">ติดต่อสอบถาม</h4>
+                    <div class="mt-1 flex justify-center sm:justify-start space-x-1.5">
+                        <span class="w-7 h-7 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs cursor-pointer">📞</span>
+                        <span class="w-7 h-7 rounded-full bg-orange-600 text-white flex items-center justify-center text-[10px] font-bold cursor-pointer">LINE</span>
+                        <span class="w-7 h-7 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs cursor-pointer">✉️</span>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-gray-400 text-xs font-semibold">เบอร์ติดต่อ</h4>
+                    <p class="text-base font-bold text-orange-500 mt-0.5 tracking-wide">062-2397362</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- แถบบล็อกใบอนุญาตตัวแทน -->
+        <section class="bg-amber-50/70 border border-amber-200 rounded-xl p-4 flex items-center space-x-3 shadow-sm">
+            <span class="text-2xl text-amber-500">🛡️</span>
+            <div class="text-xs text-amber-900 leading-relaxed">
+                <span class="font-bold text-amber-950">ใบอนุญาตตัวแทน ใบอนุญาตนายหน้าประกันชีวิตควบการลงทุน</span><br>
+                เลขที่ <span class="font-mono font-bold bg-amber-100 px-1 rounded">6801059141</span> เลขที่ -
+            </div>
+        </section>
+
+        <!-- ส่วนแนะนำตัว (ปรับคำโปรยใหม่ตามรูปเล่ม FWD ล่าสุด) -->
+        <section class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+            <div class="md:col-span-3">
+                <h3 class="text-lg font-bold text-gray-800 border-l-4 border-orange-500 pl-3">แนะนำตัว</h3>
+                <div class="h-[2px] w-12 bg-amber-400 mt-1 ml-3"></div>
+            </div>
+            <div class="md:col-span-9 bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 relative">
+                <span class="text-4xl text-orange-200 absolute top-2 left-3 font-serif">“</span>
+                <p class="text-gray-600 text-sm leading-relaxed pl-6 relative z-10">
+                    สวัสดีค่ะ ดิฉัน <span class="font-bold text-gray-800">"กวิสรา จงเจริญ"</span> ผู้บริหารศูนย์ บมจ.เอฟดับบลิวดี ประกันชีวิต พร้อมให้คำปรึกษาด้านการประกันชีวิตและการวางแผนการเงินอย่างมืออาชีพ ใส่ใจ เข้าใจทุกเป้าหมายของคุณ เพื่อให้คุณและคนที่คุณรักมีอนาคตที่มั่นคงและอุ่นใจ
+                </p>
+                <span class="text-4xl text-orange-200 absolute bottom-1 right-4 font-serif">”</span>
+            </div>
+        </section>
+
+        <!-- ส่วนเกียรติประวัติ & ทีมงานของเรา (ปรับโมเดลการซ้อนของรูปทีมงานตามภาพใหม่) -->
+        <section class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            
+            <!-- ด้านซ้าย: รายการรางวัล -->
+            <div class="md:col-span-7 space-y-4">
+                <h3 class="text-lg font-bold text-gray-800 border-l-4 border-orange-500 pl-3">เกียรติประวัติและผลงาน</h3>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-sm space-y-3">
+                    <div class="flex items-center space-x-3 py-1.5 border-b border-gray-50">
+                        <span class="text-amber-500">🏆</span>
+                        <span class="text-gray-600">รางวัลตัวแทนคุณภาพดีเด่น FWD 2023</span>
+                    </div>
+                    <div class="flex items-center space-x-3 py-1.5 border-b border-gray-50">
+                        <span class="text-amber-500">🏆</span>
+                        <span class="text-gray-600">รางวัล Top Unit Manager 2023</span>
+                    </div>
+                    <div class="flex items-center space-x-3 py-1.5 border-b border-gray-50">
+                        <span class="text-amber-500">🏆</span>
+                        <span class="text-gray-600">รางวัล MDRT Qualifier 2022</span>
+                    </div>
+                    <div class="flex items-center space-x-3 py-1.5">
+                        <span class="text-amber-500">🏆</span>
+                        <span class="text-gray-600">รางวัล Top Case 2022</span>
+                    </div>
+                </div>
+                <div>
+                    <button class="bg-orange-500 hover:bg-orange-600 text-white text-xs font-medium px-5 py-2 rounded-full transition shadow-sm flex items-center gap-1">
+                        ดูทั้งหมด <span>›</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ด้านขวา: ส่วนแสดงรูปทีมงานดีไซน์แบบซ้อนวงกลมตามภาพ S__12902433.jpg -->
+            <div class="md:col-span-5 space-y-4">
+                <h3 class="text-lg font-bold text-gray-800 border-l-4 border-orange-500 pl-3">ทีมงานของเรา</h3>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center min-h-[160px] relative overflow-hidden">
+                    
+                    <!-- ส่วนการจัดกลุ่มรูปภาพทีมซ้อนกัน (Avatar Stack Group) -->
+                    <div class="flex items-center justify-center -space-x-4 mb-4">
+                        <!-- ตัวแทนรูปคนที่ 1 -->
+                        <div class="w-12 h-12 rounded-full border-2 border-white bg-gray-300 shadow-md flex items-center justify-center text-[8px] text-gray-400">Team1</div>
+                        <!-- ตัวแทนรูปคนที่ 2 -->
+                        <div class="w-12 h-12 rounded-full border-2 border-white bg-gray-400 shadow-md flex items-center justify-center text-[8px] text-white">Team2</div>
+                        <!-- ตัวแทนรูปคนที่ 3 -->
+                        <div class="w-12 h-12 rounded-full border-2 border-white bg-gray-300 shadow-md flex items-center justify-center text-[8px] text-gray-400">Team3</div>
+                        <!-- ตัวแทนรูปคนที่ 4 -->
+                        <div class="w-12 h-12 rounded-full border-2 border-white bg-gray-400 shadow-md flex items-center justify-center text-[8px] text-white">Team4</div>
+                        
+                        <!-- บล็อกส้มแสดงจำนวนที่เหลือ (+4) -->
+                        <div class="w-12 h-12 rounded-full border-2 border-white bg-orange-500 text-white font-bold text-xs flex items-center justify-center shadow-md">
+                            +4
+                        </div>
+                    </div>
+                    
+                    <p class="text-xs text-gray-400 font-medium">พลังขับเคลื่อนและสมาชิกในทีมงานของเรา</p>
+                    
+                    <!-- ตกแต่งคลื่นสีส้มจางมุมขวาล่างตามรูปภาพ -->
+                    <div class="absolute bottom-0 right-0 w-24 h-8 bg-gradient-to-tl from-orange-100 to-transparent rounded-tl-full opacity-60"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 4. Footer ท้ายเว็บ -->
+    <footer class="bg-slate-900 text-gray-400 text-center py-6 text-xs border-t-4 border-orange-500 mt-10">
+        <p>© 2026 FWD Insurance Agent Office. โครงสร้างจำลองหน้าเว็บคอมมูนิตี้ตัวแทน</p>
+    </footer>
+
+    <script>
+        (async function () {
+            try {
+                const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
+                const data = await res.json();
+                if (!data.authenticated) {
+                    window.location.href = '/login';
+                    return;
+                }
+                const nameEl = document.getElementById('user-name');
+                if (nameEl && data.username) nameEl.textContent = data.username;
+            } catch (e) {
+                console.error('auth check failed', e);
+            }
+        })();
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            try {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                });
+            } finally {
+                window.location.href = '/login';
+            }
+        });
+    </script>
+
+</body>
+</html>
