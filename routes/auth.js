@@ -32,6 +32,18 @@ function isValidEmail(email) {
   return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+const FULL_USER_COLUMNS = `
+  id, email, first_name, last_name, birthdate, gender, province, avatar_path,
+  role, is_active, created_at, updated_at,
+  phone, position, company, branch, license_number, license_number_2,
+  bio, quote, facebook_url, line_id, instagram_url, awards
+`;
+
+function requireAuth(req, res, next) {
+  if (req.session && req.session.userId) return next();
+  return res.status(401).json({ error: 'กรุณาเข้าสู่ระบบ' });
+}
+
 router.post('/register', upload.single('avatar'), async (req, res, next) => {
   try {
     const {
@@ -137,8 +149,7 @@ router.get('/me', async (req, res, next) => {
       return res.json({ authenticated: false });
     }
     const [rows] = await pool.query(
-      `SELECT id, email, first_name, last_name, birthdate, gender, province, avatar_path, role
-       FROM users WHERE id = ? LIMIT 1`,
+      `SELECT ${FULL_USER_COLUMNS} FROM users WHERE id = ? LIMIT 1`,
       [req.session.userId]
     );
     if (rows.length === 0) {
@@ -146,6 +157,64 @@ router.get('/me', async (req, res, next) => {
       return res.json({ authenticated: false });
     }
     res.json({ authenticated: true, user: rows[0] });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// แก้ไขข้อมูลโปรไฟล์ (ทุก field นอกจาก email/password)
+router.put('/profile', requireAuth, upload.single('avatar'), async (req, res, next) => {
+  try {
+    const allowed = [
+      'first_name', 'last_name', 'birthdate', 'gender', 'province',
+      'phone', 'position', 'company', 'branch',
+      'license_number', 'license_number_2',
+      'bio', 'quote',
+      'facebook_url', 'line_id', 'instagram_url',
+    ];
+    const updates = {};
+    for (const k of allowed) {
+      if (k in req.body) {
+        const v = req.body[k];
+        updates[k] = v === '' ? null : v;
+      }
+    }
+
+    if ('awards' in req.body) {
+      try {
+        const parsed = typeof req.body.awards === 'string'
+          ? JSON.parse(req.body.awards)
+          : req.body.awards;
+        updates.awards = Array.isArray(parsed) ? JSON.stringify(parsed) : null;
+      } catch (e) {
+        return res.status(400).json({ error: 'awards ต้องเป็น JSON array' });
+      }
+    }
+
+    if (req.file) {
+      updates.avatar_path = `/uploads/avatars/${req.file.filename}`;
+    }
+
+    if (updates.gender && !['male', 'female', 'other'].includes(updates.gender)) {
+      return res.status(400).json({ error: 'เพศไม่ถูกต้อง' });
+    }
+
+    const keys = Object.keys(updates);
+    if (keys.length === 0) {
+      return res.status(400).json({ error: 'ไม่มีข้อมูลที่ต้องอัพเดต' });
+    }
+
+    const setClause = keys.map(k => `${k} = ?`).join(', ');
+    const values = keys.map(k => updates[k]);
+    values.push(req.session.userId);
+
+    await pool.query(`UPDATE users SET ${setClause} WHERE id = ?`, values);
+
+    const [rows] = await pool.query(
+      `SELECT ${FULL_USER_COLUMNS} FROM users WHERE id = ? LIMIT 1`,
+      [req.session.userId]
+    );
+    res.json({ ok: true, user: rows[0] });
   } catch (err) {
     next(err);
   }
