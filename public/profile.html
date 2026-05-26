@@ -271,7 +271,9 @@
                     return;
                 }
                 const nameEl = document.getElementById('user-name');
-                if (nameEl && data.username) nameEl.textContent = data.username;
+                if (nameEl && data.user) {
+                    nameEl.textContent = `${data.user.first_name} ${data.user.last_name}`;
+                }
             } catch (e) {
                 console.error('auth check failed', e);
             }

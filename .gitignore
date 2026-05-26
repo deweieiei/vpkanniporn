@@ -27,3 +27,7 @@ build/
 
 # Sessions
 sessions/
+
+# Uploaded files (keep folder, ignore content)
+public/uploads/avatars/*
+!public/uploads/avatars/.gitkeep

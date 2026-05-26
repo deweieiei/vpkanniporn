@@ -11,11 +11,12 @@
         .fwd-bg-gradient {
             background: linear-gradient(135deg, #FFF3EB 0%, #FF6B00 60%, #D45500 100%);
         }
+        input, select { font-family: inherit; }
     </style>
 </head>
 <body class="fwd-bg-gradient min-h-screen flex items-center justify-center p-4">
 
-    <div class="w-full max-w-md">
+    <div class="w-full max-w-lg">
         <!-- Logo Header -->
         <div class="text-center mb-6">
             <div class="inline-flex items-center bg-white/20 backdrop-blur rounded-2xl px-5 py-3 shadow-lg">
@@ -25,14 +26,14 @@
             <p class="text-white mt-3 font-semibold text-sm">FWD Agent Office Portal</p>
         </div>
 
-        <!-- Login Card -->
+        <!-- Card -->
         <div class="bg-white rounded-3xl shadow-2xl p-8">
             <div class="text-center mb-6">
                 <h1 class="text-2xl font-bold text-gray-800">เข้าสู่ระบบ</h1>
                 <p class="text-xs text-gray-500 mt-1">สำหรับตัวแทน FWD เท่านั้น</p>
             </div>
 
-            <!-- Toggle Login / Register -->
+            <!-- Tab toggle -->
             <div class="flex bg-gray-100 rounded-full p-1 mb-6 text-xs font-bold">
                 <button id="tab-login" class="flex-1 py-2 rounded-full bg-orange-500 text-white shadow transition">เข้าสู่ระบบ</button>
                 <button id="tab-register" class="flex-1 py-2 rounded-full text-gray-500 transition">สมัครสมาชิก</button>
@@ -41,16 +42,16 @@
             <!-- Alert -->
             <div id="alert" class="hidden mb-4 p-3 rounded-lg text-xs font-medium"></div>
 
-            <!-- Login Form -->
+            <!-- ============ LOGIN FORM ============ -->
             <form id="form-login" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Username</label>
-                    <input type="text" name="username" required autocomplete="username"
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">อีเมล</label>
+                    <input type="email" name="email" required autocomplete="email"
                         class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
-                        placeholder="กรอก username">
+                        placeholder="you@example.com">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Password</label>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">รหัสผ่าน</label>
                     <input type="password" name="password" required autocomplete="current-password"
                         class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
                         placeholder="••••••••">
@@ -62,32 +63,75 @@
                 </button>
             </form>
 
-            <!-- Register Form -->
-            <form id="form-register" class="space-y-4 hidden">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">ชื่อ-นามสกุล</label>
-                    <input type="text" name="full_name"
-                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
-                        placeholder="เช่น กวิสรา จงเจริญ">
+            <!-- ============ REGISTER FORM ============ -->
+            <form id="form-register" class="space-y-4 hidden" enctype="multipart/form-data">
+                <!-- Avatar -->
+                <div class="flex flex-col items-center">
+                    <label class="cursor-pointer group">
+                        <div id="avatar-preview" class="w-24 h-24 rounded-full border-4 border-orange-200 bg-gray-100 flex items-center justify-center text-gray-400 text-xs overflow-hidden group-hover:border-orange-400 transition">
+                            <span id="avatar-placeholder">📷 รูปโปรไฟล์</span>
+                            <img id="avatar-img" class="hidden w-full h-full object-cover" alt="preview">
+                        </div>
+                        <input type="file" name="avatar" id="avatar-input" accept="image/*" class="hidden">
+                    </label>
+                    <p class="text-[10px] text-gray-400 mt-1">คลิกเพื่ออัปโหลด (jpg/png, สูงสุด 5MB)</p>
                 </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">ชื่อ <span class="text-red-500">*</span></label>
+                        <input type="text" name="first_name" required
+                            class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
+                            placeholder="กวิสรา">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">นามสกุล <span class="text-red-500">*</span></label>
+                        <input type="text" name="last_name" required
+                            class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
+                            placeholder="จงเจริญ">
+                    </div>
+                </div>
+
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Email</label>
-                    <input type="email" name="email"
-                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">อีเมล <span class="text-red-500">*</span></label>
+                    <input type="email" name="email" required
+                        class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
                         placeholder="you@example.com">
                 </div>
+
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Username</label>
-                    <input type="text" name="username" required minlength="3"
-                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
-                        placeholder="อย่างน้อย 3 ตัวอักษร">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Password</label>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">รหัสผ่าน <span class="text-red-500">*</span></label>
                     <input type="password" name="password" required minlength="6"
-                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
+                        class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
                         placeholder="อย่างน้อย 6 ตัวอักษร">
                 </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">วันเดือนปีเกิด</label>
+                        <input type="date" name="birthdate"
+                            class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">เพศ</label>
+                        <select name="gender"
+                            class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition bg-white">
+                            <option value="">-- เลือก --</option>
+                            <option value="male">ชาย</option>
+                            <option value="female">หญิง</option>
+                            <option value="other">อื่นๆ</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">จังหวัด</label>
+                    <select name="province" id="province-select"
+                        class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition bg-white">
+                        <option value="">-- เลือกจังหวัด --</option>
+                    </select>
+                </div>
+
                 <button type="submit"
                     class="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm disabled:opacity-50">
                     <span class="btn-text">สมัครสมาชิก</span>
@@ -106,6 +150,27 @@
     </div>
 
     <script>
+        const PROVINCES = [
+            'กรุงเทพมหานคร','กระบี่','กาญจนบุรี','กาฬสินธุ์','กำแพงเพชร','ขอนแก่น','จันทบุรี','ฉะเชิงเทรา',
+            'ชลบุรี','ชัยนาท','ชัยภูมิ','ชุมพร','เชียงราย','เชียงใหม่','ตรัง','ตราด','ตาก','นครนายก',
+            'นครปฐม','นครพนม','นครราชสีมา','นครศรีธรรมราช','นครสวรรค์','นนทบุรี','นราธิวาส','น่าน',
+            'บึงกาฬ','บุรีรัมย์','ปทุมธานี','ประจวบคีรีขันธ์','ปราจีนบุรี','ปัตตานี','พระนครศรีอยุธยา',
+            'พังงา','พัทลุง','พิจิตร','พิษณุโลก','เพชรบุรี','เพชรบูรณ์','แพร่','พะเยา','ภูเก็ต',
+            'มหาสารคาม','มุกดาหาร','แม่ฮ่องสอน','ยะลา','ยโสธร','ร้อยเอ็ด','ระนอง','ระยอง','ราชบุรี',
+            'ลพบุรี','ลำปาง','ลำพูน','เลย','ศรีสะเกษ','สกลนคร','สงขลา','สตูล','สมุทรปราการ',
+            'สมุทรสงคราม','สมุทรสาคร','สระแก้ว','สระบุรี','สิงห์บุรี','สุโขทัย','สุพรรณบุรี',
+            'สุราษฎร์ธานี','สุรินทร์','หนองคาย','หนองบัวลำภู','อ่างทอง','อำนาจเจริญ','อุดรธานี',
+            'อุตรดิตถ์','อุทัยธานี','อุบลราชธานี'
+        ];
+
+        const provinceSelect = document.getElementById('province-select');
+        PROVINCES.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p;
+            opt.textContent = p;
+            provinceSelect.appendChild(opt);
+        });
+
         const tabLogin = document.getElementById('tab-login');
         const tabRegister = document.getElementById('tab-register');
         const formLogin = document.getElementById('form-login');
@@ -120,9 +185,29 @@
             formRegister.classList.toggle('hidden', isLogin);
             hideAlert();
         }
-
         tabLogin.addEventListener('click', () => switchTab('login'));
         tabRegister.addEventListener('click', () => switchTab('register'));
+
+        // Avatar preview
+        const avatarInput = document.getElementById('avatar-input');
+        const avatarImg = document.getElementById('avatar-img');
+        const avatarPlaceholder = document.getElementById('avatar-placeholder');
+        avatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                showAlert('ไฟล์รูปใหญ่เกิน 5MB', 'error');
+                avatarInput.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                avatarImg.src = ev.target.result;
+                avatarImg.classList.remove('hidden');
+                avatarPlaceholder.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        });
 
         function showAlert(msg, type) {
             const styles = {
@@ -142,38 +227,51 @@
             btn.querySelector('.btn-spinner').classList.toggle('hidden', !loading);
         }
 
-        async function submitForm(form, endpoint) {
+        // Login: JSON
+        formLogin.addEventListener('submit', async (e) => {
+            e.preventDefault();
             hideAlert();
-            toggleSubmit(form, true);
+            toggleSubmit(formLogin, true);
             try {
-                const data = Object.fromEntries(new FormData(form).entries());
-                const res = await fetch(endpoint, {
+                const data = Object.fromEntries(new FormData(formLogin).entries());
+                const res = await fetch('/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'same-origin',
                     body: JSON.stringify(data),
                 });
                 const body = await res.json();
-                if (!res.ok) {
-                    showAlert(body.error || 'เกิดข้อผิดพลาด', 'error');
-                    return;
-                }
+                if (!res.ok) { showAlert(body.error || 'เกิดข้อผิดพลาด', 'error'); return; }
                 showAlert('สำเร็จ! กำลังพาคุณไปหน้าโปรไฟล์...', 'success');
                 setTimeout(() => { window.location.href = '/profile'; }, 600);
             } catch (err) {
                 showAlert('ไม่สามารถเชื่อมต่อ server ได้', 'error');
             } finally {
-                toggleSubmit(form, false);
+                toggleSubmit(formLogin, false);
             }
-        }
-
-        formLogin.addEventListener('submit', (e) => {
-            e.preventDefault();
-            submitForm(formLogin, '/api/auth/login');
         });
-        formRegister.addEventListener('submit', (e) => {
+
+        // Register: multipart/form-data
+        formRegister.addEventListener('submit', async (e) => {
             e.preventDefault();
-            submitForm(formRegister, '/api/auth/register');
+            hideAlert();
+            toggleSubmit(formRegister, true);
+            try {
+                const fd = new FormData(formRegister);
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    body: fd,
+                });
+                const body = await res.json();
+                if (!res.ok) { showAlert(body.error || 'เกิดข้อผิดพลาด', 'error'); return; }
+                showAlert('สมัครสำเร็จ! กำลังพาคุณไปหน้าโปรไฟล์...', 'success');
+                setTimeout(() => { window.location.href = '/profile'; }, 700);
+            } catch (err) {
+                showAlert('ไม่สามารถเชื่อมต่อ server ได้', 'error');
+            } finally {
+                toggleSubmit(formRegister, false);
+            }
         });
     </script>
 </body>
