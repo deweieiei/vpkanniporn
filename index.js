@@ -45,6 +45,29 @@ app.get('/health', (_req, res) => {
   res.json({ ok: true, ts: new Date().toISOString() });
 });
 
+app.get('/api/health/db', async (_req, res) => {
+  try {
+    const { ping } = require('./db/pool');
+    await ping();
+    res.json({
+      ok: true,
+      db_host: process.env.DB_HOST,
+      db_name: process.env.DB_NAME,
+      db_user: process.env.DB_USER,
+    });
+  } catch (err) {
+    res.status(500).json({
+      ok: false,
+      code: err.code,
+      errno: err.errno,
+      message: err.message,
+      db_host: process.env.DB_HOST,
+      db_name: process.env.DB_NAME,
+      db_user: process.env.DB_USER,
+    });
+  }
+});
+
 app.use((_req, res) => {
   res.status(404).sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -52,7 +75,9 @@ app.use((_req, res) => {
 app.use((err, _req, res, _next) => {
   console.error('[ERROR]', err);
   res.status(err.status || 500).json({
-    error: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : err.message,
+    error: err.message || 'Internal Server Error',
+    code: err.code,
+    errno: err.errno,
   });
 });
 
