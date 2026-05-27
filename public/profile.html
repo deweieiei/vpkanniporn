@@ -481,7 +481,6 @@
                         return;
                     }
                     renderProfile(data.user);
-                    startIdleTimer();
                 }
             } catch (e) {
                 console.error('load profile failed', e);
@@ -499,24 +498,6 @@
                 await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
             } finally { window.location.href = '/login'; }
         });
-
-        // ============ Idle Timer (auto-logout 15 นาที) ============
-        const IDLE_LIMIT_MS = 15 * 60 * 1000;
-        let idleTimer = null;
-        function resetIdleTimer() {
-            if (idleTimer) clearTimeout(idleTimer);
-            idleTimer = setTimeout(async () => {
-                try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' }); } catch {}
-                alert('หมดเวลาใช้งาน (15 นาที) กรุณาเข้าสู่ระบบใหม่');
-                window.location.href = '/login';
-            }, IDLE_LIMIT_MS);
-        }
-        function startIdleTimer() {
-            ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'].forEach(ev => {
-                document.addEventListener(ev, resetIdleTimer, { passive: true });
-            });
-            resetIdleTimer();
-        }
 
         // Edit modal
         const modal = document.getElementById('edit-modal');

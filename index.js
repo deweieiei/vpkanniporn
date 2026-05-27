@@ -26,12 +26,11 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'change-me-in-production',
   resave: false,
   saveUninitialized: false,
-  rolling: true,
   cookie: {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
-    maxAge: 1000 * 60 * 15,
+    maxAge: 1000 * 60 * 60 * 24 * 30,
   },
 }));
 
