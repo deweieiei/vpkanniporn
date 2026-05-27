@@ -390,14 +390,15 @@
             }
             const slideshow = document.getElementById('cover-slideshow');
             const overlay = document.getElementById('cover-overlay');
+            if (!slideshow) return;
             slideshow.innerHTML = '';
 
             const covers = parseJsonArray(coverImages);
             if (covers.length === 0) {
-                overlay.classList.add('hidden');
+                if (overlay) overlay.classList.add('hidden');
                 return;
             }
-            overlay.classList.remove('hidden');
+            if (overlay) overlay.classList.remove('hidden');
 
             covers.forEach((src, i) => {
                 const img = document.createElement('img');
@@ -427,7 +428,7 @@
             // Header
             setText('user-name', fullName);
             const avMini = document.getElementById('user-avatar-mini');
-            if (u.avatar_path) {
+            if (u.avatar_path && avMini) {
                 avMini.style.backgroundImage = `url('${u.avatar_path}')`;
                 avMini.style.backgroundSize = 'cover';
                 avMini.style.backgroundPosition = 'center';
@@ -445,12 +446,14 @@
             setText('hero-phone', u.phone);
             setText('hero-email', u.email);
 
-            if (u.phone) document.getElementById('hero-phone-link').href = `tel:${u.phone.replace(/[^0-9+]/g, '')}`;
-            if (u.email) document.getElementById('hero-email-link').href = `mailto:${u.email}`;
+            const heroPhoneLink = document.getElementById('hero-phone-link');
+            const heroEmailLink = document.getElementById('hero-email-link');
+            if (u.phone && heroPhoneLink) heroPhoneLink.href = `tel:${u.phone.replace(/[^0-9+]/g, '')}`;
+            if (u.email && heroEmailLink) heroEmailLink.href = `mailto:${u.email}`;
 
             const heroPhoto = document.getElementById('hero-photo');
-            if (u.avatar_path) {
-                heroPhoto.innerHTML = `<img src="${u.avatar_path}" alt="${fullName}" class="w-full h-full object-cover">
+            if (u.avatar_path && heroPhoto) {
+                heroPhoto.innerHTML = `<img src="${u.avatar_path}" alt="${escapeHtml(fullName)}" class="w-full h-full object-cover">
                   <div class="absolute bottom-0 inset-x-0 h-8 bg-gradient-to-t from-orange-600 to-transparent pointer-events-none"></div>`;
             }
 
@@ -465,42 +468,41 @@
 
             // Profile photo circle
             const pp = document.getElementById('profile-photo');
-            if (u.avatar_path) {
-                pp.innerHTML = `<img src="${u.avatar_path}" alt="${fullName}" class="w-full h-full object-cover rounded-full">`;
+            if (u.avatar_path && pp) {
+                pp.innerHTML = `<img src="${u.avatar_path}" alt="${escapeHtml(fullName)}" class="w-full h-full object-cover rounded-full">`;
             }
 
             // Social
             const fb = document.getElementById('card-facebook');
             const ln = document.getElementById('card-line');
             const ig = document.getElementById('card-instagram');
-            const empty = document.getElementById('card-social-empty');
+            const emptySoc = document.getElementById('card-social-empty');
             let hasAny = false;
-            if (u.facebook_url) { fb.href = u.facebook_url; fb.classList.remove('hidden'); hasAny = true; }
-            if (u.line_id) { ln.href = `https://line.me/ti/p/~${u.line_id.replace(/^@/, '')}`; ln.classList.remove('hidden'); hasAny = true; }
-            if (u.instagram_url) { ig.href = u.instagram_url; ig.classList.remove('hidden'); hasAny = true; }
-            empty.classList.toggle('hidden', hasAny);
+            if (u.facebook_url && fb) { fb.href = u.facebook_url; fb.classList.remove('hidden'); hasAny = true; }
+            if (u.line_id && ln) { ln.href = `https://line.me/ti/p/~${u.line_id.replace(/^@/, '')}`; ln.classList.remove('hidden'); hasAny = true; }
+            if (u.instagram_url && ig) { ig.href = u.instagram_url; ig.classList.remove('hidden'); hasAny = true; }
+            if (emptySoc) emptySoc.classList.toggle('hidden', hasAny);
 
             // Bio
-            if (u.bio && u.bio.trim()) {
-                document.getElementById('bio-text').textContent = u.bio;
+            const bioEl = document.getElementById('bio-text');
+            if (bioEl && u.bio && u.bio.trim()) {
+                bioEl.textContent = u.bio;
             }
 
             // Awards
             const awardsList = document.getElementById('awards-list');
-            let awards = [];
-            if (u.awards) {
-                try { awards = typeof u.awards === 'string' ? JSON.parse(u.awards) : u.awards; }
-                catch { awards = []; }
-            }
-            if (Array.isArray(awards) && awards.length > 0) {
-                awardsList.innerHTML = awards.map((a, i) => `
-                    <div class="flex items-center space-x-3 py-1.5 ${i < awards.length - 1 ? 'border-b border-gray-50' : ''}">
-                        <span class="text-amber-500">🏆</span>
-                        <span class="text-gray-600">${escapeHtml(a)}</span>
-                    </div>
-                `).join('');
-            } else {
-                awardsList.innerHTML = `<p class="text-gray-400 text-xs">ยังไม่มีรางวัล — เพิ่มในหน้าแก้ไขโปรไฟล์</p>`;
+            if (awardsList) {
+                const awards = parseJsonArray(u.awards);
+                if (awards.length > 0) {
+                    awardsList.innerHTML = awards.map((a, i) => `
+                        <div class="flex items-center space-x-3 py-1.5 ${i < awards.length - 1 ? 'border-b border-gray-50' : ''}">
+                            <span class="text-amber-500">🏆</span>
+                            <span class="text-gray-600">${escapeHtml(a)}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    awardsList.innerHTML = `<p class="text-gray-400 text-xs">ยังไม่มีรางวัล — เพิ่มในหน้าแก้ไขโปรไฟล์</p>`;
+                }
             }
         }
 
@@ -721,6 +723,8 @@
             fd.append('cover_images_keep', JSON.stringify(keptCovers));
             coverState.filter(c => c.type === 'new').forEach(c => fd.append('cover_images', c.file));
 
+            let saveOk = false;
+            let savedUser = null;
             try {
                 const res = await fetch('/api/auth/profile', {
                     method: 'PUT',
@@ -734,8 +738,8 @@
                     editAlert.classList.remove('hidden');
                     return;
                 }
-                renderProfile(data.user);
-                modal.classList.add('hidden');
+                saveOk = true;
+                savedUser = data.user;
             } catch (err) {
                 editAlert.className = 'mx-5 mt-4 p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200';
                 editAlert.textContent = 'ไม่สามารถเชื่อมต่อ server';
@@ -744,6 +748,18 @@
                 btn.disabled = false;
                 btn.querySelector('.btn-text').classList.remove('hidden');
                 btn.querySelector('.btn-spinner').classList.add('hidden');
+            }
+
+            // หลังบันทึกสำเร็จ — render UI ใหม่ (ถ้า render error ก็ reload หน้าให้)
+            if (saveOk && savedUser) {
+                try {
+                    renderProfile(savedUser);
+                    modal.classList.add('hidden');
+                } catch (renderErr) {
+                    console.error('render after save failed:', renderErr);
+                    modal.classList.add('hidden');
+                    window.location.reload();
+                }
             }
         });
     </script>
