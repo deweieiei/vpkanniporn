@@ -7,14 +7,62 @@ const { pool } = require('../db/pool');
 
 const router = express.Router();
 
-const AVATARS_DIR = path.join(__dirname, '..', 'public', 'uploads', 'avatars');
-const COVERS_DIR = path.join(__dirname, '..', 'public', 'uploads', 'covers');
-fs.mkdirSync(AVATARS_DIR, { recursive: true });
-fs.mkdirSync(COVERS_DIR, { recursive: true });
+const PUBLIC_DIR = path.join(__dirname, '..', 'public');
+const AVATARS_DIR = path.join(PUBLIC_DIR, 'uploads', 'avatars');
+const COVERS_DIR = path.join(PUBLIC_DIR, 'uploads', 'covers');
+const PENDING_AVATAR_DIR = path.join(AVATARS_DIR, '_new');
+const PENDING_COVER_DIR = path.join(COVERS_DIR, '_new');
+
+[AVATARS_DIR, COVERS_DIR, PENDING_AVATAR_DIR, PENDING_COVER_DIR].forEach(d =>
+  fs.mkdirSync(d, { recursive: true })
+);
+
+function userSubdir(baseDir, userId) {
+  const dir = path.join(baseDir, String(userId));
+  fs.mkdirSync(dir, { recursive: true });
+  return dir;
+}
+
+// แปลง web path (/uploads/...) -> disk path (absolute) ปลอดภัย ป้องกัน path traversal
+function webPathToDisk(webPath) {
+  if (typeof webPath !== 'string' || !webPath.startsWith('/uploads/')) return null;
+  const candidate = path.resolve(PUBLIC_DIR, '.' + webPath);
+  const uploadsBase = path.join(PUBLIC_DIR, 'uploads');
+  if (!candidate.startsWith(uploadsBase + path.sep) && candidate !== uploadsBase) return null;
+  return candidate;
+}
+
+function safeUnlink(webPath) {
+  const diskPath = webPathToDisk(webPath);
+  if (!diskPath) return;
+  fs.unlink(diskPath, (err) => {
+    if (err && err.code !== 'ENOENT') {
+      console.warn('unlink failed:', diskPath, err.message);
+    }
+  });
+}
+
+function parseJsonArray(v) {
+  if (!v) return [];
+  try {
+    const arr = typeof v === 'string' ? JSON.parse(v) : v;
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+}
 
 const storage = multer.diskStorage({
-  destination: (_req, file, cb) => {
-    cb(null, file.fieldname === 'cover_images' ? COVERS_DIR : AVATARS_DIR);
+  destination: (req, file, cb) => {
+    const isCover = file.fieldname === 'cover_images';
+    const baseDir = isCover ? COVERS_DIR : AVATARS_DIR;
+    const userId = req.session && req.session.userId;
+    if (userId) {
+      cb(null, userSubdir(baseDir, userId));
+    } else {
+      // ยังไม่มี userId (ตอน register) — ไปที่ _new ก่อน แล้วจะ move หลัง INSERT
+      cb(null, isCover ? PENDING_COVER_DIR : PENDING_AVATAR_DIR);
+    }
   },
   filename: (_req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase().slice(0, 8) || '.jpg';
@@ -61,30 +109,35 @@ router.post('/register', upload.single('avatar'), async (req, res, next) => {
     } = req.body;
 
     if (!isValidEmail(email)) {
+      if (req.file) safeUnlink(`/uploads/avatars/_new/${req.file.filename}`);
       return res.status(400).json({ error: 'รูปแบบอีเมลไม่ถูกต้อง' });
     }
     if (!password || password.length < 6) {
+      if (req.file) safeUnlink(`/uploads/avatars/_new/${req.file.filename}`);
       return res.status(400).json({ error: 'password ต้องมีอย่างน้อย 6 ตัวอักษร' });
     }
     if (!first_name || !last_name) {
+      if (req.file) safeUnlink(`/uploads/avatars/_new/${req.file.filename}`);
       return res.status(400).json({ error: 'กรุณากรอกชื่อและนามสกุล' });
     }
     if (gender && !['male', 'female', 'other'].includes(gender)) {
+      if (req.file) safeUnlink(`/uploads/avatars/_new/${req.file.filename}`);
       return res.status(400).json({ error: 'เพศไม่ถูกต้อง' });
     }
 
     const [existing] = await pool.query('SELECT id FROM users WHERE email = ? LIMIT 1', [email]);
     if (existing.length > 0) {
+      if (req.file) safeUnlink(`/uploads/avatars/_new/${req.file.filename}`);
       return res.status(409).json({ error: 'อีเมลนี้ถูกใช้แล้ว' });
     }
 
     const hash = await bcrypt.hash(password, 10);
-    const avatarPath = req.file ? `/uploads/avatars/${req.file.filename}` : null;
 
+    // INSERT ก่อนเพื่อให้ได้ userId แล้วค่อย move ไฟล์เข้าโฟลเดอร์ user
     const [result] = await pool.query(
       `INSERT INTO users
        (email, password_hash, first_name, last_name, birthdate, gender, province, avatar_path)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, NULL)`,
       [
         email,
         hash,
@@ -93,13 +146,26 @@ router.post('/register', upload.single('avatar'), async (req, res, next) => {
         birthdate || null,
         gender || null,
         province || null,
-        avatarPath,
       ]
     );
+    const userId = result.insertId;
 
-    req.session.userId = result.insertId;
+    let avatarPath = null;
+    if (req.file) {
+      const userDir = userSubdir(AVATARS_DIR, userId);
+      const newDiskPath = path.join(userDir, req.file.filename);
+      try {
+        fs.renameSync(req.file.path, newDiskPath);
+        avatarPath = `/uploads/avatars/${userId}/${req.file.filename}`;
+        await pool.query('UPDATE users SET avatar_path = ? WHERE id = ?', [avatarPath, userId]);
+      } catch (moveErr) {
+        console.warn('move avatar failed:', moveErr.message);
+      }
+    }
+
+    req.session.userId = userId;
     req.session.email = email;
-    res.json({ ok: true, id: result.insertId, email });
+    res.json({ ok: true, id: userId, email, avatar_path: avatarPath });
   } catch (err) {
     next(err);
   }
@@ -171,9 +237,21 @@ router.get('/me', async (req, res, next) => {
   }
 });
 
-// แก้ไขข้อมูลโปรไฟล์ (รองรับ avatar + 6 covers)
 router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
   try {
+    const userId = req.session.userId;
+
+    // อ่านข้อมูลเก่าเพื่อรู้ว่าไฟล์ใดต้องลบ
+    const [currentRows] = await pool.query(
+      'SELECT avatar_path, cover_images FROM users WHERE id = ? LIMIT 1',
+      [userId]
+    );
+    if (currentRows.length === 0) {
+      return res.status(404).json({ error: 'ไม่พบผู้ใช้' });
+    }
+    const oldAvatar = currentRows[0].avatar_path;
+    const oldCovers = parseJsonArray(currentRows[0].cover_images);
+
     const allowed = [
       'first_name', 'last_name', 'birthdate', 'gender', 'province',
       'phone', 'position', 'company', 'branch',
@@ -200,32 +278,46 @@ router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
       }
     }
 
-    // Avatar (single file)
+    // ไฟล์ที่ต้องลบหลัง update สำเร็จ
+    const filesToDelete = [];
+
+    // Avatar
     if (req.files && req.files.avatar && req.files.avatar[0]) {
-      updates.avatar_path = `/uploads/avatars/${req.files.avatar[0].filename}`;
+      const f = req.files.avatar[0];
+      updates.avatar_path = `/uploads/avatars/${userId}/${f.filename}`;
+      if (oldAvatar && oldAvatar !== updates.avatar_path) {
+        filesToDelete.push(oldAvatar);
+      }
     }
 
-    // Cover images (up to 6): keep existing + new uploads, max 6
+    // Cover images
     const hasNewCovers = !!(req.files && req.files.cover_images && req.files.cover_images.length > 0);
     const hasKeepInstruction = 'cover_images_keep' in req.body;
 
     if (hasNewCovers || hasKeepInstruction) {
-      let kept = [];
+      let requestedKeep = [];
       if (hasKeepInstruction) {
         try {
           const parsed = typeof req.body.cover_images_keep === 'string'
             ? JSON.parse(req.body.cover_images_keep)
             : req.body.cover_images_keep;
-          kept = Array.isArray(parsed) ? parsed.filter(s => typeof s === 'string') : [];
+          requestedKeep = Array.isArray(parsed) ? parsed.filter(s => typeof s === 'string') : [];
         } catch (e) {
           return res.status(400).json({ error: 'cover_images_keep ต้องเป็น JSON array' });
         }
       }
+      // เฉพาะ path ที่เป็นของ user คนนี้จริงๆ (ป้องกัน inject path คนอื่น)
+      const validKept = requestedKeep.filter(p => oldCovers.includes(p));
       const newPaths = hasNewCovers
-        ? req.files.cover_images.map(f => `/uploads/covers/${f.filename}`)
+        ? req.files.cover_images.map(f => `/uploads/covers/${userId}/${f.filename}`)
         : [];
-      const merged = [...kept, ...newPaths].slice(0, 6);
+      const merged = [...validKept, ...newPaths].slice(0, 6);
       updates.cover_images = merged.length > 0 ? JSON.stringify(merged) : null;
+
+      // คอลัมน์ภาพปกที่ไม่อยู่ใน merged = ต้องลบ
+      oldCovers.forEach(p => {
+        if (!merged.includes(p)) filesToDelete.push(p);
+      });
     }
 
     if (updates.gender && !['male', 'female', 'other'].includes(updates.gender)) {
@@ -239,13 +331,16 @@ router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
 
     const setClause = keys.map(k => `${k} = ?`).join(', ');
     const values = keys.map(k => updates[k]);
-    values.push(req.session.userId);
+    values.push(userId);
 
     await pool.query(`UPDATE users SET ${setClause} WHERE id = ?`, values);
 
+    // ลบไฟล์เก่าหลัง UPDATE สำเร็จ
+    filesToDelete.forEach(safeUnlink);
+
     const [rows] = await pool.query(
       `SELECT ${FULL_USER_COLUMNS} FROM users WHERE id = ? LIMIT 1`,
-      [req.session.userId]
+      [userId]
     );
     res.json({ ok: true, user: rows[0] });
   } catch (err) {
