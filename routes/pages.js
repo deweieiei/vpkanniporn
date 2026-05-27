@@ -27,4 +27,12 @@ router.get('/agent/:id', (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'profile.html'));
 });
 
+router.get('/search', (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'search.html'));
+});
+
+router.get('/packages', (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'packages.html'));
+});
+
 module.exports = router;
