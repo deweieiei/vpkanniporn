@@ -6,7 +6,7 @@ const router = express.Router();
 const PUBLIC_COLUMNS = `
   id, first_name, last_name, avatar_path, position, company, branch,
   phone, email, province, license_number, license_number_2,
-  bio, quote, facebook_url, line_id, instagram_url, awards,
+  bio, quote, facebook_url, line_id, instagram_url, awards, cover_images,
   created_at
 `;
 

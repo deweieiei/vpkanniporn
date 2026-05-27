@@ -7,11 +7,15 @@ const { pool } = require('../db/pool');
 
 const router = express.Router();
 
-const UPLOAD_DIR = path.join(__dirname, '..', 'public', 'uploads', 'avatars');
-fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+const AVATARS_DIR = path.join(__dirname, '..', 'public', 'uploads', 'avatars');
+const COVERS_DIR = path.join(__dirname, '..', 'public', 'uploads', 'covers');
+fs.mkdirSync(AVATARS_DIR, { recursive: true });
+fs.mkdirSync(COVERS_DIR, { recursive: true });
 
 const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, UPLOAD_DIR),
+  destination: (_req, file, cb) => {
+    cb(null, file.fieldname === 'cover_images' ? COVERS_DIR : AVATARS_DIR);
+  },
   filename: (_req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase().slice(0, 8) || '.jpg';
     const safe = Date.now() + '-' + Math.random().toString(36).slice(2, 8) + ext;
@@ -28,6 +32,11 @@ const upload = multer({
   },
 });
 
+const profileUpload = upload.fields([
+  { name: 'avatar', maxCount: 1 },
+  { name: 'cover_images', maxCount: 6 },
+]);
+
 function isValidEmail(email) {
   return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -36,7 +45,7 @@ const FULL_USER_COLUMNS = `
   id, email, first_name, last_name, birthdate, gender, province, avatar_path,
   role, is_active, created_at, updated_at,
   phone, position, company, branch, license_number, license_number_2,
-  bio, quote, facebook_url, line_id, instagram_url, awards
+  bio, quote, facebook_url, line_id, instagram_url, awards, cover_images
 `;
 
 function requireAuth(req, res, next) {
@@ -162,8 +171,8 @@ router.get('/me', async (req, res, next) => {
   }
 });
 
-// แก้ไขข้อมูลโปรไฟล์ (ทุก field นอกจาก email/password)
-router.put('/profile', requireAuth, upload.single('avatar'), async (req, res, next) => {
+// แก้ไขข้อมูลโปรไฟล์ (รองรับ avatar + 6 covers)
+router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
   try {
     const allowed = [
       'first_name', 'last_name', 'birthdate', 'gender', 'province',
@@ -191,8 +200,32 @@ router.put('/profile', requireAuth, upload.single('avatar'), async (req, res, ne
       }
     }
 
-    if (req.file) {
-      updates.avatar_path = `/uploads/avatars/${req.file.filename}`;
+    // Avatar (single file)
+    if (req.files && req.files.avatar && req.files.avatar[0]) {
+      updates.avatar_path = `/uploads/avatars/${req.files.avatar[0].filename}`;
+    }
+
+    // Cover images (up to 6): keep existing + new uploads, max 6
+    const hasNewCovers = !!(req.files && req.files.cover_images && req.files.cover_images.length > 0);
+    const hasKeepInstruction = 'cover_images_keep' in req.body;
+
+    if (hasNewCovers || hasKeepInstruction) {
+      let kept = [];
+      if (hasKeepInstruction) {
+        try {
+          const parsed = typeof req.body.cover_images_keep === 'string'
+            ? JSON.parse(req.body.cover_images_keep)
+            : req.body.cover_images_keep;
+          kept = Array.isArray(parsed) ? parsed.filter(s => typeof s === 'string') : [];
+        } catch (e) {
+          return res.status(400).json({ error: 'cover_images_keep ต้องเป็น JSON array' });
+        }
+      }
+      const newPaths = hasNewCovers
+        ? req.files.cover_images.map(f => `/uploads/covers/${f.filename}`)
+        : [];
+      const merged = [...kept, ...newPaths].slice(0, 6);
+      updates.cover_images = merged.length > 0 ? JSON.stringify(merged) : null;
     }
 
     if (updates.gender && !['male', 'female', 'other'].includes(updates.gender)) {

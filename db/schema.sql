@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS users (
   line_id          VARCHAR(64)  NULL,
   instagram_url    VARCHAR(255) NULL,
   awards           JSON         NULL,
+  cover_images     JSON         NULL,
   PRIMARY KEY (id),
   UNIQUE KEY uq_users_email (email),
   KEY idx_users_name (last_name, first_name),

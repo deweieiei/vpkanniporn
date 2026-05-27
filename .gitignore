@@ -31,3 +31,5 @@ sessions/
 # Uploaded files (keep folder, ignore content)
 public/uploads/avatars/*
 !public/uploads/avatars/.gitkeep
+public/uploads/covers/*
+!public/uploads/covers/.gitkeep
