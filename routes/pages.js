@@ -22,6 +22,10 @@ router.get('/profile', requireAuth, (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'profile.html'));
 });
 
+router.get('/dashboard', requireAuth, (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'dashboard.html'));
+});
+
 // ดูโปรไฟล์ตัวแทนคนอื่น (สาธารณะ ไม่ต้อง login)
 router.get('/agent/:id', (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'profile.html'));

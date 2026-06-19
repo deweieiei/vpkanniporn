@@ -13,14 +13,19 @@
   [ ] ฟอร์มติดต่อ 3 แบบ — รอ Phase 3 (DB)
 
 ▌ Phase 2 — Admin Dashboard
-  [ ] /dashboard layout 3-col ตาม S__13730278.jpg
-  [ ] Sidebar menu ลำดับใหม่
-  [ ] /admin/plans (list + filter category)
-  [ ] /admin/plans/new + /:id/edit
-  [ ] /admin/profile ใหม่ (รวม social มากขึ้น, ลบสาขา)
-  [ ] /admin/articles (CRUD บทความ)
-  [ ] /admin/contacts (ตาราง 3 หมวด)
-  [ ] /admin/stats (page views + contacts รวม)
+  ✓ /dashboard skeleton + sidebar 6 อัน (เสร็จ 2026-06-19 รอบ 2)
+  ✓ Tab "ผลงานและรีวิว" — แก้รางวัลได้จริง
+  ✓ Tab "ติดต่อเรา" — แก้ phone/line/social ได้จริง
+  [ ] Tab "วางแผนการเงิน" — edit hero text / tagline / bio
+  [ ] Tab "ประกันสุขภาพ" — CRUD แบบประกัน (รอ Phase 3 DB)
+  [ ] Tab "ออมเงินและมรดก" — CRUD แบบประกัน (รอ Phase 3 DB)
+  [ ] Tab "ร่วมงานกับเรา" — edit career section text
+  [ ] /dashboard ปุ่มแก้ "Edit Profile" → link ไป /profile (มีอยู่)
+  [ ] /admin/plans (list + filter category) — รอ DB
+  [ ] /admin/plans/new + /:id/edit — รอ DB
+  [ ] /admin/articles (CRUD บทความ) — รอ DB
+  [ ] /admin/contacts (ตาราง 3 หมวด) — รอ DB
+  [ ] /admin/stats — รอ DB
 
 ▌ Phase 3 — Backend
   [ ] DB migration: insurance_categories, insurance_plans,

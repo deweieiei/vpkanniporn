@@ -3,7 +3,64 @@
   (ทุกครั้งที่ทำเสร็จอะไร อัปเดตตรงนี้ — ลงชื่อ + วันที่)
 ════════════════════════════════════════════════════════════════
 
-▌ 2026-06-19 — Claude Opus 4.7 (รอบแรก)
+▌ 2026-06-19 (รอบ 2) — Claude Opus 4.7
+  ★ พี่ดิวยืนยัน: ทดสอบด้วย Docker MySQL local, nav 6 อันอยู่ใน dashboard ตัวแทนเท่านั้น,
+    "ผลงาน" = รางวัล/Timeline ความสำเร็จ
+
+  ◉ ค้นพบที่ต้องแก้:
+  ★ index.js (Express entry) หายไปจาก disk + ไม่อยู่ใน git → เขียนใหม่
+  ★ เครื่องพี่ดิวไม่มี MySQL/XAMPP → ใช้ Docker
+
+  ◉ Code:
+  ✓ index.js — Express server เต็มรูปแบบ
+     - express-session cookie 'fwd.sid' 30 วัน
+     - mount /api/auth, /api/users, /
+     - /health, /api/health/db
+     - SPA fallback 404 → index.html
+     - graceful shutdown (SIGINT/SIGTERM ปิด MySQL pool)
+     - smoke test ผ่าน: /, /login, /search, /api/auth/me ทำงานปกติ
+
+  ✓ docker-compose.yml — MySQL 8.0 + phpMyAdmin
+     - port 3306 (MySQL) + 8080 (phpmyadmin GUI)
+     - utf8mb4_unicode_ci, TZ=Asia/Bangkok
+     - mount db/schema.sql ใน /docker-entrypoint-initdb.d/ → auto-init
+     - volume fwd-mysql-data (persistent)
+     - DB user: vpkann_database / pass: devpass (local)
+
+  ✓ .env — เปลี่ยน DB_PASSWORD เป็น 'devpass' (local Docker)
+     - production .env บน HostAtom ต้องใช้ pass จริง
+
+  ✓ public/index.html — landing nav แบบ visitor-friendly
+     - nav header เหลือ 2 อัน: หน้าแรก / ค้นหาตัวแทน
+     - ปุ่มมุมขวาบน: ลูกศร → /login (default)
+     - JS เช็ค /api/auth/me ตอน load: ถ้า login → ปุ่มเปลี่ยนเป็น ⚙ /dashboard
+
+  ✓ public/dashboard.html — หน้าจัดการสำหรับตัวแทน (ใหม่)
+     - Top header: logo + ชื่อตัวแทน + avatar + logout
+     - Banner "คุณกำลังอยู่ในโหมดจัดการข้อมูล"
+     - Sidebar 6 อัน:
+       1. 💼 วางแผนการเงิน — placeholder
+       2. 🏥 ประกันสุขภาพ — placeholder (รอ DB Phase 3)
+       3. 💰 ออมเงินและมรดก — placeholder (รอ DB Phase 3)
+       4. 🏆 ผลงานและรีวิว — ★ ใช้งานได้จริง ★
+            - textarea 1 บรรทัด = 1 รางวัล
+            - live preview เป็น tag pills
+            - บันทึก → PUT /api/auth/profile (awards JSON)
+       5. 🤝 ร่วมงานกับเรา — placeholder
+       6. 📞 ติดต่อเรา — ★ ใช้งานได้จริง ★
+            - แก้ phone / line_id / facebook_url / instagram_url
+            - email read-only (เปลี่ยนที่หน้าโปรไฟล์)
+     - Tab switching ด้วย URL hash
+     - Auth check ตอน load: ถ้าไม่ login → redirect /login
+
+  ✓ routes/pages.js — เพิ่ม route /dashboard (requireAuth → redirect /login)
+
+▌ พี่ดิวต้องทำ (1 step):
+  ◇ ลง Docker Desktop https://www.docker.com/products/docker-desktop/
+    หลังลงเสร็จเปิด Docker Desktop แล้วบอก AI ต่อรอบหน้า
+    AI จะรัน docker compose up -d ให้ → ทดสอบ register + login ได้จริง
+
+▌ 2026-06-19 (รอบ 1) — Claude Opus 4.7
   ✓ สำรวจ codebase + DB schema เรียบร้อย
   ✓ อ่าน PDF + 4 รูปภาพในโฟลเดอร์ "สิ่งที่ต้องทำ/"
   ✓ ตีความเครื่องหมายแดงของลูกค้าได้ครบ 7 หน้า PDF

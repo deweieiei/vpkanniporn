@@ -670,15 +670,17 @@
 
         <ul class="nav-desktop">
             <li><a href="#home">หน้าแรก</a></li>
-            <li><a href="#services">แผนประกัน</a></li>
-            <li><a href="#about-agent">รู้จักที่ปรึกษา</a></li>
-            <li><a href="#reviews">รีวิว</a></li>
-            <li><a href="#join">ร่วมงาน</a></li>
             <li><a href="/search">ค้นหาตัวแทน</a></li>
         </ul>
 
         <div class="header-cta">
-            <a href="/login" class="btn-login-icon" title="เข้าสู่ระบบสำหรับตัวแทน">→</a>
+            <!-- ปุ่มสำหรับ visitor (ไม่ login) — โชว์เป็น default -->
+            <a id="cta-login" href="/login" class="btn-login-icon" title="เข้าสู่ระบบสำหรับตัวแทน">→</a>
+
+            <!-- ปุ่มสำหรับตัวแทน (login แล้ว) — JS จะ unhide -->
+            <a id="cta-dashboard" href="/dashboard" class="btn-login-icon" style="display:none;" title="เข้าหน้าจัดการ">
+                ⚙
+            </a>
         </div>
     </header>
 
@@ -917,6 +919,21 @@
 
     <!-- ==================== Dynamic data injection ==================== -->
     <script>
+        // เช็คว่า login อยู่มั้ย — toggle ปุ่มเข้าระบบ vs เข้าหน้าจัดการ
+        async function checkAuth() {
+            try {
+                const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
+                const data = await res.json();
+                if (data && data.authenticated) {
+                    document.getElementById('cta-login').style.display = 'none';
+                    document.getElementById('cta-dashboard').style.display = 'flex';
+                }
+            } catch (e) {
+                // ถ้า fetch fail ก็ปล่อยให้ default (visitor view)
+            }
+        }
+        checkAuth();
+
         // ดึงข้อมูลตัวแทนหลัก (กวิสรา = user id 1 เริ่มต้น)
         // ถ้า fetch ไม่ได้ ใช้ค่า static ที่ hard-code ไว้แล้ว
         async function loadFeaturedAgent() {

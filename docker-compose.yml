@@ -1,0 +1,61 @@
+version: '3.9'
+
+# MySQL local สำหรับ dev — ตรงกับโครงสร้าง HostAtom
+# วิธีใช้:
+#   docker compose up -d        # เริ่มฐานข้อมูล (background)
+#   docker compose logs -f      # ดู log
+#   docker compose down         # หยุด (ข้อมูลคงอยู่ใน volume)
+#   docker compose down -v      # หยุด + ลบข้อมูล (เริ่มใหม่)
+#
+# Connection จาก Node:
+#   host=localhost  port=3306  user=vpkann_database  password=devpass  database=vpkann_database
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: fwd-mysql
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=caching_sha2_password
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: vpkann_database
+      MYSQL_USER: vpkann_database
+      MYSQL_PASSWORD: devpass
+      TZ: Asia/Bangkok
+    ports:
+      - "3306:3306"
+    volumes:
+      - fwd-mysql-data:/var/lib/mysql
+      # ไฟล์ใน /docker-entrypoint-initdb.d/ จะรันอัตโนมัติ "ตอน init ครั้งแรกเท่านั้น"
+      # (ถ้าอยากรันใหม่ ต้อง down -v ก่อน)
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpass"]
+      interval: 8s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+
+  # phpMyAdmin ออปชั่นเพิ่ม GUI — เปิดที่ http://localhost:8080
+  phpmyadmin:
+    image: phpmyadmin:5
+    container_name: fwd-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: rootpass
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "8080:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  fwd-mysql-data:
+    name: fwd-mysql-data
