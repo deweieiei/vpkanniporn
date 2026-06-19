@@ -1,0 +1,43 @@
+════════════════════════════════════════════════════════════════
+  Checkpoint: สิ่งที่ทำเสร็จแล้วในการรื้อรอบนี้
+  (ทุกครั้งที่ทำเสร็จอะไร อัปเดตตรงนี้ — ลงชื่อ + วันที่)
+════════════════════════════════════════════════════════════════
+
+▌ 2026-06-19 — Claude Opus 4.7 (รอบแรก)
+  ✓ สำรวจ codebase + DB schema เรียบร้อย
+  ✓ อ่าน PDF + 4 รูปภาพในโฟลเดอร์ "สิ่งที่ต้องทำ/"
+  ✓ ตีความเครื่องหมายแดงของลูกค้าได้ครบ 7 หน้า PDF
+  ✓ สร้าง AI_Memory/ + เขียนเอกสารส่งต่อ 9 ไฟล์
+  ✓ พี่ดิวยืนยัน: Step-by-step UI ก่อน, กวิสรา showcase, public landing first
+
+  ◉ Code changes:
+  ✓ public/index.html — รื้อใหม่เป็น marketing landing (Phase 1.1)
+     - ดีไซน์ตาม S__13730279.jpg เป๊ะ: hero/services 6 ใบ/why-us 4 stats/
+       profile + popular plans/3 testimonials/timeline 2022-25/career/CTA
+     - สีจาก CSS variables FWD (--primary-orange #FF6B00)
+     - มี nav.js placeholder + sticky LINE CTA ขวาล่าง
+     - ปุ่ม login icon มุมขวาบน (→ /login)
+     - ปุ่ม "ดูโปรไฟล์ฉบับเต็ม" → /agent/1
+     - JS fetch /api/users/1 มา override ข้อมูลกวิสรา (มี fallback static)
+     - Responsive: clamp() ทุก font + breakpoint 640px/1024px
+     - Service cards ลิงก์ไป /packages?category=health|life|savings|...
+
+  ✓ public/profile.html — ลบ awards + bio sections + เพิ่ม view-as-prospect (Phase 1.2)
+     - ลบ section "แนะนำตัว" (bio block) — ตาม PDF หน้า 2 ที่ลูกค้าวง X
+     - ลบ section "เกียรติประวัติและผลงาน" — ตาม PDF หน้า 2 ที่ลูกค้าวง X
+     - เพิ่มปุ่ม "👁️ ดูในมุมมองผู้มุ่งหวัง" ข้างปุ่ม "แก้ไขโปรไฟล์"
+       (โชว์เฉพาะตอนดูโปรไฟล์ตัวเอง, คลิก → /agent/{own-id})
+     - เก็บ edit modal เดิม (bio + awards ยังบันทึก DB ได้ ใช้ในอนาคต)
+     - เก็บ hero/CTA row/profile card/license box เดิม (ตรงตาม PDF)
+     - ลบโค้ด JS render bio + awards (element ถูกลบ)
+
+▌ ยังไม่ทำ:
+  - Admin dashboard (S__13730278.jpg) — ขั้นต่อไป
+  - Plans management (PDF หน้า 4-6)
+  - Edit profile ใหม่ (PDF หน้า 7) — เพิ่ม Threads, Line OA, ลบสาขา
+  - DB tables ใหม่ (insurance_plans, contact_submissions)
+  - ทดสอบในเบราว์เซอร์จริง (พี่ดิวเปิดดู preview ได้)
+
+════════════════════════════════════════════════════════════════
+  (เพิ่มรายการใหม่ด้านบน — ลำดับใหม่สุดอยู่บนสุด)
+════════════════════════════════════════════════════════════════

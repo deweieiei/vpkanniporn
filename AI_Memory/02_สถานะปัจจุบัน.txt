@@ -1,0 +1,96 @@
+════════════════════════════════════════════════════════════════
+  สถานะโค้ดปัจจุบัน (ก่อนเริ่มรื้อ UI ใหม่)
+  อัปเดตล่าสุด: 19 มิ.ย. 2569 โดย Claude Opus 4.7
+════════════════════════════════════════════════════════════════
+
+✦ โครงสร้างไฟล์
+
+  FWD/
+  ├── .git/                  ← เชื่อม GitHub: deweieiei/vpkanniporn
+  ├── .env                   ← DB password ของจริง (ห้าม commit)
+  ├── .env.example           ← template
+  ├── .gitignore
+  ├── README.md              ← วิธี deploy (เก่า)
+  ├── package.json           ← deps: express, mysql2, bcryptjs, multer, etc.
+  ├── index.html             ← *** ไฟล์ design draft (ไม่ได้ใช้ serve)
+  │                             มีสี CSS variables ของ FWD อยู่ — ใช้อ้างอิงสี
+  ├── index.js               ← Express server (entry — ผมยังไม่ได้เปิดดู)
+  ├── db/
+  │   ├── pool.js            ← MySQL pool config
+  │   ├── schema.sql         ← CREATE TABLE users
+  │   ├── alter_add_profile_fields.sql
+  │   └── alter_add_cover_images.sql
+  ├── routes/
+  │   ├── pages.js           ← serve HTML: /, /login, /profile, /agent/:id, /search, /packages
+  │   ├── auth.js            ← /api/auth/register, login, logout, me, profile (PUT)
+  │   └── users.js           ← /api/users (list), /api/users/:id (public profile)
+  ├── public/
+  │   ├── index.html         ← หน้าแรกปัจจุบัน (VP Kanniporn header + product grid 5 ใบ)
+  │   ├── login.html         ← เข้าระบบ/สมัคร (FWD orange gradient — สวยแล้ว)
+  │   ├── profile.html       ← โปรไฟล์ตัวแทน + modal แก้ไข (มี cover slideshow)
+  │   ├── search.html        ← ค้นหาตัวแทน (มีฟิลเตอร์)
+  │   ├── packages.html      ← placeholder การ์ดแพกเกจ 3 ใบ (ยังไม่มีจริง)
+  │   ├── nav.js             ← Nav bar shared ทุกหน้า
+  │   ├── src/               ← รูป static (S__12566769.jpg banner)
+  │   ├── icon/              ← (ว่าง)
+  │   └── uploads/
+  │       ├── avatars/<user_id>/  ← รูปโปรไฟล์ (per-user folder)
+  │       └── covers/<user_id>/   ← รูปปก (max 6 รูป — slideshow)
+  └── สิ่งที่ต้องทำ/         ← *** โฟลเดอร์ลูกค้าส่งภาพ + PDF reference
+
+✦ Database Schema (1 table)
+
+  users:
+    id, email (unique), password_hash, first_name, last_name,
+    birthdate, gender, province, avatar_path,
+    role (admin/agent/user), is_active, created_at, updated_at,
+    phone, position, company, branch,
+    license_number, license_number_2,
+    bio, quote,
+    facebook_url, line_id, instagram_url,
+    awards (JSON array),
+    cover_images (JSON array of paths, max 6)
+
+  ★ ยังไม่มี table สำหรับ:
+    - insurance_plans (แบบประกัน)
+    - articles (บทความ)
+    - contact_submissions (ฟอร์มลูกค้าติดต่อ)
+    - categories (หมวดหมู่แบบประกัน)
+    - page_views (สถิติ)
+
+✦ Routes ที่ทำงานอยู่
+
+  GET  /                  → public/index.html (VP Kanniporn home)
+  GET  /login             → public/login.html (FWD orange gradient)
+  GET  /profile           → public/profile.html (ต้อง auth) — โปรไฟล์ของตัวเอง
+  GET  /agent/:id         → public/profile.html (ดูคนอื่นได้ ไม่ต้อง auth)
+  GET  /search            → public/search.html (ค้นหาตัวแทนทั้งหมด)
+  GET  /packages          → public/packages.html (placeholder)
+  GET  /health            → health check
+  POST /api/auth/register → สมัคร + อัปโหลด avatar
+  POST /api/auth/login    → login (email + password)
+  POST /api/auth/logout
+  GET  /api/auth/me       → คืน user object เต็ม (ถ้า login)
+  PUT  /api/auth/profile  → แก้โปรไฟล์ + avatar + cover_images[] (max 6)
+  GET  /api/users         → list ตัวแทนทุกคน (สำหรับ search)
+  GET  /api/users/:id     → public profile
+
+✦ สิ่งที่ทำดีแล้ว (เก็บไว้)
+
+  ✓ Auth ทำงานเรียบร้อย (bcrypt + express-session, 30 วัน)
+  ✓ Avatar/cover upload + path traversal protection
+  ✓ Per-user upload subfolders (/uploads/avatars/<id>/)
+  ✓ Cover slideshow แบบ fade transition
+  ✓ Search ตัวแทนด้วยชื่อ/ใบอนุญาต/จังหวัด/สาขา
+  ✓ ดูโปรไฟล์ตัวเอง vs คนอื่น (ซ่อนปุ่ม edit/logout เมื่อดูคนอื่น)
+  ✓ Login page โทนส้ม FWD (สวย ไม่ต้องทำใหม่)
+  ✓ Responsive (Tailwind)
+
+✦ Git Status
+
+  - Branch: main (up to date กับ origin)
+  - มี untracked: "สิ่งที่ต้องทำ/" (โฟลเดอร์อ้างอิงลูกค้า)
+  - มี deleted files ใน test/ (ไม่สำคัญ)
+  - Commit ล่าสุด: 8357596 "up" — 5aa19ce "feat: split pages..."
+
+════════════════════════════════════════════════════════════════

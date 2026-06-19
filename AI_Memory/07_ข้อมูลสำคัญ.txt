@@ -1,0 +1,70 @@
+════════════════════════════════════════════════════════════════
+  ข้อมูลสำคัญ (Credentials, URL, Path)
+  ⚠ ห้าม copy ไฟล์นี้ออกนอก project / commit ขึ้น git
+════════════════════════════════════════════════════════════════
+
+✦ Git Repository
+  URL: https://github.com/deweieiei/vpkanniporn.git
+  Branch หลัก: main
+  Hosting: GitHub (account: deweieiei = พี่ดิว)
+
+✦ Hosting (Production)
+  Provider: HostAtom (Plesk + Node.js + MySQL)
+  Auto-deploy: Plesk → Git pull on push → npm install → restart Node
+
+✦ Database (Production)
+  Engine: MySQL
+  DB User: vpkann_database
+  DB Host: localhost (จาก Plesk ภายใน)
+  DB Port: 3306
+  DB Password: i5g&8P8$zMlkjGcb     ⚠ SECRET — เห็นใน README.md
+  DB Name: vpkann_database (หรือชื่อที่สร้างไว้)
+  Console: phpMyAdmin (เข้าผ่าน Plesk)
+
+  ★ ผมยังไม่เคยเปิด pool.js เช็คว่ามี config ตรงมั้ย — เผื่อมี
+
+✦ Environment Variables (.env ใน project)
+  NODE_ENV=production
+  SESSION_SECRET=<random 32+ chars>
+  DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME
+
+  (ห้าม commit .env — มี .env.example ให้ดู)
+
+✦ Tech Stack
+  Node version: >= 18.x
+  Express: 4.21.0 (ระบุ — v5 ยัง alpha, อย่าอัป)
+  mysql2: 3.22.3
+  bcryptjs: 2.4.3 (pure JS — ไม่ต้อง compile)
+  multer: 2.1.1 (file upload, 5MB limit)
+  express-session: 1.18.0
+
+✦ Path สำคัญ
+  - Project root:     C:\Users\dew\Desktop\FWD\
+  - Public assets:    C:\Users\dew\Desktop\FWD\public\
+  - Uploads:          public/uploads/avatars/<id>/  + covers/<id>/
+  - Static images:    public/src/  (S__12566769.jpg = banner)
+  - Reference docs:   C:\Users\dew\Desktop\FWD\สิ่งที่ต้องทำ\
+  - AI memory:        C:\Users\dew\Desktop\FWD\AI_Memory\  (ที่นี่)
+
+✦ พี่ดิวมี backup ที่
+  C:\Users\dew\Desktop\AIDocument\      ← memory ส่วนตัวสำรอง
+  C:\Users\dew\Desktop\chaungthai\      ← project ChaungThai (คนละโปรเจกต์)
+  C:\Users\dew\Desktop\timecarehub\     ← project TimeCare (คนละโปรเจกต์)
+
+✦ คนติดต่อ
+  ตัวแทน FWD (เจ้าของเว็บ): กวิสรา จงเจริญ
+  - Tel: 062-2397362
+  - Email: kavisara.fwd@gmail.com
+  - LINE: @kavisara.fwd
+  - Position: Unit Manager / Financial Consultant
+
+  ผู้พัฒนา: พี่ดิว (ไพโรจน์ ธัญญเจริญ)
+  - Email: babydew2015@gmail.com
+
+✦ คำสั่ง Dev บนเครื่องพี่ดิว (Windows + PowerShell)
+  cd C:\Users\dew\Desktop\FWD
+  npm install
+  npm run dev          # node --watch index.js → port 3000
+  # เปิด http://localhost:3000
+
+════════════════════════════════════════════════════════════════

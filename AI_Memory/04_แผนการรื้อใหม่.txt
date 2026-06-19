@@ -1,0 +1,126 @@
+════════════════════════════════════════════════════════════════
+  แผนการรื้อ UI ใหม่ — ลำดับงาน
+  ⚠ ยังไม่เริ่มทำ! รอพี่ดิวยืนยันก่อน (ดู 08_คำถามรอตอบ)
+════════════════════════════════════════════════════════════════
+
+✦ สมมุติฐาน (จะ revise หลังพี่ดิวตอบ)
+
+  1. Backend stack เดิม (Express + MySQL) — ไม่เปลี่ยน
+  2. Public landing ใช้ดีไซน์ S__13730279.jpg เป็นมาตรฐาน
+  3. ทำให้แต่ละตัวแทนมี landing ของตัวเอง (multi-tenant)
+  4. เพิ่ม DB tables: insurance_plans, contact_submissions
+  5. ตัด feature ที่ลูกค้าวง X ออก (awards, team, etc.)
+
+════════════════════════════════════════════════════════════════
+  Phase 1: Public Pages (ผู้เยี่ยมชม)
+════════════════════════════════════════════════════════════════
+
+  [1.1] รื้อ public/index.html ให้เป็น marketing landing
+        → ใช้ดีไซน์จาก index.html (root) เป็นต้นแบบ
+        → เปลี่ยนข้อมูลตัวแทนเป็น dynamic (ดึงจาก /api/users/featured)
+        → เก็บ nav.js + ทำให้ responsive
+
+  [1.2] รื้อ /agent/:id (profile.html) ตาม PDF หน้า 2
+        → ลบ "เกียรติประวัติ" + "ทีมงาน" + "ติดต่อสอบถาม row"
+        → แก้สีชื่อตัวแทน
+        → เพิ่มปุ่ม "ดูในมุมมองผู้มุ่งหวัง" (ดูแบบลูกค้าเห็น)
+
+  [1.3] หน้าแบบประกัน (public) — ใหม่
+        → /agent/:id/plans/:plan_id หรือ /plans/:id
+        → แสดงรายละเอียดแบบประกัน (เนื้อหา rich text)
+
+  [1.4] ฟอร์มติดต่อ — ใหม่
+        → 3 ฟอร์ม: ติดต่อสอบถาม / สนใจประกัน / สนใจเป็นตัวแทน
+        → save ลง table contact_submissions
+        → ส่ง email/LINE แจ้งตัวแทน (Phase ต่อไป)
+
+════════════════════════════════════════════════════════════════
+  Phase 2: Admin Dashboard (ตัวแทนหลัง login)
+════════════════════════════════════════════════════════════════
+
+  [2.1] หน้า dashboard ใหม่ (/admin หรือ /dashboard)
+        → Layout 3 col ตาม S__13730278.jpg
+        → Top stats card
+        → Sidebar menu ลำดับใหม่ตาม PDF หน้า 3:
+            1. ติดต่อสอบถาม
+            2. สนใจเป็นตัวแทน
+            3. สนใจทำประกันชีวิต
+            4. แก้ไข/จัดการบทความ
+            5. สถิติการเข้าชม
+        → Quick tools (right sidebar)
+        → Recent activity feed
+
+  [2.2] หน้าจัดการแบบประกัน (/admin/plans)
+        → List แบ่ง category (Tab/Filter)
+        → ปุ่ม "+ เพิ่มแบบประกัน" + "ดูตัวอย่าง"
+        → ไม่มี toggle / ไม่มี select-all (ตามที่ PDF X)
+        → Drag-drop reorder (option)
+
+  [2.3] หน้าสร้าง/แก้ไขแบบประกัน (/admin/plans/new, /admin/plans/:id/edit)
+        → Upload รูป 3 ขนาด (ปกใหญ่/ปกย่อ/social)
+        → Rich text editor สำหรับรายละเอียด
+        → ปุ่ม "ดูตัวอย่าง" / "ยกเลิก" / "บันทึก"
+
+  [2.4] หน้าแก้ไขโปรไฟล์ใหม่ (/admin/profile)
+        → ตาม PDF หน้า 7
+        → ลบ "สาขา"
+        → เพิ่ม Line OA, Threads, X, LinkedIn, TikTok
+        → Upload รูป multi-platform sizes
+
+  [2.5] หน้าจัดการบทความ (/admin/articles)
+        → List + create/edit/delete
+
+  [2.6] หน้าสถิติ (/admin/stats)
+        → Page views + contact submissions รวมกัน
+        → กราฟง่ายๆ (Chart.js)
+
+  [2.7] หน้าฟอร์มลูกค้าที่ส่งมา (/admin/contacts)
+        → ตาราง 3 หมวด: ติดต่อสอบถาม / สนใจประกัน / สนใจเป็นตัวแทน
+        → mark ว่าตอบแล้ว/ยัง
+
+════════════════════════════════════════════════════════════════
+  Phase 3: Backend (DB + API)
+════════════════════════════════════════════════════════════════
+
+  [3.1] DB migration ใหม่:
+        - insurance_categories (id, name, slug, icon, order)
+        - insurance_plans (id, user_id, category_id, title, description,
+                          cover_large, cover_small, cover_social,
+                          content_html, view_count, created_at, updated_at)
+        - articles (id, user_id, title, slug, cover, content_html,
+                   view_count, created_at)
+        - contact_submissions (id, user_id, type, name, phone, email,
+                              message, status, created_at)
+        - page_views (id, user_id, page_url, ip, ua, created_at)
+
+  [3.2] API routes ใหม่:
+        - /api/plans/* (CRUD แบบประกัน)
+        - /api/articles/* (CRUD บทความ)
+        - /api/contacts/* (รับฟอร์ม + list)
+        - /api/stats/* (สถิติ)
+
+════════════════════════════════════════════════════════════════
+  Phase 4: ลบของเก่า + deploy
+════════════════════════════════════════════════════════════════
+
+  [4.1] ลบ packages.html (placeholder ไม่ตรงตามที่ลูกค้าต้องการ)
+        → แทนด้วย /plans หรือ /agent/:id/plans
+  [4.2] ลบรูป index.html (root) ออก หรือ rename เป็น .reference.html
+  [4.3] อัปเดต README.md
+  [4.4] Test ทุกหน้าใน mobile + desktop
+  [4.5] Deploy → HostAtom (ผ่าน git push → Plesk auto-pull)
+
+════════════════════════════════════════════════════════════════
+  ลำดับที่แนะนำ (ทำตามนี้)
+════════════════════════════════════════════════════════════════
+
+  Day 1: 1.1 + 1.2 (public landing + profile หน้า viewer)
+  Day 2: 3.1 (DB migration) + 2.1 (dashboard skeleton)
+  Day 3: 2.2 + 2.3 (plans CRUD)
+  Day 4: 2.4 + 2.7 (profile + contact list)
+  Day 5: 2.5 + 2.6 + 1.4 (articles + stats + contact forms)
+  Day 6: 4 (cleanup + deploy)
+
+  ★ แต่ก่อนเริ่ม — รอพี่ดิวยืนยันก่อน (อ่าน 08_คำถามรอตอบ)
+
+════════════════════════════════════════════════════════════════

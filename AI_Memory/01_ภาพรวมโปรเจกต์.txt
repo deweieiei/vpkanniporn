@@ -1,0 +1,44 @@
+════════════════════════════════════════════════════════════════
+  ภาพรวมโปรเจกต์ FWD Agent Office
+════════════════════════════════════════════════════════════════
+
+✦ คืออะไร
+  เว็บไซต์สำนักงานตัวแทนประกันชีวิต FWD ของ "กวิสรา จงเจริญ"
+  (ตำแหน่ง: Unit Manager / Financial Consultant)
+  ภายใต้แบรนด์ "VP Kanniporn" หรือ "VP Kanniporn Digital Agent Office"
+
+✦ ทำเพื่ออะไร
+  - ให้ตัวแทนมีหน้าโปรไฟล์ออนไลน์ที่ลูกค้าค้นเจอ
+  - แสดงผลิตภัณฑ์ประกัน + บทความ
+  - รับข้อมูลลูกค้าที่สนใจ (ติดต่อสอบถาม, สมัครเป็นตัวแทน, ทำประกัน)
+  - ทีมตัวแทนใต้สังกัดมีหน้าของตัวเองได้
+
+✦ ใครเป็นเจ้าของ
+  พี่ดิว (ผู้พัฒนา) ทำให้ลูกค้าซึ่งเป็นทีมตัวแทน FWD
+  - GitHub: https://github.com/deweieiei/vpkanniporn
+  - Deploy: HostAtom (Plesk + Node.js + MySQL)
+
+✦ Tech Stack
+  - Backend: Node.js + Express 4.x + express-session + bcryptjs + multer
+  - DB: MySQL (vpkann_database)
+  - Frontend: HTML + Tailwind CSS (CDN) + Vanilla JS
+  - Font: Prompt (Google Fonts) + Sarabun (fallback)
+  - Deploy: HostAtom (Plesk panel + Git auto-pull)
+
+✦ สีหลัก (FWD Brand)
+  --primary-orange:    #FF6B00   ← สีหลัก
+  --secondary-orange:  #E65C00   ← hover/active
+  --light-orange-bg:   #FFF5EF   ← background อ่อน
+  --dark-bg:           #1A1A1A   ← พื้นเข้ม (footer)
+  --gold:              #D4AF37   ← gold accent (Elite badge)
+  --line-green:        #06C755   ← LINE button
+  --text-main:         #333333
+  --text-muted:        #666666
+
+  (สีอยู่ที่ไฟล์ index.html ราก project — ใช้สีเหล่านี้ทั่วทั้งเว็บ)
+
+✦ Font หลัก
+  'Prompt' (ไทย) → จาก Google Fonts
+  รอง: Sarabun, Helvetica Neue, Arial, sans-serif
+
+════════════════════════════════════════════════════════════════

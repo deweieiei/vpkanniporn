@@ -1,0 +1,40 @@
+════════════════════════════════════════════════════════════════
+  Checkpoint: TODO List
+  (เมื่อทำเสร็จ ตัดออก ย้ายไปไฟล์ 05_ทำแล้ว.txt)
+════════════════════════════════════════════════════════════════
+
+▌ Phase 1 — Public Pages
+  ✓ public/index.html → marketing landing (เสร็จ 2026-06-19)
+  ✓ profile.html (/agent/:id view) ตาม PDF หน้า 2 (เสร็จ 2026-06-19)
+       ✓ ลบ awards / bio sections
+       ✓ เพิ่มปุ่ม "ดูในมุมมองผู้มุ่งหวัง"
+       — ยังไม่ได้แก้สีชื่อ (รอ feedback พี่ดิว)
+  [ ] หน้าแสดงแบบประกัน public (/plans/:id) — รอ Phase 3 (DB)
+  [ ] ฟอร์มติดต่อ 3 แบบ — รอ Phase 3 (DB)
+
+▌ Phase 2 — Admin Dashboard
+  [ ] /dashboard layout 3-col ตาม S__13730278.jpg
+  [ ] Sidebar menu ลำดับใหม่
+  [ ] /admin/plans (list + filter category)
+  [ ] /admin/plans/new + /:id/edit
+  [ ] /admin/profile ใหม่ (รวม social มากขึ้น, ลบสาขา)
+  [ ] /admin/articles (CRUD บทความ)
+  [ ] /admin/contacts (ตาราง 3 หมวด)
+  [ ] /admin/stats (page views + contacts รวม)
+
+▌ Phase 3 — Backend
+  [ ] DB migration: insurance_categories, insurance_plans,
+       articles, contact_submissions, page_views
+  [ ] /api/plans/* CRUD
+  [ ] /api/articles/* CRUD
+  [ ] /api/contacts/* (POST จากผู้เยี่ยม, GET ดู, PATCH mark-read)
+  [ ] /api/stats/*
+
+▌ Phase 4 — Cleanup + Deploy
+  [ ] ลบ packages.html (เก่า)
+  [ ] ย้าย index.html (root) → AI_Memory/reference_design.html
+  [ ] อัปเดต README.md
+  [ ] Test mobile + desktop
+  [ ] Deploy HostAtom
+
+════════════════════════════════════════════════════════════════
