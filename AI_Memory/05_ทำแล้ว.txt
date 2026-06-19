@@ -3,6 +3,40 @@
   (ทุกครั้งที่ทำเสร็จอะไร อัปเดตตรงนี้ — ลงชื่อ + วันที่)
 ════════════════════════════════════════════════════════════════
 
+▌ 2026-06-19 (รอบ 3) — Claude Opus 4.7
+  ★ พี่ดิวบอก: "เหมือนเรียก index.html ผิดไฟล์ — แก้และลบที่ไม่ใช้"
+    → Launch preview เปิด root/index.html (เก่า) แทน public/index.html (ใหม่)
+
+  ◉ Cleanup:
+  ✓ ย้าย root/index.html (23KB, ดีไซน์ reference) → AI_Memory/reference_design_landing.html
+     เก็บไว้อ้างอิงสีและโครงสร้าง ไม่ลบทิ้ง
+
+  ✓ ลบ public/packages.html (placeholder ไม่ตรง requirement)
+     — ลูกค้าต้องการ /plans dynamic (Phase 3) ไม่ใช่ static placeholder
+
+  ✓ ลบ route /packages ใน routes/pages.js
+
+  ✓ ลบ link /packages ใน public/nav.js (เหลือ หน้าหลัก + ค้นหาตัวแทน)
+
+  ✓ แก้ public/index.html service cards 6 ใบ:
+     link "/packages?category=..." → "#contact" (พา visitor ไป CTA ติดต่อ)
+
+  ◉ UI improvements (สืบเนื่องจาก feedback "ไม่เห็น login/register"):
+  ✓ public/index.html ปุ่ม header
+     เก่า: วงกลม "→" icon เล็กๆ (เห็นยาก)
+     ใหม่: ปุ่มข้อความ "✍️ สมัครสมาชิก" + "🔑 เข้าสู่ระบบ"
+     หลัง login: "⚙ หน้าจัดการ" + "↩ ออกจากระบบ"
+     Mobile (<640px): ซ่อนปุ่มสมัครสมาชิก เหลือแค่เข้าระบบ
+
+  ✓ public/login.html: รับ window.location.hash === '#register'
+     → เปิด tab สมัครสมาชิกอัตโนมัติเวลามาจาก landing
+
+  ◉ Smoke test ผ่าน:
+     GET /         → HTTP 200 (landing ใหม่)
+     GET /packages → HTTP 404 (ลบสำเร็จ)
+     GET /nav.js   → ไม่มี packages link
+     GET /dashboard → 302 → /login (auth gate)
+
 ▌ 2026-06-19 (รอบ 2) — Claude Opus 4.7
   ★ พี่ดิวยืนยัน: ทดสอบด้วย Docker MySQL local, nav 6 อันอยู่ใน dashboard ตัวแทนเท่านั้น,
     "ผลงาน" = รางวัล/Timeline ความสำเร็จ

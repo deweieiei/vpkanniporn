@@ -6,10 +6,8 @@
     const NAV_ITEMS = [
         { path: '/',         label: 'หน้าหลัก',      icon: '🏠', exact: true },
         { path: '/search',   label: 'ค้นหาตัวแทน',   icon: '🔍' },
-        { path: '/packages', label: 'แพกเกจประกัน',  icon: '📦' },
         // เพิ่มเมนูใหม่ที่นี่ในอนาคต เช่น:
         // { path: '/news',   label: 'ข่าวสาร',        icon: '📰' },
-        // { path: '/contact', label: 'ติดต่อเรา',     icon: '📞' },
     ];
 
     const ACTIVE_CLS = 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md';
