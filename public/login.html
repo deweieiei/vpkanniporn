@@ -196,6 +196,11 @@
         tabLogin.addEventListener('click', () => switchTab('login'));
         tabRegister.addEventListener('click', () => switchTab('register'));
 
+        // ถ้ามาจาก landing ด้วย #register ให้เปิด tab สมัครสมาชิกทันที
+        if (window.location.hash === '#register') {
+            switchTab('register');
+        }
+
         // Avatar preview
         const avatarInput = document.getElementById('avatar-input');
         const avatarImg = document.getElementById('avatar-img');

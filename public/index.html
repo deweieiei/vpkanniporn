@@ -116,20 +116,45 @@
             align-items: center;
             gap: 8px;
         }
-        .btn-login-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
+        .btn-auth {
             background-color: var(--primary-orange);
             color: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 9px 18px;
+            border-radius: 999px;
             font-weight: 700;
-            box-shadow: 0 4px 10px rgba(255, 107, 0, 0.3);
-            transition: background 0.2s;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+            transition: background 0.2s, transform 0.15s;
+            white-space: nowrap;
         }
-        .btn-login-icon:hover { background-color: var(--secondary-orange); }
+        .btn-auth:hover {
+            background-color: var(--secondary-orange);
+            transform: translateY(-1px);
+        }
+        .btn-auth-outline {
+            background-color: var(--white);
+            color: var(--primary-orange);
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 2px solid var(--primary-orange);
+            font-weight: 700;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-auth-outline:hover {
+            background-color: var(--light-orange-bg);
+        }
+        @media (max-width: 640px) {
+            .btn-auth, .btn-auth-outline { padding: 7px 12px; font-size: 12px; }
+            .btn-auth-outline { display: none; } /* hide register on tiny screen */
+        }
 
         @media (min-width: 1024px) {
             .nav-desktop { display: flex; }
@@ -673,13 +698,21 @@
             <li><a href="/search">ค้นหาตัวแทน</a></li>
         </ul>
 
-        <div class="header-cta">
+        <div class="header-cta" style="display:flex; gap:8px; align-items:center;">
             <!-- ปุ่มสำหรับ visitor (ไม่ login) — โชว์เป็น default -->
-            <a id="cta-login" href="/login" class="btn-login-icon" title="เข้าสู่ระบบสำหรับตัวแทน">→</a>
+            <a id="cta-register" href="/login#register" class="btn-auth-outline" title="สมัครสมาชิกใหม่">
+                ✍️ สมัครสมาชิก
+            </a>
+            <a id="cta-login" href="/login" class="btn-auth" title="เข้าสู่ระบบสำหรับตัวแทน">
+                🔑 เข้าสู่ระบบ
+            </a>
 
             <!-- ปุ่มสำหรับตัวแทน (login แล้ว) — JS จะ unhide -->
-            <a id="cta-dashboard" href="/dashboard" class="btn-login-icon" style="display:none;" title="เข้าหน้าจัดการ">
-                ⚙
+            <a id="cta-dashboard" href="/dashboard" class="btn-auth" style="display:none;" title="เข้าหน้าจัดการ">
+                ⚙ หน้าจัดการ
+            </a>
+            <a id="cta-logout" href="#" class="btn-auth-outline" style="display:none;" title="ออกจากระบบ">
+                ↩ ออกจากระบบ
             </a>
         </div>
     </header>
@@ -926,13 +959,25 @@
                 const data = await res.json();
                 if (data && data.authenticated) {
                     document.getElementById('cta-login').style.display = 'none';
-                    document.getElementById('cta-dashboard').style.display = 'flex';
+                    document.getElementById('cta-register').style.display = 'none';
+                    document.getElementById('cta-dashboard').style.display = 'inline-flex';
+                    document.getElementById('cta-logout').style.display = 'inline-flex';
                 }
             } catch (e) {
                 // ถ้า fetch fail ก็ปล่อยให้ default (visitor view)
             }
         }
         checkAuth();
+
+        // Logout จาก landing
+        document.getElementById('cta-logout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
+            } finally {
+                window.location.reload();
+            }
+        });
 
         // ดึงข้อมูลตัวแทนหลัก (กวิสรา = user id 1 เริ่มต้น)
         // ถ้า fetch ไม่ได้ ใช้ค่า static ที่ hard-code ไว้แล้ว
