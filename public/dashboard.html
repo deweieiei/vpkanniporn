@@ -3,332 +3,854 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard — VP Kanniporn Office</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>หน้าจัดการ — VP Kanniporn Office</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Sarabun:wght@400;700;800&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: 'Prompt', sans-serif; }
-        .fwd-orange { color: #FF6B00; }
-        .fwd-bg-orange { background-color: #FF6B00; }
-        .nav-item.active {
-            background: linear-gradient(135deg, #FF6B00, #E65C00);
-            color: white;
-            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+        :root {
+            --primary-orange: #FF6B00;
+            --secondary-orange: #E65C00;
+            --light-orange-bg: #FFF5EF;
+            --dark-bg: #1A1A1A;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --white: #ffffff;
+            --line-green: #06C755;
+            --gold: #D4AF37;
         }
-        .nav-item.active .nav-icon { background: rgba(255,255,255,0.2); }
-        textarea { font-family: inherit; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Prompt', 'Sarabun', 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text-main);
+            background-color: #fbfbfb;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { text-decoration: none; color: inherit; }
+        img { display: block; max-width: 100%; height: auto; }
+
+        /* ===== Admin Top Bar (อยู่บนสุด) ===== */
+        .admin-bar {
+            background: linear-gradient(90deg, #1f2937, #111827);
+            color: #fff;
+            padding: 8px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 1100;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .admin-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .admin-badge {
+            background: var(--primary-orange);
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .admin-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .admin-user {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.08);
+            padding: 4px 12px 4px 4px;
+            border-radius: 999px;
+        }
+        .admin-user .avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background-color: #475569;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid var(--primary-orange);
+        }
+        .admin-btn {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.15);
+            font-size: 11px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+        .admin-btn:hover { background: rgba(255,255,255,0.18); }
+        .admin-btn.danger:hover { background: #dc2626; border-color: #dc2626; }
+
+        /* ===== Header (Brand) ===== */
+        .site-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 5%;
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 38px;
+            z-index: 1000;
+            gap: 12px;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .brand-logo {
+            font-size: 28px;
+            font-weight: 900;
+            color: #1f2937;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+        }
+        .brand-logo .dot {
+            color: var(--primary-orange);
+            font-size: 34px;
+            line-height: 1;
+        }
+        .brand-meta {
+            border-left: 2px solid #e5e7eb;
+            padding-left: 12px;
+            line-height: 1.2;
+        }
+        .brand-meta .title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary-orange);
+        }
+        .brand-meta .sub {
+            font-size: 11px;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 2px;
+        }
+        .badge-elite {
+            background: rgba(212, 175, 55, 0.15);
+            color: #92760e;
+            font-size: 9px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-weight: 700;
+        }
+
+        /* ===== Nav 4 อัน (Sticky scroll-to-section) ===== */
+        .section-nav {
+            background: var(--white);
+            position: sticky;
+            top: 110px;
+            z-index: 900;
+            border-bottom: 2px solid var(--light-orange-bg);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .section-nav-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 5%;
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            scrollbar-width: thin;
+        }
+        .section-nav-inner::-webkit-scrollbar { height: 4px; }
+        .section-nav-inner::-webkit-scrollbar-thumb { background: var(--primary-orange); border-radius: 2px; }
+        .section-nav a {
+            padding: 14px 18px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .section-nav a:hover { color: var(--primary-orange); }
+        .section-nav a.active {
+            color: var(--primary-orange);
+            border-bottom-color: var(--primary-orange);
+        }
+
+        /* ===== Editable Section (กรอบไฮไลต์ + ปุ่มแก้) ===== */
+        .editable {
+            position: relative;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .editable:hover {
+            background-color: rgba(255, 107, 0, 0.02);
+        }
+        .edit-btn {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: var(--primary-orange);
+            color: var(--white);
+            border: none;
+            padding: 7px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255,107,0,0.35);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 5;
+            font-family: inherit;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .edit-btn:hover {
+            background: var(--secondary-orange);
+            transform: translateY(-1px);
+        }
+        .edit-btn.disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .edit-btn.disabled:hover { background: #9ca3af; transform: none; }
+
+        /* ===== Hero ===== */
+        .hero {
+            background: linear-gradient(135deg, #FFF0E6 0%, #FFE0CC 50%, #FFD0B0 100%);
+            padding: 60px 5% 70px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: -120px;
+            right: -120px;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,200,150,0.5) 0%, transparent 70%);
+        }
+        .hero-inner { max-width: 1000px; margin: 0 auto; position: relative; z-index: 1; }
+        .hero h1 {
+            font-size: clamp(28px, 5vw, 44px);
+            margin-bottom: 12px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        .hero .tagline {
+            font-size: clamp(18px, 3vw, 24px);
+            color: var(--primary-orange);
+            font-family: 'Georgia', serif;
+            font-style: italic;
+            margin-bottom: 14px;
+        }
+        .hero .sub-tagline {
+            font-size: clamp(14px, 2vw, 18px);
+            color: var(--text-muted);
+            margin-bottom: 28px;
+        }
+
+        /* ===== Section utilities ===== */
+        .section-title {
+            text-align: center;
+            font-size: clamp(22px, 3vw, 32px);
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+        .section-subtitle {
+            text-align: center;
+            font-size: clamp(13px, 2vw, 17px);
+            color: var(--text-muted);
+            margin-bottom: 36px;
+        }
+
+        /* ===== Services Grid ===== */
+        .services {
+            padding: 60px 5%;
+            background-color: var(--white);
+        }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 18px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .service-card {
+            background-color: var(--white);
+            border: 1px solid #F0F0F0;
+            border-radius: 16px;
+            padding: 24px 16px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+        }
+        .service-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #FFF5EF, #FFE0CC);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin: 0 auto 14px;
+        }
+        .service-card h3 { font-size: 17px; margin-bottom: 4px; }
+        .service-card p.en {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-bottom: 16px;
+            flex-grow: 1;
+        }
+
+        /* ===== Profile Section ===== */
+        .profile-section {
+            padding: 60px 5%;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 36px;
+            background-color: var(--white);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        @media (min-width: 900px) {
+            .profile-section { grid-template-columns: 1fr 1fr; gap: 50px; }
+        }
+        .profile-info h2 { font-size: 24px; margin-bottom: 8px; }
+        .profile-info .name {
+            font-size: clamp(24px, 4vw, 32px);
+            color: var(--primary-orange);
+            margin-bottom: 4px;
+            font-weight: 800;
+        }
+        .profile-info .position {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-bottom: 22px;
+        }
+        .profile-info blockquote {
+            font-style: italic;
+            font-size: 16px;
+            border-left: 4px solid var(--primary-orange);
+            padding-left: 14px;
+            margin-bottom: 24px;
+            color: #444;
+            line-height: 1.7;
+        }
+        .profile-contact p {
+            margin-bottom: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .profile-contact span.label { color: var(--primary-orange); font-size: 17px; }
+
+        /* ===== Reviews ===== */
+        .testimonials { padding: 60px 5%; background-color: var(--light-orange-bg); }
+        .reviews-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 22px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .review-card {
+            background-color: var(--white);
+            padding: 30px 26px 26px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: 1px solid rgba(255,107,0,0.1);
+            position: relative;
+            text-align: center;
+        }
+        .review-card p { font-size: 14px; color: #555; margin-top: 12px; line-height: 1.7; }
+        .review-card .review-name { margin-top: 14px; font-size: 12px; color: var(--primary-orange); font-weight: 700; }
+
+        /* ===== Achievements Timeline ===== */
+        .achievements {
+            padding: 60px 5%;
+            background-color: var(--white);
+            text-align: center;
+        }
+        .timeline {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 32px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .timeline .year {
+            background: linear-gradient(135deg, #FFFFFF, #FFF5EF);
+            border: 2px solid var(--gold);
+            padding: 13px 22px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(212,175,55,0.12);
+            color: #5c4515;
+        }
+
+        /* ===== Modal ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 5000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 28px;
+            max-width: 580px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal-card h2 {
+            font-size: 20px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-card .modal-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 22px;
+        }
+        .field {
+            margin-bottom: 16px;
+        }
+        .field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #4b5563;
+            margin-bottom: 5px;
+        }
+        .field input, .field textarea, .field select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .field input:focus, .field textarea:focus, .field select:focus {
+            border-color: var(--primary-orange);
+            box-shadow: 0 0 0 3px rgba(255,107,0,0.15);
+        }
+        .field textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+        .field .help { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 540px) { .field-row { grid-template-columns: 1fr; } }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px solid #f3f4f6;
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .btn-cancel {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+        .btn-cancel:hover { background: #e5e7eb; }
+        .btn-save {
+            background: var(--primary-orange);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(255,107,0,0.35);
+        }
+        .btn-save:hover { background: var(--secondary-orange); }
+        .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* Alert toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 22px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 13px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+            z-index: 6000;
+            opacity: 0;
+            transition: opacity 0.25s, transform 0.25s;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+        .toast.success { background: #10b981; color: #fff; }
+        .toast.error { background: #ef4444; color: #fff; }
+
+        /* Loading state */
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: #fbfbfb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .loading-screen p {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: center;
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body>
 
-    <!-- ===== Top Header ===== -->
-    <header class="bg-white shadow-sm sticky top-0 z-40 border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="/" class="flex items-center gap-3">
-                <div class="text-2xl font-black text-slate-800 tracking-wider flex items-center">
-                    FWD<span class="fwd-orange text-3xl leading-none">.</span>
-                </div>
-                <div class="border-l pl-3 hidden md:block">
-                    <p class="text-xs font-bold text-orange-600">VP Kanniporn Dashboard</p>
-                    <p class="text-[10px] text-gray-500">หน้าจัดการสำหรับตัวแทน</p>
-                </div>
-            </a>
-            <div class="flex items-center gap-2">
-                <a href="/" target="_blank" class="text-xs text-gray-500 hover:text-orange-500 px-3 py-1.5 hidden sm:inline">
-                    👁 ดูเว็บ
-                </a>
-                <div class="flex items-center gap-2 bg-orange-50 rounded-full pl-1 pr-3 py-1">
-                    <div id="user-avatar" class="w-7 h-7 rounded-full bg-gray-300 overflow-hidden border-2 border-orange-300"></div>
-                    <span id="user-name" class="text-xs font-semibold text-gray-700">กำลังโหลด…</span>
-                </div>
-                <button id="logout-btn" class="text-xs font-semibold text-orange-600 border border-orange-200 hover:bg-orange-50 px-3 py-1.5 rounded-full">
-                    ออกจากระบบ
-                </button>
-            </div>
+    <!-- ===== Loading Screen ===== -->
+    <div id="loading-screen" class="loading-screen">
+        <p>
+            <span style="display:block; font-size:32px; margin-bottom:8px; animation: spin 1s linear infinite;">⚙</span>
+            กำลังตรวจสอบสิทธิ์...
+        </p>
+    </div>
+    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+
+    <!-- ===== Admin Top Bar ===== -->
+    <div class="admin-bar">
+        <div class="admin-bar-left">
+            <span class="admin-badge">⚙ โหมดจัดการข้อมูล</span>
+            <span style="color: rgba(255,255,255,0.6); font-size: 11px;">— สิ่งที่คุณแก้จะแสดงในหน้าเว็บทันที</span>
         </div>
+        <div class="admin-bar-right">
+            <a href="/" target="_blank" class="admin-btn">👁 ดูหน้าเว็บ</a>
+            <div class="admin-user">
+                <div class="avatar" id="user-avatar"></div>
+                <span id="user-name" style="font-weight: 600;">…</span>
+            </div>
+            <button class="admin-btn danger" id="logout-btn">ออกจากระบบ</button>
+        </div>
+    </div>
+
+    <!-- ===== Header (เหมือน landing) ===== -->
+    <header class="site-header">
+        <a href="/" class="brand">
+            <div class="brand-logo">FWD<span class="dot">.</span></div>
+            <div class="brand-meta">
+                <p class="title">สำนักงานตัวแทน FWD</p>
+                <p class="sub">
+                    <span>VP Kanniporn</span>
+                    <span class="badge-elite">Elite Agent Office</span>
+                </p>
+            </div>
+        </a>
+        <div style="font-size: 11px; color: #6b7280;">หน้าจัดการ</div>
     </header>
 
-    <!-- ===== แถบโหมดจัดการ ===== -->
-    <div class="bg-orange-500 text-white text-center py-1.5 text-xs font-semibold tracking-wide">
-        ⚙ คุณกำลังอยู่ในโหมดจัดการข้อมูล
+    <!-- ===== Section Nav (4 อัน) ===== -->
+    <nav class="section-nav">
+        <div class="section-nav-inner">
+            <a href="#about-agent" data-anchor="about-agent" class="nav-link">💼 วางแผนการเงิน</a>
+            <a href="#services" data-anchor="services" class="nav-link">🏥 ประกันสุขภาพ</a>
+            <a href="#services" data-anchor="services" class="nav-link">💰 ออมเงินและมรดก</a>
+            <a href="#reviews" data-anchor="reviews" class="nav-link">🏆 ผลงานและรีวิว</a>
+        </div>
+    </nav>
+
+    <main>
+
+        <!-- ============= Hero ============= -->
+        <section id="home" class="hero editable">
+            <button class="edit-btn" data-edit="hero">✏️ แก้ไข</button>
+            <div class="hero-inner">
+                <h1 id="hero-heading">วางแผนวันนี้ เพื่ออนาคตที่คุณเลือกได้</h1>
+                <p class="tagline" id="hero-tagline">Plan Today, Live Your Future</p>
+                <p class="sub-tagline" id="hero-sub">เพราะทุกเป้าหมายในชีวิต ควรมีแผนที่มั่นคงรองรับ</p>
+            </div>
+        </section>
+
+        <!-- ============= Services (6 cards) ============= -->
+        <section id="services" class="services editable">
+            <button class="edit-btn disabled" data-edit="services" title="ฟีเจอร์ CRUD แบบประกันมาใน Phase 3">🚧 รอเปิด</button>
+            <h2 class="section-title">เลือกแผนที่เหมาะกับคุณ</h2>
+            <p class="section-subtitle">คุณกำลังมองหาอะไรอยู่?</p>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">🏥</div>
+                    <h3>ประกันสุขภาพ</h3>
+                    <p class="en">Health Insurance</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🛡️</div>
+                    <h3>ประกันชีวิต</h3>
+                    <p class="en">Life Insurance</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">💰</div>
+                    <h3>ประกันสะสมทรัพย์</h3>
+                    <p class="en">Savings Insurance</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">👴</div>
+                    <h3>ประกันบำนาญ</h3>
+                    <p class="en">Retirement Planning</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🏢</div>
+                    <h3>ประกันกลุ่ม</h3>
+                    <p class="en">Group Insurance</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">📜</div>
+                    <h3>วางแผนมรดก</h3>
+                    <p class="en">Legacy Planning</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============= Profile (วางแผนการเงิน) ============= -->
+        <section id="about-agent" class="profile-section editable">
+            <button class="edit-btn" data-edit="profile">✏️ แก้ไข</button>
+            <div class="profile-info">
+                <h2>รู้จักที่ปรึกษาของคุณ</h2>
+                <p class="name" id="agent-name">กวิสรา จงเจริญ</p>
+                <p class="position" id="agent-position">Unit Manager | Financial Consultant</p>
+                <blockquote id="agent-quote">
+                    "การวางแผนการเงินที่ดี ไม่ใช่เรื่องของคนรวย แต่เป็นเรื่องของคนที่อยากให้อนาคตของตัวเองมั่นคง"
+                </blockquote>
+                <div class="profile-contact">
+                    <p><span class="label">📞</span> <span id="agent-phone">062-239-7362</span></p>
+                    <p><span class="label">✉️</span> <span id="agent-email">kavisara.fwd@gmail.com</span></p>
+                    <p><span class="label">💬</span> <span id="agent-line">@kavisara.fwd</span></p>
+                </div>
+            </div>
+            <div>
+                <h2 style="font-size: 22px; margin-bottom: 14px;">แผนยอดนิยม</h2>
+                <p style="font-size: 13px; color: var(--text-muted); padding: 24px; background: #fafafa; border-radius: 12px; text-align: center;">
+                    🚧 รายการ "แผนยอดนิยม" จะดึงจาก DB <br>เมื่อ Phase 3 (insurance_plans) เปิดใช้
+                </p>
+            </div>
+        </section>
+
+        <!-- ============= Reviews + Timeline (ผลงานและรีวิว) ============= -->
+        <section id="reviews" class="testimonials editable">
+            <button class="edit-btn disabled" data-edit="reviews" title="CRUD รีวิวมาใน Phase 3">🚧 รอเปิด</button>
+            <h2 class="section-title">เรื่องราวจากลูกค้าของเรา</h2>
+            <p class="section-subtitle">เสียงจริงจากผู้ที่วางใจให้เราดูแล</p>
+            <div class="reviews-container">
+                <div class="review-card">
+                    <p>"อธิบายเข้าใจง่าย ไม่ยัดเยียดการขาย แนะนำสิ่งที่เหมาะสมกับเราจริงๆ ค่ะ"</p>
+                    <p class="review-name">— คุณภัทรา / กรุงเทพฯ</p>
+                </div>
+                <div class="review-card">
+                    <p>"ช่วยวางแผนให้บรรลุเป้าหมาย ทำให้ครอบครัวมีความมั่นคงและอบอุ่นใจมากค่ะ"</p>
+                    <p class="review-name">— คุณวิทยา / นนทบุรี</p>
+                </div>
+                <div class="review-card">
+                    <p>"ดูแลดีมาก แม้หลังจากทำสัญญาแล้วก็ยังคอยติดตามและให้คำแนะนำเสมอ"</p>
+                    <p class="review-name">— คุณนิตยา / สมุทรปราการ</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="achievements editable">
+            <button class="edit-btn" data-edit="awards">✏️ แก้ไข</button>
+            <h2 class="section-title">ความสำเร็จและรางวัล</h2>
+            <p class="section-subtitle">ผลงานที่ได้รับการยอมรับจากองค์กรชั้นนำ</p>
+            <div class="timeline" id="awards-timeline">
+                <div class="year">2022 — MDRT Qualifier</div>
+                <div class="year">2023 — Top Unit Manager / Elite Agent</div>
+                <div class="year">2024 — Financial Advisor Award</div>
+                <div class="year">2025 — Leadership Achievement</div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===== MODAL: Hero ===== -->
+    <div class="modal-overlay" data-modal="hero">
+        <div class="modal-card">
+            <h2>✏️ แก้ไข Hero (หน้าแรก)</h2>
+            <p class="modal-sub">ส่วนหัวของเว็บ — ข้อความหลัก, tagline ภาษาอังกฤษ, และ subtitle</p>
+            <form data-form="hero">
+                <div class="field">
+                    <label>หัวข้อใหญ่ (Heading)</label>
+                    <input type="text" name="hero_heading" placeholder="วางแผนวันนี้ เพื่ออนาคตที่คุณเลือกได้">
+                    <p class="help">★ ปัจจุบันเป็น static — บันทึกแล้วจะแสดงเฉพาะหน้าจัดการ จนกว่าจะเปิด DB field</p>
+                </div>
+                <div class="field">
+                    <label>Tagline (ภาษาอังกฤษ)</label>
+                    <input type="text" name="hero_tagline" placeholder="Plan Today, Live Your Future">
+                </div>
+                <div class="field">
+                    <label>คำบรรยายเสริม (Sub-tagline)</label>
+                    <input type="text" name="hero_sub" placeholder="เพราะทุกเป้าหมายในชีวิต ควรมีแผนที่มั่นคงรองรับ">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
+                    <button type="submit" class="btn btn-save">💾 บันทึก</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <!-- ===== Layout: Sidebar + Main ===== -->
-    <div class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-        <!-- ============ Sidebar Nav (6 อัน) ============ -->
-        <aside class="lg:col-span-3">
-            <nav class="bg-white rounded-2xl shadow-sm border border-gray-100 p-2 sticky top-24">
-                <div class="px-3 py-2 mb-1">
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">เมนูจัดการ</p>
-                </div>
-                <ul class="space-y-1">
-                    <li>
-                        <button data-tab="finance" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-orange-50 transition text-left">
-                            <span class="nav-icon w-7 h-7 rounded-lg bg-orange-100 flex items-center justify-center text-sm">💼</span>
-                            <span>วางแผนการเงิน</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button data-tab="health" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-orange-50 transition text-left">
-                            <span class="nav-icon w-7 h-7 rounded-lg bg-orange-100 flex items-center justify-center text-sm">🏥</span>
-                            <span>ประกันสุขภาพ</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button data-tab="savings" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-orange-50 transition text-left">
-                            <span class="nav-icon w-7 h-7 rounded-lg bg-orange-100 flex items-center justify-center text-sm">💰</span>
-                            <span>ออมเงินและมรดก</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button data-tab="awards" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-orange-50 transition text-left">
-                            <span class="nav-icon w-7 h-7 rounded-lg bg-orange-100 flex items-center justify-center text-sm">🏆</span>
-                            <span>ผลงานและรีวิว</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button data-tab="career" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-orange-50 transition text-left">
-                            <span class="nav-icon w-7 h-7 rounded-lg bg-orange-100 flex items-center justify-center text-sm">🤝</span>
-                            <span>ร่วมงานกับเรา</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button data-tab="contact" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-orange-50 transition text-left">
-                            <span class="nav-icon w-7 h-7 rounded-lg bg-orange-100 flex items-center justify-center text-sm">📞</span>
-                            <span>ติดต่อเรา</span>
-                        </button>
-                    </li>
-                </ul>
-
-                <div class="border-t border-gray-100 mt-3 pt-3 px-3">
-                    <a href="/profile" class="block text-xs text-gray-500 hover:text-orange-500 py-1">
-                        🪪 แก้ไขโปรไฟล์ส่วนตัว →
-                    </a>
-                </div>
-            </nav>
-        </aside>
-
-        <!-- ============ Main Content ============ -->
-        <main class="lg:col-span-9 space-y-5">
-
-            <!-- Alert global -->
-            <div id="global-alert" class="hidden p-4 rounded-xl text-sm font-medium"></div>
-
-            <!-- =========== Tab: วางแผนการเงิน =========== -->
-            <section data-content="finance" class="tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <div class="flex items-start gap-4 mb-5">
-                    <span class="text-3xl">💼</span>
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-800">วางแผนการเงิน</h2>
-                        <p class="text-xs text-gray-500 mt-1">ภาพรวมและข้อความสำหรับ section "วางแผนการเงิน" ในหน้าเว็บหลัก</p>
+    <!-- ===== MODAL: Profile (วางแผนการเงิน) ===== -->
+    <div class="modal-overlay" data-modal="profile">
+        <div class="modal-card">
+            <h2>✏️ แก้ไขโปรไฟล์ + ติดต่อ</h2>
+            <p class="modal-sub">ข้อมูลที่ลูกค้าเห็นในส่วน "รู้จักที่ปรึกษาของคุณ"</p>
+            <form data-form="profile">
+                <div class="field-row">
+                    <div class="field">
+                        <label>ชื่อ</label>
+                        <input type="text" name="first_name" required>
+                    </div>
+                    <div class="field">
+                        <label>นามสกุล</label>
+                        <input type="text" name="last_name" required>
                     </div>
                 </div>
-
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-900 mb-4">
-                    🚧 หน้านี้ยังอยู่ระหว่างพัฒนา — ส่วน CRUD แบบประกัน/บทความจะมาในอัปเดตถัดไป
-                </div>
-
-                <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
-                    <p class="text-xs font-bold text-gray-500 mb-2">ตัวอย่าง section นี้ในหน้าหลัก:</p>
-                    <p class="text-base text-gray-800 font-bold">วางแผนวันนี้ เพื่ออนาคตที่คุณเลือกได้</p>
-                    <p class="text-xs text-gray-500 italic mt-1">"Plan Today, Live Your Future"</p>
-                </div>
-            </section>
-
-            <!-- =========== Tab: ประกันสุขภาพ =========== -->
-            <section data-content="health" class="tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <div class="flex items-start gap-4 mb-5">
-                    <span class="text-3xl">🏥</span>
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-800">ประกันสุขภาพ</h2>
-                        <p class="text-xs text-gray-500 mt-1">จัดการแบบประกันในหมวด "สุขภาพ"</p>
+                <div class="field-row">
+                    <div class="field">
+                        <label>ตำแหน่ง</label>
+                        <input type="text" name="position" placeholder="Unit Manager">
+                    </div>
+                    <div class="field">
+                        <label>บริษัท / สังกัด</label>
+                        <input type="text" name="company" placeholder="Financial Consultant">
                     </div>
                 </div>
-
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-900">
-                    🚧 ระบบ CRUD แบบประกันยังไม่เปิด — รอ DB tables ใหม่ (insurance_plans, insurance_categories) ใน Phase 3
+                <div class="field">
+                    <label>ประโยคแนะนำตัว (Quote)</label>
+                    <textarea name="quote" rows="3" placeholder="การวางแผนการเงินที่ดี ไม่ใช่เรื่องของคนรวย..."></textarea>
                 </div>
-            </section>
-
-            <!-- =========== Tab: ออมเงินและมรดก =========== -->
-            <section data-content="savings" class="tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <div class="flex items-start gap-4 mb-5">
-                    <span class="text-3xl">💰</span>
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-800">ออมเงินและมรดก</h2>
-                        <p class="text-xs text-gray-500 mt-1">จัดการแบบประกันในหมวด "ออมทรัพย์" และ "วางแผนมรดก"</p>
+                <div class="field-row">
+                    <div class="field">
+                        <label>📞 เบอร์โทร</label>
+                        <input type="text" name="phone" placeholder="062-2397362">
                     </div>
-                </div>
-
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-900">
-                    🚧 ระบบ CRUD แบบประกันยังไม่เปิด — รอ DB tables ใหม่ใน Phase 3
-                </div>
-            </section>
-
-            <!-- =========== Tab: ผลงานและรีวิว (ใช้งานได้จริง) =========== -->
-            <section data-content="awards" class="tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <div class="flex items-start gap-4 mb-5">
-                    <span class="text-3xl">🏆</span>
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-800">ผลงานและรีวิว</h2>
-                        <p class="text-xs text-gray-500 mt-1">เพิ่ม/แก้/ลบ รางวัลและ Timeline ความสำเร็จ ที่จะแสดงในหน้าโปรไฟล์ของคุณ</p>
+                    <div class="field">
+                        <label>💬 LINE ID</label>
+                        <input type="text" name="line_id" placeholder="@kavisara.fwd">
                     </div>
                 </div>
-
-                <form id="form-awards" class="space-y-4">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <label class="text-sm font-bold text-gray-700">รางวัล / Timeline ความสำเร็จ</label>
-                            <span class="text-[11px] text-gray-400">1 บรรทัด = 1 รางวัล</span>
-                        </div>
-                        <textarea
-                            name="awards"
-                            id="awards-textarea"
-                            rows="10"
-                            placeholder="2022 — MDRT Qualifier&#10;2023 — Top Unit Manager&#10;2024 — Financial Advisor Award&#10;2025 — Leadership Achievement"
-                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition resize-y"></textarea>
-                        <p class="text-[11px] text-gray-400 mt-1.5">
-                            ใส่ปีหรือชื่อรางวัล 1 บรรทัด — บรรทัดว่างจะถูกข้าม
-                        </p>
+                <div class="field-row">
+                    <div class="field">
+                        <label>📘 Facebook URL</label>
+                        <input type="url" name="facebook_url" placeholder="https://...">
                     </div>
-
-                    <!-- Preview list -->
-                    <div class="bg-amber-50/60 border border-amber-100 rounded-xl p-4">
-                        <p class="text-[11px] font-bold text-amber-900 mb-2">📋 ตัวอย่างที่จะแสดง:</p>
-                        <div id="awards-preview" class="flex flex-wrap gap-2">
-                            <span class="text-[11px] text-amber-700 italic">— ยังไม่ได้กรอกข้อมูล —</span>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end gap-2 pt-2">
-                        <button type="button" id="awards-reset" class="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold text-sm hover:bg-gray-50">
-                            ↶ คืนค่าเดิม
-                        </button>
-                        <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-sm shadow-md disabled:opacity-50">
-                            💾 บันทึก
-                        </button>
-                    </div>
-                </form>
-            </section>
-
-            <!-- =========== Tab: ร่วมงานกับเรา =========== -->
-            <section data-content="career" class="tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <div class="flex items-start gap-4 mb-5">
-                    <span class="text-3xl">🤝</span>
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-800">ร่วมงานกับเรา</h2>
-                        <p class="text-xs text-gray-500 mt-1">ข้อความเชิญชวนสมัครเป็นตัวแทน FWD</p>
+                    <div class="field">
+                        <label>📸 Instagram URL</label>
+                        <input type="url" name="instagram_url" placeholder="https://...">
                     </div>
                 </div>
-
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-900">
-                    🚧 ส่วน text editor ของหน้านี้จะเปิดใช้งานในอัปเดตถัดไป — ปัจจุบันใช้ข้อความ default
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
+                    <button type="submit" class="btn btn-save">💾 บันทึก</button>
                 </div>
-            </section>
-
-            <!-- =========== Tab: ติดต่อเรา (ใช้งานได้จริง) =========== -->
-            <section data-content="contact" class="tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <div class="flex items-start gap-4 mb-5">
-                    <span class="text-3xl">📞</span>
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-800">ติดต่อเรา</h2>
-                        <p class="text-xs text-gray-500 mt-1">เบอร์โทร, อีเมล, LINE และ Social Media ที่จะแสดงในหน้าเว็บ</p>
-                    </div>
-                </div>
-
-                <form id="form-contact" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">📞 เบอร์ติดต่อ</label>
-                        <input type="text" name="phone" placeholder="062-2397362" class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 outline-none text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">✉️ อีเมล</label>
-                        <input type="text" id="email-display" placeholder="you@gmail.com" readonly class="w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-500 text-sm">
-                        <p class="text-[10px] text-gray-400 mt-1">เปลี่ยนอีเมลได้ที่หน้า "แก้ไขโปรไฟล์ส่วนตัว"</p>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">💬 LINE ID</label>
-                        <input type="text" name="line_id" placeholder="@kavisara.fwd" class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 outline-none text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">📘 Facebook URL</label>
-                        <input type="url" name="facebook_url" placeholder="https://facebook.com/..." class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 outline-none text-sm">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-xs font-bold text-gray-600 mb-1">📸 Instagram URL</label>
-                        <input type="url" name="instagram_url" placeholder="https://instagram.com/..." class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 outline-none text-sm">
-                    </div>
-
-                    <div class="md:col-span-2 flex justify-end gap-2 pt-2">
-                        <button type="button" id="contact-reset" class="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold text-sm hover:bg-gray-50">
-                            ↶ คืนค่าเดิม
-                        </button>
-                        <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-sm shadow-md disabled:opacity-50">
-                            💾 บันทึก
-                        </button>
-                    </div>
-                </form>
-            </section>
-
-            <!-- Placeholder ตอน loading -->
-            <section id="loading-state" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-                <p class="text-3xl mb-3 animate-pulse">⚙</p>
-                <p class="text-sm text-gray-500">กำลังตรวจสอบสิทธิ์...</p>
-            </section>
-
-        </main>
+            </form>
+        </div>
     </div>
+
+    <!-- ===== MODAL: Awards ===== -->
+    <div class="modal-overlay" data-modal="awards">
+        <div class="modal-card">
+            <h2>✏️ แก้ไขผลงานและรางวัล</h2>
+            <p class="modal-sub">Timeline ความสำเร็จที่แสดงด้านล่างของหน้าเว็บ — 1 บรรทัด = 1 รายการ</p>
+            <form data-form="awards">
+                <div class="field">
+                    <label>รายการผลงาน/รางวัล</label>
+                    <textarea name="awards" rows="9" placeholder="2022 — MDRT Qualifier
+2023 — Top Unit Manager
+2024 — Financial Advisor Award
+2025 — Leadership Achievement"></textarea>
+                    <p class="help">บรรทัดว่างจะถูกข้าม</p>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
+                    <button type="submit" class="btn btn-save">💾 บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== Toast ===== -->
+    <div id="toast" class="toast"></div>
 
     <script>
         let currentUser = null;
+        // local cache สำหรับ section ที่ยังไม่มี DB field (hero text)
+        const LOCAL_CACHE_KEY = 'fwd_hero_overrides';
+        let heroOverrides = {};
 
         function escapeHtml(s) {
             return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
                 ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         }
-
         function parseJsonArray(v) {
             if (!v) return [];
             try {
-                const arr = typeof v === 'string' ? JSON.parse(v) : v;
-                return Array.isArray(arr) ? arr : [];
+                const a = typeof v === 'string' ? JSON.parse(v) : v;
+                return Array.isArray(a) ? a : [];
             } catch { return []; }
         }
-
-        function showAlert(msg, type = 'success') {
-            const el = document.getElementById('global-alert');
-            const styles = {
-                success: 'bg-green-50 text-green-800 border border-green-200',
-                error: 'bg-red-50 text-red-800 border border-red-200',
-            };
-            el.className = `p-4 rounded-xl text-sm font-medium ${styles[type]}`;
-            el.textContent = msg;
-            el.classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setTimeout(() => el.classList.add('hidden'), 5000);
+        function toast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `toast ${type} show`;
+            setTimeout(() => { t.className = 'toast'; }, 3000);
         }
 
-        // ============ Tab switching ============
-        const TABS = ['finance', 'health', 'savings', 'awards', 'career', 'contact'];
-
-        function switchTab(name) {
-            if (!TABS.includes(name)) name = 'finance';
-            document.querySelectorAll('.nav-item').forEach(b => {
-                b.classList.toggle('active', b.dataset.tab === name);
-            });
-            document.querySelectorAll('.tab-content').forEach(s => {
-                s.classList.toggle('hidden', s.dataset.content !== name);
-            });
-            // Update URL hash (ไม่ scroll)
-            history.replaceState(null, '', '#' + name);
-        }
-
-        document.querySelectorAll('.nav-item').forEach(btn => {
-            btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-        });
-
-        // ============ Auth & Initial Load ============
+        // ===== Auth Check =====
         async function loadUser() {
             try {
                 const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
@@ -338,152 +860,183 @@
                     return;
                 }
                 currentUser = data.user;
-                renderUser();
-
-                document.getElementById('loading-state').classList.add('hidden');
-
-                // เปิด tab จาก hash หรือ default
-                const initial = (location.hash || '').replace('#', '') || 'finance';
-                switchTab(initial);
-
-                // populate forms
-                populateAwardsForm();
-                populateContactForm();
+                renderAll();
+                document.getElementById('loading-screen').style.display = 'none';
             } catch (e) {
-                console.error('loadUser fail', e);
                 window.location.href = '/login';
             }
         }
 
-        function renderUser() {
+        // ===== Render =====
+        function renderAll() {
             const u = currentUser;
             const fullName = `${u.first_name || ''} ${u.last_name || ''}`.trim() || 'ตัวแทน';
             document.getElementById('user-name').textContent = fullName;
-
             if (u.avatar_path) {
-                const av = document.getElementById('user-avatar');
-                av.style.backgroundImage = `url('${u.avatar_path}')`;
-                av.style.backgroundSize = 'cover';
-                av.style.backgroundPosition = 'center';
+                document.getElementById('user-avatar').style.backgroundImage = `url('${u.avatar_path}')`;
             }
-        }
-
-        // ============ Awards form ============
-        function awardsArrayFromText(text) {
-            return text.split('\n').map(s => s.trim()).filter(Boolean);
-        }
-
-        function renderAwardsPreview(arr) {
-            const el = document.getElementById('awards-preview');
-            if (arr.length === 0) {
-                el.innerHTML = '<span class="text-[11px] text-amber-700 italic">— ยังไม่ได้กรอกข้อมูล —</span>';
-                return;
-            }
-            el.innerHTML = arr.map(a => `
-                <span class="bg-white border border-amber-300 text-[12px] font-medium text-amber-900 px-3 py-1.5 rounded-full">
-                    🏆 ${escapeHtml(a)}
-                </span>
-            `).join('');
-        }
-
-        function populateAwardsForm() {
-            const arr = parseJsonArray(currentUser.awards);
-            document.getElementById('awards-textarea').value = arr.join('\n');
-            renderAwardsPreview(arr);
-        }
-
-        document.getElementById('awards-textarea').addEventListener('input', e => {
-            renderAwardsPreview(awardsArrayFromText(e.target.value));
-        });
-
-        document.getElementById('awards-reset').addEventListener('click', populateAwardsForm);
-
-        document.getElementById('form-awards').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button[type="submit"]');
-            btn.disabled = true;
-            const original = btn.textContent;
-            btn.textContent = '⏳ กำลังบันทึก…';
-
+            // Hero (local cache)
             try {
-                const arr = awardsArrayFromText(document.getElementById('awards-textarea').value);
-                const fd = new FormData();
-                fd.append('awards', JSON.stringify(arr));
-                fd.append('first_name', currentUser.first_name || '');
-                fd.append('last_name', currentUser.last_name || '');
+                heroOverrides = JSON.parse(localStorage.getItem(LOCAL_CACHE_KEY) || '{}') || {};
+            } catch { heroOverrides = {}; }
+            if (heroOverrides.heading) document.getElementById('hero-heading').textContent = heroOverrides.heading;
+            if (heroOverrides.tagline) document.getElementById('hero-tagline').textContent = heroOverrides.tagline;
+            if (heroOverrides.sub) document.getElementById('hero-sub').textContent = heroOverrides.sub;
 
-                const res = await fetch('/api/auth/profile', {
-                    method: 'PUT',
-                    credentials: 'same-origin',
-                    body: fd,
-                });
-                const data = await res.json();
-                if (!res.ok) {
-                    showAlert(data.error || 'บันทึกไม่สำเร็จ', 'error');
-                    return;
-                }
-                currentUser = data.user;
-                showAlert('✓ บันทึกผลงานเรียบร้อย', 'success');
-                renderAwardsPreview(parseJsonArray(currentUser.awards));
-            } catch (err) {
-                showAlert('ไม่สามารถเชื่อมต่อ server: ' + err.message, 'error');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = original;
+            // Profile
+            document.getElementById('agent-name').textContent = fullName;
+            const pos = u.position ? (u.company ? `${u.position} | ${u.company}` : u.position) : 'Unit Manager | Financial Consultant';
+            document.getElementById('agent-position').textContent = pos;
+            if (u.quote) document.getElementById('agent-quote').textContent = `"${u.quote}"`;
+            if (u.phone) document.getElementById('agent-phone').textContent = u.phone;
+            if (u.email) document.getElementById('agent-email').textContent = u.email;
+            if (u.line_id) {
+                const v = u.line_id.startsWith('@') ? u.line_id : '@' + u.line_id;
+                document.getElementById('agent-line').textContent = v;
             }
-        });
 
-        // ============ Contact form ============
-        function populateContactForm() {
-            const f = document.getElementById('form-contact');
-            f.elements.phone.value = currentUser.phone || '';
-            f.elements.line_id.value = currentUser.line_id || '';
-            f.elements.facebook_url.value = currentUser.facebook_url || '';
-            f.elements.instagram_url.value = currentUser.instagram_url || '';
-            document.getElementById('email-display').value = currentUser.email || '';
+            // Awards timeline
+            const arr = parseJsonArray(u.awards);
+            const tl = document.getElementById('awards-timeline');
+            if (arr.length > 0) {
+                tl.innerHTML = arr.map(a => `<div class="year">${escapeHtml(a)}</div>`).join('');
+            }
         }
 
-        document.getElementById('contact-reset').addEventListener('click', populateContactForm);
+        // ===== Modal helpers =====
+        function openModal(name) {
+            const m = document.querySelector(`[data-modal="${name}"]`);
+            if (!m) return;
+            // populate form
+            const form = m.querySelector(`[data-form="${name}"]`);
+            if (name === 'hero') {
+                form.elements.hero_heading.value = heroOverrides.heading || document.getElementById('hero-heading').textContent;
+                form.elements.hero_tagline.value = heroOverrides.tagline || document.getElementById('hero-tagline').textContent;
+                form.elements.hero_sub.value = heroOverrides.sub || document.getElementById('hero-sub').textContent;
+            } else if (name === 'profile') {
+                form.elements.first_name.value = currentUser.first_name || '';
+                form.elements.last_name.value = currentUser.last_name || '';
+                form.elements.position.value = currentUser.position || '';
+                form.elements.company.value = currentUser.company || '';
+                form.elements.quote.value = currentUser.quote || '';
+                form.elements.phone.value = currentUser.phone || '';
+                form.elements.line_id.value = currentUser.line_id || '';
+                form.elements.facebook_url.value = currentUser.facebook_url || '';
+                form.elements.instagram_url.value = currentUser.instagram_url || '';
+            } else if (name === 'awards') {
+                const arr = parseJsonArray(currentUser.awards);
+                form.elements.awards.value = arr.join('\n');
+            }
+            m.classList.add('open');
+        }
+        function closeModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+        }
 
-        document.getElementById('form-contact').addEventListener('submit', async (e) => {
+        // ===== PUT /api/auth/profile helper =====
+        async function saveProfile(updates) {
+            const fd = new FormData();
+            // ส่ง first_name/last_name เพื่อให้ผ่าน server validation (route ทำงานแม้ field เดียวก็ได้)
+            fd.append('first_name', currentUser.first_name || '');
+            fd.append('last_name', currentUser.last_name || '');
+            for (const [k, v] of Object.entries(updates)) {
+                fd.append(k, v == null ? '' : v);
+            }
+            const res = await fetch('/api/auth/profile', {
+                method: 'PUT',
+                credentials: 'same-origin',
+                body: fd,
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'บันทึกไม่สำเร็จ');
+            currentUser = data.user;
+            return data.user;
+        }
+
+        // ===== Bind edit buttons =====
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            if (btn.classList.contains('disabled')) return;
+            btn.addEventListener('click', () => openModal(btn.dataset.edit));
+        });
+        document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
+        document.querySelectorAll('.modal-overlay').forEach(m => {
+            m.addEventListener('click', e => { if (e.target === m) closeModals(); });
+        });
+
+        // ===== Form submits =====
+        // HERO — local cache (ยังไม่มี DB field ตอนนี้)
+        document.querySelector('[data-form="hero"]').addEventListener('submit', e => {
+            e.preventDefault();
+            const f = e.target;
+            heroOverrides = {
+                heading: f.elements.hero_heading.value.trim(),
+                tagline: f.elements.hero_tagline.value.trim(),
+                sub: f.elements.hero_sub.value.trim(),
+            };
+            localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(heroOverrides));
+            renderAll();
+            closeModals();
+            toast('✓ บันทึก Hero (local) — DB field เปิดใน Phase 3');
+        });
+
+        // PROFILE
+        document.querySelector('[data-form="profile"]').addEventListener('submit', async e => {
             e.preventDefault();
             const btn = e.target.querySelector('button[type="submit"]');
             btn.disabled = true;
-            const original = btn.textContent;
-            btn.textContent = '⏳ กำลังบันทึก…';
-
             try {
                 const f = e.target;
-                const fd = new FormData();
-                fd.append('phone', f.elements.phone.value.trim());
-                fd.append('line_id', f.elements.line_id.value.trim());
-                fd.append('facebook_url', f.elements.facebook_url.value.trim());
-                fd.append('instagram_url', f.elements.instagram_url.value.trim());
-                // PUT /api/auth/profile ต้องมี first_name/last_name เพื่อ pass validation อ่อนๆ
-                fd.append('first_name', currentUser.first_name || '');
-                fd.append('last_name', currentUser.last_name || '');
-
-                const res = await fetch('/api/auth/profile', {
-                    method: 'PUT',
-                    credentials: 'same-origin',
-                    body: fd,
+                await saveProfile({
+                    first_name: f.elements.first_name.value.trim(),
+                    last_name: f.elements.last_name.value.trim(),
+                    position: f.elements.position.value.trim(),
+                    company: f.elements.company.value.trim(),
+                    quote: f.elements.quote.value.trim(),
+                    phone: f.elements.phone.value.trim(),
+                    line_id: f.elements.line_id.value.trim(),
+                    facebook_url: f.elements.facebook_url.value.trim(),
+                    instagram_url: f.elements.instagram_url.value.trim(),
                 });
-                const data = await res.json();
-                if (!res.ok) {
-                    showAlert(data.error || 'บันทึกไม่สำเร็จ', 'error');
-                    return;
-                }
-                currentUser = data.user;
-                showAlert('✓ บันทึกข้อมูลติดต่อเรียบร้อย', 'success');
+                renderAll();
+                closeModals();
+                toast('✓ บันทึกโปรไฟล์เรียบร้อย');
             } catch (err) {
-                showAlert('ไม่สามารถเชื่อมต่อ server: ' + err.message, 'error');
+                toast(err.message, 'error');
             } finally {
                 btn.disabled = false;
-                btn.textContent = original;
             }
         });
 
-        // ============ Logout ============
+        // AWARDS
+        document.querySelector('[data-form="awards"]').addEventListener('submit', async e => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            try {
+                const arr = e.target.elements.awards.value
+                    .split('\n').map(s => s.trim()).filter(Boolean);
+                await saveProfile({ awards: JSON.stringify(arr) });
+                renderAll();
+                closeModals();
+                toast('✓ บันทึกผลงานเรียบร้อย');
+            } catch (err) {
+                toast(err.message, 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        // ===== Section nav scroll spy =====
+        document.querySelectorAll('.nav-link').forEach(a => {
+            a.addEventListener('click', () => {
+                setTimeout(() => {
+                    document.querySelectorAll('.nav-link').forEach(x => x.classList.remove('active'));
+                    a.classList.add('active');
+                }, 50);
+            });
+        });
+
+        // ===== Logout =====
         document.getElementById('logout-btn').addEventListener('click', async () => {
             if (!confirm('ออกจากระบบ?')) return;
             try {
@@ -493,6 +1046,7 @@
             }
         });
 
+        // ===== Init =====
         loadUser();
     </script>
 

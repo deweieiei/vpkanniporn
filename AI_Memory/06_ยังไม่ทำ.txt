@@ -12,15 +12,13 @@
   [ ] หน้าแสดงแบบประกัน public (/plans/:id) — รอ Phase 3 (DB)
   [ ] ฟอร์มติดต่อ 3 แบบ — รอ Phase 3 (DB)
 
-▌ Phase 2 — Admin Dashboard
-  ✓ /dashboard skeleton + sidebar 6 อัน (เสร็จ 2026-06-19 รอบ 2)
-  ✓ Tab "ผลงานและรีวิว" — แก้รางวัลได้จริง
-  ✓ Tab "ติดต่อเรา" — แก้ phone/line/social ได้จริง
-  [ ] Tab "วางแผนการเงิน" — edit hero text / tagline / bio
-  [ ] Tab "ประกันสุขภาพ" — CRUD แบบประกัน (รอ Phase 3 DB)
-  [ ] Tab "ออมเงินและมรดก" — CRUD แบบประกัน (รอ Phase 3 DB)
-  [ ] Tab "ร่วมงานกับเรา" — edit career section text
-  [ ] /dashboard ปุ่มแก้ "Edit Profile" → link ไป /profile (มีอยู่)
+▌ Phase 2 — Dashboard (รื้อรอบ 4 — sidebar → preview landing)
+  ✓ Dashboard preview เหมือน landing + nav 4 อัน (เสร็จ 2026-06-19 รอบ 4)
+  ✓ Edit modal: Hero / Profile / Awards ใช้ได้จริง
+  [ ] DB field สำหรับ hero text (ตอนนี้ใช้ localStorage local-only)
+  [ ] CRUD แบบประกัน (services section) — รอ DB Phase 3
+  [ ] CRUD รีวิวลูกค้า (reviews section) — รอ DB Phase 3
+  [ ] Career section + footer แก้ได้ (ยังไม่มี edit button)
   [ ] /admin/plans (list + filter category) — รอ DB
   [ ] /admin/plans/new + /:id/edit — รอ DB
   [ ] /admin/articles (CRUD บทความ) — รอ DB

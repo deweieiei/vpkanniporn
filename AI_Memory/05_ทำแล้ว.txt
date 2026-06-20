@@ -3,6 +3,36 @@
   (ทุกครั้งที่ทำเสร็จอะไร อัปเดตตรงนี้ — ลงชื่อ + วันที่)
 ════════════════════════════════════════════════════════════════
 
+▌ 2026-06-19 (รอบ 4) — Claude Opus 4.7
+  ★ พี่ดิว: "แก้หน้า Profile ให้เหมือน Home — มีเมนู 4 อัน + แก้ไขแบบเดิม"
+    ตีความ: หน้า Dashboard (ตัวแทน login) ให้เป็น preview ของ landing
+            + nav 4 อัน + ปุ่มแก้แต่ละ section
+
+  ◉ รื้อ public/dashboard.html ใหม่ทั้งไฟล์
+  ✓ Layout เหมือน landing เป๊ะ: hero / services 6 ใบ / profile / reviews / timeline
+  ✓ Admin top bar สีเข้ม สติกกี้: avatar + ชื่อ + "ดูหน้าเว็บ" + ออกจากระบบ
+  ✓ Section nav (sticky) 4 อัน:
+      💼 วางแผนการเงิน → #about-agent
+      🏥 ประกันสุขภาพ → #services
+      💰 ออมเงินและมรดก → #services
+      🏆 ผลงานและรีวิว → #reviews
+  ✓ ปุ่มแก้ (✏️ แก้ไข) มุมขวาบนของแต่ละ section ที่แก้ได้
+  ✓ Modal popup แก้ 3 section (เปิดใช้งานได้จริง):
+      1. Hero — แก้ heading/tagline/sub-tagline (เก็บใน localStorage รอ DB field Phase 3)
+      2. Profile — first/last name + position + company + quote
+                  + phone + line_id + facebook + instagram (PUT /api/auth/profile)
+      3. Awards — textarea 1 บรรทัด/รางวัล → save JSON array
+  ✓ Section ที่ยังไม่เปิด (services, reviews) มีปุ่ม "🚧 รอเปิด" disabled พร้อม tooltip
+  ✓ Toast แจ้งผลบันทึก (เขียวสำเร็จ/แดงล้ม) + ปิดอัตโนมัติ 3 วินาที
+  ✓ Loading screen ตอน auth check (ถ้าไม่ login → redirect /login)
+
+  ◉ ยกเลิก (แทนที่ของรอบ 2):
+  ✗ Dashboard sidebar 6 อัน — แทนด้วย section nav 4 อันบนสุด
+
+  ◉ Smoke test ผ่าน:
+     GET /dashboard → 302 → /login
+     dashboard.html serve ครบ nav 4 อัน
+
 ▌ 2026-06-19 (รอบ 3) — Claude Opus 4.7
   ★ พี่ดิวบอก: "เหมือนเรียก index.html ผิดไฟล์ — แก้และลบที่ไม่ใช้"
     → Launch preview เปิด root/index.html (เก่า) แทน public/index.html (ใหม่)
