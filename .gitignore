@@ -21,6 +21,9 @@ Thumbs.db
 .idea/
 *.swp
 
+# Local Claude Code preview config (per-machine, not needed for deploy)
+.claude/
+
 # Build output
 dist/
 build/

@@ -3,6 +3,94 @@
   (ทุกครั้งที่ทำเสร็จอะไร อัปเดตตรงนี้ — ลงชื่อ + วันที่)
 ════════════════════════════════════════════════════════════════
 
+▌ 2026-07-03 (รอบ 6 — session store persistent) — Claude Sonnet 5
+  ★ พี่ดิว: "ต้องการให้จำการ login"
+
+  ◉ วินิจฉัยสาเหตุ:
+    ก่อนหน้านี้ session cookie ตั้ง maxAge 30 วันไว้แล้ว (ทำตั้งแต่รอบก่อนๆ)
+    แต่ session middleware ไม่ได้ตั้งค่า `store` → ใช้ default MemoryStore
+    ของ express-session ซึ่งเก็บ session ไว้ใน RAM ของ process เดียว
+    → ทุกครั้งที่ Node process restart (deploy ใหม่, crash, หรือแม้แต่
+      `node --watch` ตอน dev ที่ restart เองเวลาไฟล์เปลี่ยน) session หายหมด
+      ผู้ใช้ต้อง login ใหม่ทั้งที่ cookie ยังไม่หมดอายุ ← นี่คือสาเหตุที่ "ไม่จำ login"
+
+  ◉ แก้ไข (index.js):
+  ✓ เพิ่ม dependency `express-mysql-session` (^3.0.3) — session store ที่เก็บ
+     ลง MySQL table `sessions` แทน RAM ใช้ pool เดิมจาก db/pool.js (ไม่เปิด
+     connection ซ้ำ) → session อยู่รอดข้าม process restart ได้จริง
+  ✓ ตั้ง expiration: 30 วัน ตรงกับ cookie.maxAge เดิม
+  ✓ createDatabaseTable: true → table `sessions` จะถูกสร้างอัตโนมัติตอน
+     boot ครั้งแรก (ไม่ต้องรัน SQL เพิ่มเอง ไม่ต้องแก้ schema.sql)
+  ✓ เพิ่ม `.on('error', ...)` กัน process crash ถ้า DB ต่อไม่ได้ตอน boot
+     (EventEmitter 'error' ที่ไม่มี listener จะทำให้ Node throw ทั้ง process)
+  ✓ graceful shutdown เพิ่ม `sessionStore.close()` ก่อน `pool.end()`
+     (ปิด timer เคลียร์ session หมดอายุ โดยไม่ปิด pool เพราะใช้ร่วมกับ query อื่น
+     — เช็ค source code ของ lib แล้วว่า endConnectionOnClose=false เมื่อ
+     ส่ง pool เข้าไปเอง ปลอดภัย ไม่ปิด pool ซ้ำ)
+
+  ◉ ทดสอบ (เครื่องนี้ยังไม่มี Docker/MySQL local — ทดสอบเท่าที่ทำได้):
+  ✓ npm run dev บูตสำเร็จ ไม่ crash แม้ DB ต่อไม่ได้ (error listener ทำงาน)
+  ✓ GET / และ GET /api/auth/me ตอบ 200 ปกติ (ไม่ต้องอ่าน session store
+     ถ้ายังไม่มี cookie เดิม)
+  ✓ POST /api/auth/login ตอบ 500 เร็ว (18ms) ไม่ hang — fail fast ตามคาด
+     เพราะ query DB ไม่ได้ (พฤติกรรมเดิมก่อนแก้ก็เป็นแบบนี้ ไม่ได้แย่ลง)
+  ✗ ยังไม่ได้ทดสอบ "login แล้ว restart server แล้วยัง login ค้างอยู่มั้ย"
+     จริงๆ เพราะต้องมี MySQL ก่อน (รอ Docker Desktop)
+
+  ▌ ทำต่อรอบหน้า (หลังพี่ดิวลง Docker + เปิด docker compose up -d):
+    1. Register/login ทดสอบให้เห็น table `sessions` ถูกสร้างอัตโนมัติใน DB
+    2. Restart dev server (kill + npm run dev ใหม่) แล้วเช็คว่า refresh
+       browser แล้วยัง login อยู่ (ไม่ redirect ไป /login) — คือการยืนยันจริง
+       ว่า "จำ login" ทำงาน
+    3. Deploy ขึ้น HostAtom แล้วเช็คว่า table sessions ถูกสร้างบน production DB
+       ด้วย (createDatabaseTable: true จะสร้างให้อัตโนมัติเหมือนกัน)
+
+▌ 2026-07-03 (รอบ 5 — session ใหม่, เครื่องใหม่) — Claude Sonnet 5
+  ★ พี่ดิวเปิดงานนี้เป็น "งานใหม่" บนเครื่อง user "serverdew"
+    (โฟลเดอร์ FWD/ ทั้งหมดถูกย้าย/คัดลอกมาจากเครื่องเดิม user "dew")
+    โจทย์ที่พี่ดิวบอก: "ต้องการเว็บที่ใช้งานได้ทั้งมือถือและเดสก์ท็อป"
+    + "สร้างเอกสารไว้ให้ AI ไว้ให้คนถัดไปอ่านด้วย"
+
+  ◉ ตรวจสอบสถานะก่อนทำอะไร (ไม่ได้แก้โค้ด แค่ยืนยัน):
+  ✓ git log/status: HEAD ตรงกับ origin/main, working tree clean
+     commit ล่าสุด 7ff6065 (2026-06-20 12:51) — ตรงกับที่บันทึกไว้ใน
+     05_ทำแล้ว.txt รอบ 1-4 ครบถ้วน ไม่มีงานที่ทำไปแล้วแต่ลืมจด
+  ✓ เช็ค public/index.html: มี viewport meta + clamp() + Tailwind
+     breakpoint (sm:/md:/lg:) 14 จุด → responsive มือถือ/เดสก์ท็อป
+     "ทำแล้ว" อยู่ก่อนหน้านี้ (ตั้งแต่รอบ 1) ไม่ต้องทำใหม่
+  ✓ เช็ค index.js: static file serve ไม่ผูกกับ DB (lazy pool)
+     → หน้า / และ /login เปิดได้แม้ยังไม่ต่อ MySQL
+     (login/register/profile ต้องมี DB ทำงานถึงจะทดสอบได้จริง)
+
+  ◉ พบว่าเครื่องนี้ยังไม่พร้อม dev — พี่ดิวเลือกให้ setup ต่อเลย:
+  ✓ npm install — เสร็จ (200 packages, 2 high severity audit warnings —
+     ยังไม่ได้ไล่แก้ เพราะเป็น dep เดิมจากโปรเจกต์ ไม่ใช่ของใหม่)
+  ✓ สร้าง .env จาก .env.example — ใช้ค่า local Docker (ตรงกับ docker-compose.yml):
+     DB_HOST=localhost DB_USER=vpkann_database DB_PASSWORD=devpass DB_NAME=vpkann_database
+     SESSION_SECRET สุ่มใหม่ด้วย crypto.randomBytes(32)
+     NODE_ENV=development (ของจริงบน HostAtom ต้องเปลี่ยนเป็น production ผ่าน Plesk env var
+     — .env นี้อยู่บนเครื่อง local เท่านั้น ไม่ใช่ค่า production)
+  ✓ สร้าง .claude/launch.json (สำหรับ preview tool ของ Claude Code เท่านั้น
+     ไม่กระทบ deploy จริง) — ใช้ `npm --prefix <path> run dev`
+  ✓ รัน dev server สำเร็จที่ port 3000 (node --watch index.js)
+  ✓ ทดสอบ responsive จริงผ่าน browser preview:
+     - Desktop viewport: layout เต็มความกว้าง, nav/hero/service grid ปกติ
+     - Mobile viewport (375x812): text/ปุ่ม/card ปรับขนาดเป็น 1 คอลัมน์ อ่านง่าย
+       ยืนยัน mobile+desktop responsive ใช้ได้จริง (ไม่ใช่แค่มี CSS class เฉยๆ)
+  ✗ Docker Desktop ยังไม่ได้ลงบนเครื่องนี้ → MySQL local ยังไม่ขึ้น
+     → /api/users/1 ตอบ 500 (คาดไว้แล้ว, มี fallback static ที่หน้าเว็บ ไม่พัง)
+     → login/register/profile ยังทดสอบไม่ได้จนกว่าจะมี DB
+
+  ◉ อัปเดตเอกสาร (งานหลักของรอบนี้):
+  ✓ 07_ข้อมูลสำคัญ.txt — แก้ path ทุกจุดจาก C:\Users\dew\ → C:\Users\serverdew\
+     + เพิ่มหัวข้อ "เครื่องนี้ยังไม่เคย setup dev env" กันงงตอนรันไม่ขึ้น
+  ✓ 05_ทำแล้ว.txt (ไฟล์นี้) — เพิ่ม checkpoint รอบ 5
+
+  ▌ ยังไม่ได้ถามพี่ดิว (รอตอบก่อนเริ่มโค้ดต่อ):
+    - "งานใหม่" หมายถึงต่อยอด Phase 2/3 เดิม (ดู 06_ยังไม่ทำ.txt) หรือมีโจทย์ใหม่อื่น?
+    - ลง Docker Desktop บนเครื่องนี้เมื่อไหร่ดี? (ต้องลงเองที่เครื่อง — AI สั่งลงให้ไม่ได้)
+      หลังลงเสร็จ บอก AI รอบหน้า จะรัน `docker compose up -d` + import schema ให้
+
 ▌ 2026-06-19 (รอบ 4) — Claude Opus 4.7
   ★ พี่ดิว: "แก้หน้า Profile ให้เหมือน Home — มีเมนู 4 อัน + แก้ไขแบบเดิม"
     ตีความ: หน้า Dashboard (ตัวแทน login) ให้เป็น preview ของ landing

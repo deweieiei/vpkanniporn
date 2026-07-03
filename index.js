@@ -3,9 +3,29 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
 const cors = require('cors');
 
 const { pool, ping } = require('./db/pool');
+
+// ===== Session store (MySQL — ไม่ใช้ MemoryStore) =====
+// เหตุผล: MemoryStore เก็บ session ไว้ใน RAM ของ process เดียว
+// พอ process restart (deploy ใหม่, crash, หรือ `node --watch` ตอน dev) session หายหมด
+// ผู้ใช้ต้อง login ใหม่ทั้งที่ cookie ยังไม่หมดอายุ (30 วัน)
+// ใช้ pool เดิมจาก db/pool.js เพื่อไม่ต้องเปิด connection ซ้ำ
+const sessionStore = new MySQLStore(
+  {
+    expiration: 30 * 24 * 60 * 60 * 1000, // ตรงกับ cookie.maxAge ด้านล่าง
+    createDatabaseTable: true,
+    clearExpired: true,
+    checkExpirationInterval: 15 * 60 * 1000,
+  },
+  pool
+);
+// ป้องกัน process crash ถ้า DB ต่อไม่ได้ตอน boot (EventEmitter 'error' ที่ไม่มี listener ทำให้ Node throw)
+sessionStore.on('error', (err) => {
+  console.warn('[session-store]', err.message);
+});
 
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
@@ -28,6 +48,7 @@ app.use(
   session({
     name: 'fwd.sid',
     secret: process.env.SESSION_SECRET || 'dev-only-change-me-in-production',
+    store: sessionStore,
     resave: false,
     saveUninitialized: false,
     rolling: true,
@@ -101,6 +122,11 @@ app.use((err, req, res, _next) => {
 // ===== Graceful shutdown =====
 async function shutdown(signal) {
   console.log(`\n[${signal}] กำลังปิดเซิร์ฟเวอร์...`);
+  try {
+    await sessionStore.close(); // หยุด timer เคลียร์ session หมดอายุ (ไม่ปิด pool เพราะใช้ pool ร่วมกับ query อื่น)
+  } catch (e) {
+    console.warn('ปิด session store ผิดพลาด:', e.message);
+  }
   try {
     await pool.end();
     console.log('✓ ปิด MySQL pool แล้ว');

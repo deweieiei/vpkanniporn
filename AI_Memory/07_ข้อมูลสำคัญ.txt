@@ -37,16 +37,28 @@
   bcryptjs: 2.4.3 (pure JS — ไม่ต้อง compile)
   multer: 2.1.1 (file upload, 5MB limit)
   express-session: 1.18.0
+  express-mysql-session: 3.0.3 (เพิ่ม 2026-07-03 — session store ลง MySQL
+    table `sessions` แทน MemoryStore เดิม เพื่อให้ login คงอยู่ข้าม process
+    restart ได้จริง ตาราง `sessions` ถูกสร้างอัตโนมัติตอน boot ครั้งแรก
+    ไม่ต้องรัน SQL เพิ่มเอง — ดูรายละเอียดใน 05_ทำแล้ว.txt รอบ 6)
 
 ✦ Path สำคัญ
-  - Project root:     C:\Users\dew\Desktop\FWD\
-  - Public assets:    C:\Users\dew\Desktop\FWD\public\
+  ⚠ อัปเดต 2026-07-03: เครื่องเปลี่ยนจาก user "dew" → user "serverdew"
+    (โปรเจกต์ทั้งโฟลเดอร์ FWD/ ย้ายมาที่เครื่องนี้ ใต้ Desktop เดิม)
+  - Project root:     C:\Users\serverdew\Desktop\FWD\vpkanniporn\
+  - Public assets:    C:\Users\serverdew\Desktop\FWD\vpkanniporn\public\
   - Uploads:          public/uploads/avatars/<id>/  + covers/<id>/
-  - Static images:    public/src/  (S__12566769.jpg = banner)
-  - Reference docs:   C:\Users\dew\Desktop\FWD\สิ่งที่ต้องทำ\
-  - AI memory:        C:\Users\dew\Desktop\FWD\AI_Memory\  (ที่นี่)
+  - Static images:    public/src/  (S__12566769.jpg = banner — เช็คว่ายังอยู่มั้ย)
+  - Reference docs:   C:\Users\serverdew\Desktop\FWD\vpkanniporn\สิ่งที่ต้องทำ\
+  - AI memory:        C:\Users\serverdew\Desktop\FWD\vpkanniporn\AI_Memory\  (ที่นี่)
+  - Database.txt (DB user/pass) อยู่ที่ C:\Users\serverdew\Desktop\FWD\ (นอก vpkanniporn/)
 
-✦ พี่ดิวมี backup ที่
+  ★ เครื่องนี้ยังไม่เคย setup dev env:
+    - ไม่มี .env (มีแต่ .env.example) — ต้องสร้างเองจาก template
+    - ไม่มี node_modules — ต้อง `npm install` ก่อนรัน
+    - ไม่รู้ว่ามี Docker Desktop ลงมั้ย (เดิมทีพี่ดิวใช้ Docker MySQL local ที่เครื่องเก่า)
+
+✦ พี่ดิวมี backup ที่ (path เครื่องเก่า "dew" — เช็คว่าย้ายมาเครื่องนี้หรือยัง)
   C:\Users\dew\Desktop\AIDocument\      ← memory ส่วนตัวสำรอง
   C:\Users\dew\Desktop\chaungthai\      ← project ChaungThai (คนละโปรเจกต์)
   C:\Users\dew\Desktop\timecarehub\     ← project TimeCare (คนละโปรเจกต์)
@@ -62,9 +74,12 @@
   - Email: babydew2015@gmail.com
 
 ✦ คำสั่ง Dev บนเครื่องพี่ดิว (Windows + PowerShell)
-  cd C:\Users\dew\Desktop\FWD
+  cd C:\Users\serverdew\Desktop\FWD\vpkanniporn
+  copy .env.example .env    # แล้วเติม SESSION_SECRET + DB_PASSWORD จริง
   npm install
   npm run dev          # node --watch index.js → port 3000
   # เปิด http://localhost:3000
+  # หน้า static (/, /login) ขึ้นได้แม้ไม่มี DB ต่อ — แต่ login/register ต้องมี MySQL
+  # (Docker Compose ในนี้: db/schema.sql auto-init ให้ ถ้าลง Docker Desktop แล้ว)
 
 ════════════════════════════════════════════════════════════════
