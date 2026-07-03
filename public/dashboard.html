@@ -250,7 +250,15 @@
             border-radius: 50%;
             background: radial-gradient(circle, rgba(255,200,150,0.5) 0%, transparent 70%);
         }
-        .hero-inner { max-width: 1000px; margin: 0 auto; position: relative; z-index: 1; }
+        .hero-inner { max-width: 1000px; margin: 0 auto; position: relative; z-index: 2; }
+        /* ===== Cover Images Slideshow (ย้ายมาจาก profile.html เดิม) ===== */
+        .hero-cover-slideshow { position: absolute; inset: 0; z-index: 0; }
+        .hero-cover-slideshow img {
+            position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+            opacity: 0; transition: opacity 1.5s ease-in-out;
+        }
+        .hero-cover-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.35); z-index: 1; display: none; }
+        .hero-cover-overlay.show { display: block; }
         .hero h1 {
             font-size: clamp(28px, 5vw, 44px);
             margin-bottom: 12px;
@@ -368,6 +376,41 @@
             gap: 10px;
         }
         .profile-contact span.label { color: var(--primary-orange); font-size: 17px; }
+        .license-box {
+            display: none;
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #78350f;
+        }
+        .license-box b { font-family: monospace; background: #fef3c7; padding: 1px 5px; border-radius: 4px; }
+
+        /* ===== Avatar + Cover upload (edit modal) ===== */
+        .avatar-upload-row { display: flex; flex-direction: column; align-items: center; padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid #f3f4f6; }
+        .avatar-upload-circle {
+            width: 88px; height: 88px; border-radius: 50%; border: 3px solid var(--light-orange-bg);
+            background: #f3f4f6; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; cursor: pointer; position: relative; color: #9ca3af; font-size: 12px;
+        }
+        .avatar-upload-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .cover-previews-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; min-height: 40px;
+        }
+        .cover-preview-item { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: #f3f4f6; border: 1px solid #e5e7eb; }
+        .cover-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+        .cover-preview-remove {
+            position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 50%;
+            background: #ef4444; color: #fff; border: none; font-size: 12px; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .add-cover-btn {
+            display: inline-block; padding: 8px 16px; background: var(--light-orange-bg); color: var(--primary-orange);
+            border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer;
+        }
+        .add-cover-btn.disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* ===== Reviews ===== */
         .testimonials { padding: 60px 5%; background-color: var(--light-orange-bg); }
@@ -560,19 +603,20 @@
     <div id="loading-screen" class="loading-screen">
         <p>
             <span style="display:block; font-size:32px; margin-bottom:8px; animation: spin 1s linear infinite;">⚙</span>
-            กำลังตรวจสอบสิทธิ์...
+            <span id="loading-text">กำลังตรวจสอบสิทธิ์...</span>
         </p>
     </div>
     <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 
-    <!-- ===== Admin Top Bar ===== -->
-    <div class="admin-bar">
+    <!-- ===== Admin Top Bar (ซ่อนถ้าดูโปรไฟล์คนอื่น — ดู isViewingOther ใน script) ===== -->
+    <div class="admin-bar" id="admin-bar">
         <div class="admin-bar-left">
             <span class="admin-badge">⚙ โหมดจัดการข้อมูล</span>
             <span style="color: rgba(255,255,255,0.6); font-size: 11px;">— สิ่งที่คุณแก้จะแสดงในหน้าเว็บทันที</span>
         </div>
         <div class="admin-bar-right">
             <a href="/" target="_blank" class="admin-btn">👁 ดูหน้าเว็บ</a>
+            <a href="#" target="_blank" id="view-as-prospect-btn" class="admin-btn" style="display:none;">👁️ มุมมองผู้มุ่งหวัง</a>
             <div class="admin-user">
                 <div class="avatar" id="user-avatar"></div>
                 <span id="user-name" style="font-weight: 600;">…</span>
@@ -593,7 +637,7 @@
                 </p>
             </div>
         </a>
-        <div style="font-size: 11px; color: #6b7280;">หน้าจัดการ</div>
+        <div id="header-mode-label" style="font-size: 11px; color: #6b7280;">หน้าจัดการ</div>
     </header>
 
     <!-- ===== Section Nav (4 อัน) ===== -->
@@ -611,6 +655,8 @@
         <!-- ============= Hero ============= -->
         <section id="home" class="hero editable">
             <button class="edit-btn" data-edit="hero">✏️ แก้ไข</button>
+            <div class="hero-cover-slideshow" id="cover-slideshow"></div>
+            <div class="hero-cover-overlay" id="cover-overlay"></div>
             <div class="hero-inner">
                 <h1 id="hero-heading">วางแผนวันนี้ เพื่ออนาคตที่คุณเลือกได้</h1>
                 <p class="tagline" id="hero-tagline">Plan Today, Live Your Future</p>
@@ -671,6 +717,10 @@
                     <p><span class="label">📞</span> <span id="agent-phone">062-239-7362</span></p>
                     <p><span class="label">✉️</span> <span id="agent-email">kavisara.fwd@gmail.com</span></p>
                     <p><span class="label">💬</span> <span id="agent-line">@kavisara.fwd</span></p>
+                </div>
+                <div class="license-box" id="license-box">
+                    🛡️ <b>ใบอนุญาตตัวแทน/นายหน้าประกันชีวิต</b><br>
+                    เลขที่ <b id="agent-license-1">—</b><span id="agent-license-2-wrap" style="display:none;"> / เลขที่ <b id="agent-license-2">—</b></span>
                 </div>
             </div>
             <div>
@@ -749,6 +799,25 @@
             <h2>✏️ แก้ไขโปรไฟล์ + ติดต่อ</h2>
             <p class="modal-sub">ข้อมูลที่ลูกค้าเห็นในส่วน "รู้จักที่ปรึกษาของคุณ"</p>
             <form data-form="profile">
+                <div class="avatar-upload-row">
+                    <label class="avatar-upload-circle" id="avatar-upload-label">
+                        <img id="avatar-preview" src="" alt="" style="display:none;">
+                        <span id="avatar-placeholder">📷 รูปโปรไฟล์</span>
+                        <input type="file" id="avatar-input" accept="image/*" style="display:none;">
+                    </label>
+                    <p class="help" style="margin-top:6px;">คลิกเพื่อเปลี่ยนรูปโปรไฟล์ (jpg/png สูงสุด 5MB)</p>
+                </div>
+
+                <div class="field">
+                    <label>ภาพปก Hero Banner (สูงสุด 6 ภาพ — เลื่อนเฟดพื้นหลังหน้าแรก)</label>
+                    <div class="cover-previews-grid" id="cover-previews"></div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <label for="cover-input" id="add-cover-btn" class="add-cover-btn">+ เพิ่มภาพปก</label>
+                        <input type="file" id="cover-input" accept="image/*" multiple style="display:none;">
+                        <span class="help" style="margin:0;">jpg/png/webp สูงสุด 5MB/ภาพ</span>
+                    </div>
+                </div>
+
                 <div class="field-row">
                     <div class="field">
                         <label>ชื่อ</label>
@@ -769,9 +838,23 @@
                         <input type="text" name="company" placeholder="Financial Consultant">
                     </div>
                 </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label>ใบอนุญาตตัวแทน</label>
+                        <input type="text" name="license_number" placeholder="6601045081">
+                    </div>
+                    <div class="field">
+                        <label>ใบอนุญาตนายหน้า</label>
+                        <input type="text" name="license_number_2" placeholder="6801059141">
+                    </div>
+                </div>
                 <div class="field">
                     <label>ประโยคแนะนำตัว (Quote)</label>
                     <textarea name="quote" rows="3" placeholder="การวางแผนการเงินที่ดี ไม่ใช่เรื่องของคนรวย..."></textarea>
+                </div>
+                <div class="field">
+                    <label>ข้อความแนะนำตัวเพิ่มเติม (Bio — ยังไม่แสดงบนหน้าเว็บ เก็บไว้ใช้ในอนาคต)</label>
+                    <textarea name="bio" rows="3" placeholder="สวัสดีค่ะ ดิฉัน ..."></textarea>
                 </div>
                 <div class="field-row">
                     <div class="field">
@@ -850,9 +933,68 @@
             setTimeout(() => { t.className = 'toast'; }, 3000);
         }
 
-        // ===== Auth Check =====
+        // ===== โหมดหน้า: /agent/:id = ดูคนอื่น (public) / /profile,/dashboard = ตัวเอง (ต้อง login) =====
+        const pathMatch = window.location.pathname.match(/^\/agent\/(\d+)/);
+        const viewingAgentId = pathMatch ? Number(pathMatch[1]) : null;
+        const isViewingOther = viewingAgentId !== null;
+
+        if (isViewingOther) {
+            document.title = 'โปรไฟล์ตัวแทน — VP Kanniporn';
+            document.getElementById('loading-text').textContent = 'กำลังโหลดโปรไฟล์...';
+            // โหมดดูคนอื่น: ซ่อนแถบจัดการทั้งหมด + ปุ่มแก้ไขทุกจุด + label "หน้าจัดการ"
+            document.getElementById('admin-bar').style.display = 'none';
+            document.getElementById('header-mode-label').innerHTML = '<a href="/" style="color:var(--primary-orange); font-weight:600;">← กลับหน้าหลัก</a>';
+            document.querySelectorAll('.edit-btn').forEach(b => b.style.display = 'none');
+        }
+
+        // ===== Cover Slideshow (ย้ายมาจาก profile.html เดิม) =====
+        let slideshowInterval = null;
+        function setupCoverSlideshow(coverImages) {
+            if (slideshowInterval) { clearInterval(slideshowInterval); slideshowInterval = null; }
+            const slideshow = document.getElementById('cover-slideshow');
+            const overlay = document.getElementById('cover-overlay');
+            slideshow.innerHTML = '';
+            const covers = parseJsonArray(coverImages);
+            if (covers.length === 0) { overlay.classList.remove('show'); return; }
+            overlay.classList.add('show');
+            covers.forEach((src, i) => {
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = '';
+                img.style.opacity = i === 0 ? '1' : '0';
+                slideshow.appendChild(img);
+            });
+            if (covers.length === 1) return;
+            let current = 0;
+            slideshowInterval = setInterval(() => {
+                const imgs = slideshow.querySelectorAll('img');
+                imgs[current].style.opacity = '0';
+                current = (current + 1) % imgs.length;
+                imgs[current].style.opacity = '1';
+            }, 4500);
+        }
+
+        // ===== โหลดข้อมูล =====
         async function loadUser() {
             try {
+                if (isViewingOther) {
+                    const res = await fetch(`/api/users/${viewingAgentId}`);
+                    if (!res.ok) {
+                        document.getElementById('loading-screen').style.display = 'none';
+                        document.querySelector('main').innerHTML = `
+                            <div style="max-width:500px; margin:60px auto; text-align:center; background:#fff; padding:40px 24px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.05);">
+                                <p style="font-size:40px; margin-bottom:12px;">😔</p>
+                                <p style="font-weight:700; font-size:18px;">ไม่พบตัวแทนรายนี้</p>
+                                <a href="/" style="color:var(--primary-orange); font-size:14px; display:inline-block; margin-top:12px;">← กลับหน้าหลัก</a>
+                            </div>`;
+                        return;
+                    }
+                    const data = await res.json();
+                    currentUser = data.user;
+                    renderAll();
+                    document.getElementById('loading-screen').style.display = 'none';
+                    return;
+                }
                 const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
                 const data = await res.json();
                 if (!data.authenticated) {
@@ -863,7 +1005,7 @@
                 renderAll();
                 document.getElementById('loading-screen').style.display = 'none';
             } catch (e) {
-                window.location.href = '/login';
+                if (!isViewingOther) window.location.href = '/login';
             }
         }
 
@@ -875,13 +1017,25 @@
             if (u.avatar_path) {
                 document.getElementById('user-avatar').style.backgroundImage = `url('${u.avatar_path}')`;
             }
-            // Hero (local cache)
-            try {
-                heroOverrides = JSON.parse(localStorage.getItem(LOCAL_CACHE_KEY) || '{}') || {};
-            } catch { heroOverrides = {}; }
-            if (heroOverrides.heading) document.getElementById('hero-heading').textContent = heroOverrides.heading;
-            if (heroOverrides.tagline) document.getElementById('hero-tagline').textContent = heroOverrides.tagline;
-            if (heroOverrides.sub) document.getElementById('hero-sub').textContent = heroOverrides.sub;
+            // Hero (local cache — เฉพาะโหมดตัวเอง คนอื่นไม่ควรเห็นค่าที่ยังไม่ได้บันทึกลง DB)
+            if (!isViewingOther) {
+                try {
+                    heroOverrides = JSON.parse(localStorage.getItem(LOCAL_CACHE_KEY) || '{}') || {};
+                } catch { heroOverrides = {}; }
+                if (heroOverrides.heading) document.getElementById('hero-heading').textContent = heroOverrides.heading;
+                if (heroOverrides.tagline) document.getElementById('hero-tagline').textContent = heroOverrides.tagline;
+                if (heroOverrides.sub) document.getElementById('hero-sub').textContent = heroOverrides.sub;
+            }
+
+            // Cover slideshow (พื้นหลัง hero)
+            setupCoverSlideshow(u.cover_images);
+
+            // ปุ่ม "มุมมองผู้มุ่งหวัง" — โชว์เฉพาะโหมดตัวเอง
+            const viewAsBtn = document.getElementById('view-as-prospect-btn');
+            if (viewAsBtn && !isViewingOther && u.id) {
+                viewAsBtn.href = `/agent/${u.id}`;
+                viewAsBtn.style.display = 'inline-flex';
+            }
 
             // Profile
             document.getElementById('agent-name').textContent = fullName;
@@ -893,6 +1047,16 @@
             if (u.line_id) {
                 const v = u.line_id.startsWith('@') ? u.line_id : '@' + u.line_id;
                 document.getElementById('agent-line').textContent = v;
+            }
+
+            // License box
+            if (u.license_number) {
+                document.getElementById('agent-license-1').textContent = u.license_number;
+                document.getElementById('license-box').style.display = 'block';
+                if (u.license_number_2) {
+                    document.getElementById('agent-license-2').textContent = u.license_number_2;
+                    document.getElementById('agent-license-2-wrap').style.display = 'inline';
+                }
             }
 
             // Awards timeline
@@ -918,11 +1082,33 @@
                 form.elements.last_name.value = currentUser.last_name || '';
                 form.elements.position.value = currentUser.position || '';
                 form.elements.company.value = currentUser.company || '';
+                form.elements.license_number.value = currentUser.license_number || '';
+                form.elements.license_number_2.value = currentUser.license_number_2 || '';
                 form.elements.quote.value = currentUser.quote || '';
+                form.elements.bio.value = currentUser.bio || '';
                 form.elements.phone.value = currentUser.phone || '';
                 form.elements.line_id.value = currentUser.line_id || '';
                 form.elements.facebook_url.value = currentUser.facebook_url || '';
                 form.elements.instagram_url.value = currentUser.instagram_url || '';
+
+                // Avatar preview
+                const avPrev = document.getElementById('avatar-preview');
+                const avPlh = document.getElementById('avatar-placeholder');
+                if (currentUser.avatar_path) {
+                    avPrev.src = currentUser.avatar_path;
+                    avPrev.style.display = 'block';
+                    avPlh.style.display = 'none';
+                } else {
+                    avPrev.style.display = 'none';
+                    avPlh.style.display = 'block';
+                }
+                pendingAvatarFile = null;
+
+                // Cover state: ล้างของเก่า (revoke object URL กันหน่วยความจำรั่ว) แล้วโหลดจาก currentUser
+                coverState.forEach(c => { if (c.type === 'new' && c.url) URL.revokeObjectURL(c.url); });
+                coverState = [];
+                parseJsonArray(currentUser.cover_images).forEach(p => coverState.push({ type: 'existing', path: p }));
+                renderCoverPreviews();
             } else if (name === 'awards') {
                 const arr = parseJsonArray(currentUser.awards);
                 form.elements.awards.value = arr.join('\n');
@@ -933,12 +1119,84 @@
             document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
         }
 
+        // ===== Avatar + Cover upload state (ย้ายมาจาก profile.html เดิม) =====
+        const MAX_COVERS = 6;
+        let coverState = []; // [{ type:'existing', path } | { type:'new', file, url }]
+        let pendingAvatarFile = null;
+
+        function renderCoverPreviews() {
+            const container = document.getElementById('cover-previews');
+            if (coverState.length === 0) {
+                container.innerHTML = '<p style="grid-column:1/-1; font-size:11px; color:#9ca3af;">ยังไม่มีภาพปก คลิก "+ เพิ่มภาพปก"</p>';
+            } else {
+                container.innerHTML = coverState.map((c, i) => {
+                    const src = c.type === 'existing' ? c.path : c.url;
+                    return `
+                        <div class="cover-preview-item">
+                            <img src="${src}">
+                            <button type="button" class="cover-preview-remove" data-cover-remove="${i}" title="ลบ">×</button>
+                        </div>`;
+                }).join('');
+                container.querySelectorAll('[data-cover-remove]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const idx = Number(btn.dataset.coverRemove);
+                        const c = coverState[idx];
+                        if (c && c.type === 'new' && c.url) URL.revokeObjectURL(c.url);
+                        coverState.splice(idx, 1);
+                        renderCoverPreviews();
+                    });
+                });
+            }
+            const btn = document.getElementById('add-cover-btn');
+            const input = document.getElementById('cover-input');
+            if (coverState.length >= MAX_COVERS) {
+                btn.classList.add('disabled');
+                input.disabled = true;
+                btn.textContent = `ครบ ${MAX_COVERS} ภาพแล้ว`;
+            } else {
+                btn.classList.remove('disabled');
+                input.disabled = false;
+                btn.textContent = `+ เพิ่มภาพปก (เหลือ ${MAX_COVERS - coverState.length})`;
+            }
+        }
+
+        document.getElementById('cover-input').addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            const remaining = MAX_COVERS - coverState.length;
+            files.slice(0, remaining).forEach(file => {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`ไฟล์ "${file.name}" ใหญ่เกิน 5MB ข้ามไป`);
+                    return;
+                }
+                coverState.push({ type: 'new', file, url: URL.createObjectURL(file) });
+            });
+            e.target.value = '';
+            renderCoverPreviews();
+        });
+
+        document.getElementById('avatar-input').addEventListener('change', (e) => {
+            const f = e.target.files[0];
+            if (!f) return;
+            if (f.size > 5 * 1024 * 1024) {
+                alert('ไฟล์ใหญ่เกิน 5MB');
+                e.target.value = '';
+                return;
+            }
+            pendingAvatarFile = f;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const prev = document.getElementById('avatar-preview');
+                prev.src = ev.target.result;
+                prev.style.display = 'block';
+                document.getElementById('avatar-placeholder').style.display = 'none';
+            };
+            reader.readAsDataURL(f);
+        });
         // ===== PUT /api/auth/profile helper =====
-        async function saveProfile(updates) {
-            // ส่ง first_name/last_name เป็นค่าเริ่มต้นเสมอ (ให้ผ่าน server validation
-            // ที่ต้องมีอย่างน้อย 1 field) แล้วให้ updates ทับค่าเดิมได้ถ้ามีส่งมา —
-            // ต้อง merge เป็น object เดียวก่อน ห้าม fd.append ซ้ำ key เดิมสองครั้ง
-            // เพราะ multer จะ parse เป็น array แล้วทำให้ SQL query พังตอน UPDATE
+        // files: { avatar?: File, cover_images?: File[] } — ส่งแยกจาก updates เพราะ
+        // cover_images ต้อง append ซ้ำ key เดิมได้หลายไฟล์ (อันนี้ถูกต้อง ไม่ใช่บั๊กแบบ
+        // first_name ที่เคยเกิด เพราะ multer คาดหวัง array อยู่แล้วสำหรับ field นี้)
+        async function saveProfile(updates, files = {}) {
             const merged = {
                 first_name: currentUser.first_name || '',
                 last_name: currentUser.last_name || '',
@@ -947,6 +1205,13 @@
             const fd = new FormData();
             for (const [k, v] of Object.entries(merged)) {
                 fd.append(k, v == null ? '' : v);
+            }
+            if (files.avatar) fd.append('avatar', files.avatar);
+            if (Array.isArray(files.cover_images)) {
+                files.cover_images.forEach(f => fd.append('cover_images', f));
+            }
+            if (files.cover_images_keep) {
+                fd.append('cover_images_keep', JSON.stringify(files.cover_images_keep));
             }
             const res = await fetch('/api/auth/profile', {
                 method: 'PUT',
@@ -992,16 +1257,25 @@
             btn.disabled = true;
             try {
                 const f = e.target;
+                const keptCovers = coverState.filter(c => c.type === 'existing').map(c => c.path);
+                const newCoverFiles = coverState.filter(c => c.type === 'new').map(c => c.file);
                 await saveProfile({
                     first_name: f.elements.first_name.value.trim(),
                     last_name: f.elements.last_name.value.trim(),
                     position: f.elements.position.value.trim(),
                     company: f.elements.company.value.trim(),
+                    license_number: f.elements.license_number.value.trim(),
+                    license_number_2: f.elements.license_number_2.value.trim(),
                     quote: f.elements.quote.value.trim(),
+                    bio: f.elements.bio.value.trim(),
                     phone: f.elements.phone.value.trim(),
                     line_id: f.elements.line_id.value.trim(),
                     facebook_url: f.elements.facebook_url.value.trim(),
                     instagram_url: f.elements.instagram_url.value.trim(),
+                }, {
+                    avatar: pendingAvatarFile,
+                    cover_images: newCoverFiles,
+                    cover_images_keep: keptCovers,
                 });
                 renderAll();
                 closeModals();

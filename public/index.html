@@ -972,6 +972,7 @@
         // Logout จาก landing
         document.getElementById('cta-logout').addEventListener('click', async (e) => {
             e.preventDefault();
+            if (!confirm('ออกจากระบบ?')) return;
             try {
                 await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
             } finally {

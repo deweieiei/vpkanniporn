@@ -18,8 +18,12 @@ router.get('/login', (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'login.html'));
 });
 
+// profile.html ถูกยุบรวมเข้า dashboard.html แล้ว (2026-07-03)
+// dashboard.html เดี๋ยวนี้ทำหน้าที่ 2 โหมดในไฟล์เดียว ผ่าน URL:
+//   /profile, /dashboard  → โหมดตัวเอง (ต้อง login, มีปุ่มแก้ไข)
+//   /agent/:id            → โหมดดูคนอื่น (public, read-only)
 router.get('/profile', requireAuth, (_req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, 'profile.html'));
+  res.sendFile(path.join(PUBLIC_DIR, 'dashboard.html'));
 });
 
 router.get('/dashboard', requireAuth, (_req, res) => {
@@ -28,7 +32,7 @@ router.get('/dashboard', requireAuth, (_req, res) => {
 
 // ดูโปรไฟล์ตัวแทนคนอื่น (สาธารณะ ไม่ต้อง login)
 router.get('/agent/:id', (_req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, 'profile.html'));
+  res.sendFile(path.join(PUBLIC_DIR, 'dashboard.html'));
 });
 
 router.get('/search', (_req, res) => {

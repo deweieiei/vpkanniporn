@@ -3,6 +3,127 @@
   (ทุกครั้งที่ทำเสร็จอะไร อัปเดตตรงนี้ — ลงชื่อ + วันที่)
 ════════════════════════════════════════════════════════════════
 
+▌ 2026-07-03 (รอบ 11 — ตรวจไฟล์/dependency ไม่ใช้) — Claude Sonnet 5
+  ★ พี่ดิว: "ตรวจสอบความสมเหตุสมผลทั้งหมด ไฟล์ไหนไม่ใช้ลบออก
+    ไปที่ AI_Memory เพิ่มสรุปให้อ่าน"
+
+  ◉ วิธีตรวจ: grep ทุก require()/href/script-src จริงในโค้ด เทียบกับ
+    ไฟล์/dependency ที่ declare ไว้ ไม่ได้เดา
+
+  ◉ ลบแล้ว (ยืนยันไม่ได้ใช้ 100%):
+  ✓ npm uninstall axios form-data mssql pg tedious — ไม่มี require()
+    เลยสักจุดในโค้ดทั้งโปรเจกต์ (mssql/pg/tedious คือ driver DB อื่น
+    ที่ไม่เกี่ยวกับโปรเจกต์นี้เลย น่าจะติดมาจาก scaffold ตอนแรก)
+    ผลลัพธ์: ลบไป 102 packages (รวม transitive deps) node_modules เบาลง
+    เยอะ ทดสอบรัน server แล้วปกติไม่กระทบอะไร
+
+  ◉ เจอช่องโหว่ความปลอดภัยระหว่างตรวจ แก้ไปด้วย:
+  ✓ multer 2.1.1 → 2.2.0 (npm audit fix) แก้ High severity DoS 2 จุด
+    (nested field name flood, ไฟล์อัปโหลดที่ยกเลิกกลางทางไม่ถูกเคลียร์)
+    npm audit หลังแก้ = 0 vulnerabilities
+
+  ◉ เจอว่าไม่ได้ใช้ แต่ "ไม่ลบ" — ต้องรอพี่ดิวตัดสินใจเอง (เหตุผลอยู่ใน
+    AI_Memory/09_ตรวจสอบไฟล์ไม่ใช้.txt):
+  ？ public/src/S__12566769.jpg — ไม่มีหน้าไหน reference แล้ว (index.html
+    เปลี่ยนไปใช้รูป stock จาก Unsplash แทน) แต่เป็นรูปจริงของลูกค้า
+    ไม่ใช่ไฟล์ขยะ — รอพี่ดิวบอกว่าจะเก็บไว้ใช้ทีหลังมั้ย
+  ？ db/alter_add_profile_fields.sql, alter_add_cover_images.sql — ไม่มี
+    โค้ดรันอัตโนมัติ (ต้อง copy ไป phpMyAdmin เอง) แต่ยังไม่รู้ว่า
+    production DB จริงมีคอลัมน์พวกนี้ครบหรือยัง — ไม่ลบเผื่อยังต้องใช้
+
+  ◉ สร้างเอกสารสรุปให้พี่ดิวอ่านตรงๆ (ไม่ใช่แค่ AI):
+  ✓ AI_Memory/09_ตรวจสอบไฟล์ไม่ใช้.txt — มีโครงสร้างไฟล์ทั้งหมดปัจจุบัน
+    + รายการที่ลบแล้ว + รายการที่รอตัดสินใจ พร้อมเหตุผลแต่ละอย่าง
+  ✓ เพิ่มไฟล์นี้เข้า index ใน 00_อ่านก่อน.txt แล้ว
+
+▌ 2026-07-03 (รอบ 10 — ยุบ profile.html เข้า dashboard.html) — Claude Sonnet 5
+  ★ พี่ดิว: "เอา profile ออก เอา dashboard มาทำเป็นโปรไฟล์
+    profile อันเก่าเคยมีอะไรเอามารวมกันที่ dashboard"
+    ตีความ: ลบ public/profile.html ทิ้ง ให้ public/dashboard.html ทำหน้าที่
+    เป็นทั้งหน้าโปรไฟล์ตัวเอง (แก้ไขได้) และหน้าดูโปรไฟล์คนอื่น (read-only)
+
+  ★ นี่คือการเปลี่ยนโครงสร้างใหญ่ — สรุปให้ AI รอบหน้าเข้าใจง่ายๆ:
+    ก่อนหน้านี้มี 2 ไฟล์แยกกัน (profile.html = ดูโปรไฟล์ทั้งตัวเองและคนอื่น,
+    dashboard.html = หน้าจัดการแบบ preview-landing) ตอนนี้เหลือไฟล์เดียว
+    (dashboard.html) ที่สลับโหมดเองจาก URL path ที่เรียก:
+      /profile, /dashboard → โหมดตัวเอง (ต้อง login, มี edit-btn ทุกจุด,
+                              admin-bar, ปุ่ม logout, ปุ่ม "มุมมองผู้มุ่งหวัง")
+      /agent/:id            → โหมดดูคนอื่น (public, ไม่ต้อง login,
+                              ซ่อน admin-bar ทั้งหมด, ซ่อนปุ่มแก้ไขทุกจุด,
+                              header label กลายเป็นลิงก์ "← กลับหน้าหลัก")
+    ตรวจสอบโหมดด้วย regex `/^\/agent\/(\d+)/` ตรง path — ตัวแปร isViewingOther
+
+  ◉ Routing (routes/pages.js):
+  ✓ /profile, /dashboard, /agent/:id ทั้ง 3 ตอนนี้ serve public/dashboard.html
+    (ไม่ต้องแก้ index.html/login.html/search.html เพราะ URL เดิมไม่เปลี่ยน
+    แค่เปลี่ยนไฟล์ที่ตอบกลับ)
+  ✓ ลบ public/profile.html ทิ้งแล้ว (เช็คแล้วไม่มีไฟล์อื่น reference)
+
+  ◉ ย้ายฟีเจอร์จาก profile.html เดิม เข้า dashboard.html (ของที่ dashboard
+    เดิมไม่มี แต่ profile.html เคยมี):
+  ✓ Cover images slideshow (สูงสุด 6 รูป, fade 1.5s) — เพิ่มเป็นพื้นหลัง
+    ของ section hero (#cover-slideshow, #cover-overlay ซ้อนใต้ hero-inner)
+  ✓ Avatar upload ในโมดัลแก้โปรไฟล์ (ก่อนหน้านี้ dashboard แก้ avatar ไม่ได้เลย)
+  ✓ Cover images upload/ลบ ในโมดัลแก้โปรไฟล์ (add/remove, preview grid, MAX 6)
+  ✓ กล่องแสดงเลขใบอนุญาต (license_number, license_number_2) ใต้ตำแหน่งงาน
+    ในส่วน "รู้จักที่ปรึกษาของคุณ" — ซ่อนถ้าไม่มีข้อมูล
+  ✓ ฟิลด์ license_number, license_number_2, bio เพิ่มในโมดัลแก้ไขโปรไฟล์
+    (bio ยังไม่แสดงบนหน้าเว็บ เก็บไว้ก่อนเหมือนที่ profile.html เดิมทำ)
+  ✓ ปุ่ม "👁️ มุมมองผู้มุ่งหวัง" ใน admin-bar (โชว์เฉพาะโหมดตัวเอง หลังโหลด
+    user.id) → เปิด /agent/{ownId} ในแท็บใหม่
+
+  ◉ Public-view mode (isViewingOther) — เพิ่มใหม่ทั้งหมด:
+  ✓ ซ่อน #admin-bar ทั้งก้อน (มี logout, ดูหน้าเว็บ, มุมมองผู้มุ่งหวัง)
+  ✓ ซ่อนปุ่ม .edit-btn ทุกจุด (hero/profile/services/reviews/awards)
+  ✓ header label "หน้าจัดการ" เปลี่ยนเป็นลิงก์ "← กลับหน้าหลัก"
+  ✓ document.title เปลี่ยนเป็น "โปรไฟล์ตัวแทน — VP Kanniporn"
+  ✓ fetch ข้อมูลจาก /api/users/:id แทน /api/auth/me
+  ✓ ถ้าไม่พบ (404) แสดงข้อความ "ไม่พบตัวแทนรายนี้" แทนที่ <main> ทั้งหมด
+    (ทดสอบจริงแล้วผ่าน — /agent/2 ตอนไม่มี DB local แสดงข้อความนี้ถูกต้อง)
+  ✓ ไม่ใช้ localStorage hero-override ตอนดูคนอื่น (กันเห็นค่าที่ยังไม่ save DB)
+
+  ◉ ทดสอบ:
+  ✓ node --check ผ่าน (แยก script ออกมาเช็ค syntax)
+  ✓ cross-check ทุก getElementById(...) ในสคริปต์ (31 จุด) ตรงกับ id="..."
+    ในหน้า HTML จริงครบ ไม่มี id ขาด ไม่มี id ซ้ำ
+  ✓ cross-check ทุก form.elements.X (16 จุด) ตรงกับ name="X" ใน input ครบ
+  ✓ ทดสอบจริงใน browser: /agent/2 (ไม่มี DB) → admin-bar ซ่อน, edit-btn
+    ซ่อนหมด, header กลายเป็น "← กลับหน้าหลัก", แสดง "ไม่พบตัวแทนรายนี้" ถูกต้อง
+  ✓ ทดสอบจริงใน browser: /profile, /dashboard (ไม่ login) → redirect
+    ไป /login ถูกต้องเหมือนเดิม (auth gate ยังทำงานปกติ)
+  ✗ ยังไม่ได้ทดสอบโหมดตัวเอง (login แล้วเห็น edit-btn + avatar/cover upload
+    จริง) เพราะเครื่องนี้ไม่มี MySQL local — รอ Docker Desktop เหมือนเดิม
+
+  ◉ อัปเดต README.md: โครงสร้างโปรเจกต์ + ตาราง Endpoints ให้ตรงกับ
+    ไฟล์จริงหลังยุบรวม (ลบ profile.html ออกจากลิสต์, เพิ่ม dashboard.html
+    อธิบาย 2 โหมด, เพิ่ม /api/users, /api/users/:id, PUT /api/auth/profile
+    ที่หายไปจากตารางเดิม)
+
+  ▌ ยังไม่ push — ตอนนี้มีงานค้าง push สะสมหลายรอบ (6-10) รอพี่ดิวสั่ง
+
+▌ 2026-07-03 (รอบ 9 — confirm popup ก่อนออกจากระบบ) — Claude Sonnet 5
+  ★ พี่ดิว: "ตอนที่กดออกจากระบบ มี popup แจ้งยืนยันก่อนอีกครั้ง"
+    ตีความ: พี่ดิวอยากให้มี popup ถามยืนยันก่อน logout ทุกที่ (กันกดพลาด)
+
+  ◉ ตรวจพบว่าไม่สม่ำเสมอ — มีแค่ dashboard.html ที่ถามยืนยันอยู่แล้ว
+    (`if (!confirm('ออกจากระบบ?')) return;`)
+    ส่วน public/index.html (ปุ่ม cta-logout) และ public/profile.html
+    (ปุ่ม logout-btn ตอน logout ตัวเอง ไม่ใช่ตอนกด "กลับหน้าหลัก"
+    ของคนอื่น) กด logout ทันทีไม่มีถามอะไรเลย
+
+  ◉ แก้ให้ตรงกันทั้ง 3 หน้า — เพิ่ม `if (!confirm('ออกจากระบบ?')) return;`
+    ก่อนเรียก fetch('/api/auth/logout') ใน:
+    ✓ public/index.html (บรรทัด ~973)
+    ✓ public/profile.html (บรรทัด ~524 — เฉพาะ branch logout ตัวเอง
+       ไม่กระทบปุ่ม "กลับหน้าหลัก" ตอนดูคนอื่น)
+    (dashboard.html มีอยู่แล้วไม่ต้องแก้)
+
+  ◉ ทดสอบ: preview_eval stub `window.confirm` แล้วจำลองคลิกปุ่ม cta-logout
+    บน index.html → ยืนยันว่า confirm() ถูกเรียกด้วยข้อความ "ออกจากระบบ?"
+    ก่อน fetch จริง (ผ่าน) — profile.html เทสแบบเดียวกันไม่ได้เพราะต้อง
+    login จริงถึงจะเห็น logout-btn ในโหมด "ตัวเอง" (ไม่มี MySQL local
+    ยืนยันแค่โค้ด pattern เหมือนกันกับ index.html ที่เทสผ่านแล้ว)
+
 ▌ 2026-07-03 (รอบ 8 — bug จริงที่ทำให้ save profile 500 บน production) — Claude Sonnet 5
   ★ พี่ดิวรายงาน: หน้า /agent/2 ไม่อัปเดตตามที่แก้ใน /dashboard
     console error จริงจาก production:

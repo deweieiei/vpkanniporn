@@ -1,35 +1,41 @@
 ════════════════════════════════════════════════════════════════
-  สถานะโค้ดปัจจุบัน (ก่อนเริ่มรื้อ UI ใหม่)
-  อัปเดตล่าสุด: 19 มิ.ย. 2569 โดย Claude Opus 4.7
+  สถานะโค้ดปัจจุบัน
+  อัปเดตล่าสุด: 2026-07-03 โดย Claude Sonnet 5 (รอบ 10)
+  (เนื้อหาเดิมด้านล่างเขียนไว้ 19 มิ.ย. 2569 ก่อนรื้อ UI — โครงสร้างไฟล์
+  เปลี่ยนไปมากแล้ว โดยเฉพาะ profile.html ถูกยุบรวมเข้า dashboard.html
+  ดูรายละเอียดเต็มใน 05_ทำแล้ว.txt รอบ 10 / README.md)
 ════════════════════════════════════════════════════════════════
 
-✦ โครงสร้างไฟล์
+✦ โครงสร้างไฟล์ (ปัจจุบันจริง ณ 2026-07-03)
 
-  FWD/
+  vpkanniporn/
   ├── .git/                  ← เชื่อม GitHub: deweieiei/vpkanniporn
-  ├── .env                   ← DB password ของจริง (ห้าม commit)
+  ├── .env                   ← DB password ของจริง (ห้าม commit, ไม่มีในเครื่อง serverdew ตอนแรก ต้องสร้างเอง)
   ├── .env.example           ← template
   ├── .gitignore
-  ├── README.md              ← วิธี deploy (เก่า)
-  ├── package.json           ← deps: express, mysql2, bcryptjs, multer, etc.
-  ├── index.html             ← *** ไฟล์ design draft (ไม่ได้ใช้ serve)
-  │                             มีสี CSS variables ของ FWD อยู่ — ใช้อ้างอิงสี
-  ├── index.js               ← Express server (entry — ผมยังไม่ได้เปิดดู)
+  ├── README.md              ← วิธี deploy (อัปเดตแล้ว 2026-07-03)
+  ├── package.json           ← deps: express, mysql2, bcryptjs, multer, express-mysql-session, etc.
+  ├── index.js               ← Express server (entry) — session store MySQL แล้ว (รอบ 6)
   ├── db/
   │   ├── pool.js            ← MySQL pool config
-  │   ├── schema.sql         ← CREATE TABLE users
-  │   ├── alter_add_profile_fields.sql
-  │   └── alter_add_cover_images.sql
+  │   ├── schema.sql         ← CREATE TABLE users (มีครบทุกคอลัมน์ล่าสุดแล้ว)
+  │   ├── alter_add_profile_fields.sql  ← ใช้เฉพาะ DB เก่าที่สร้างก่อนคอลัมน์พวกนี้มี
+  │   └── alter_add_cover_images.sql    ← เหมือนกัน
   ├── routes/
-  │   ├── pages.js           ← serve HTML: /, /login, /profile, /agent/:id, /search, /packages
+  │   ├── pages.js           ← serve HTML: /, /login, /profile, /dashboard, /agent/:id, /search
+  │   │                         (ไม่มี /packages แล้ว — ลบตั้งแต่รอบ 3 มิ.ย.)
   │   ├── auth.js            ← /api/auth/register, login, logout, me, profile (PUT)
+  │   │                         PUT /profile แก้ orphaned-file bug แล้ว (รอบ 7)
   │   └── users.js           ← /api/users (list), /api/users/:id (public profile)
   ├── public/
-  │   ├── index.html         ← หน้าแรกปัจจุบัน (VP Kanniporn header + product grid 5 ใบ)
-  │   ├── login.html         ← เข้าระบบ/สมัคร (FWD orange gradient — สวยแล้ว)
-  │   ├── profile.html       ← โปรไฟล์ตัวแทน + modal แก้ไข (มี cover slideshow)
+  │   ├── index.html         ← หน้าแรก (VP Kanniporn landing) + confirm ก่อน logout (รอบ 9)
+  │   ├── login.html         ← เข้าระบบ/สมัคร (FWD orange gradient)
+  │   ├── dashboard.html     ← *** ไฟล์เดียว ทำหน้าที่ 2 โหมด (รอบ 10):
+  │   │                         โหมดตัวเอง (/profile, /dashboard — ต้อง login, แก้ไขได้)
+  │   │                         โหมดดูคนอื่น (/agent/:id — public, read-only)
+  │   │                         มี cover slideshow + avatar/cover upload + license box
+  │   │                         (profile.html เดิมถูกลบไปแล้ว รวมเข้านี่หมด)
   │   ├── search.html        ← ค้นหาตัวแทน (มีฟิลเตอร์)
-  │   ├── packages.html      ← placeholder การ์ดแพกเกจ 3 ใบ (ยังไม่มีจริง)
   │   ├── nav.js             ← Nav bar shared ทุกหน้า
   │   ├── src/               ← รูป static (S__12566769.jpg banner)
   │   ├── icon/              ← (ว่าง)
@@ -37,6 +43,8 @@
   │       ├── avatars/<user_id>/  ← รูปโปรไฟล์ (per-user folder)
   │       └── covers/<user_id>/   ← รูปปก (max 6 รูป — slideshow)
   └── สิ่งที่ต้องทำ/         ← *** โฟลเดอร์ลูกค้าส่งภาพ + PDF reference
+
+  ★ packages.html ไม่มีแล้ว (ลบตั้งแต่รอบ 3, 2026-06-19)
 
 ✦ Database Schema (1 table)
 
