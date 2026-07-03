@@ -3,6 +3,45 @@
   (ทุกครั้งที่ทำเสร็จอะไร อัปเดตตรงนี้ — ลงชื่อ + วันที่)
 ════════════════════════════════════════════════════════════════
 
+▌ 2026-07-03 (รอบ 8 — bug จริงที่ทำให้ save profile 500 บน production) — Claude Sonnet 5
+  ★ พี่ดิวรายงาน: หน้า /agent/2 ไม่อัปเดตตามที่แก้ใน /dashboard
+    console error จริงจาก production:
+      PUT https://www.vpkanniporn.com/api/auth/profile → 500
+      {error: "เกิดข้อผิดพลาด กรุณาลองใหม่"} (ข้อความจริงถูกซ่อนเพราะ NODE_ENV=production)
+
+  ◉ หาสาเหตุจาก client-side (public/dashboard.html) เพราะข้อความ error จริง
+    ถูกซ่อนไว้ (ต้องรอ log จาก Plesk ถ้าจะดูของจริง แต่เจอ bug ชัดเจนจากโค้ดก่อน)
+
+  ★ Root cause เจอแล้ว — 100% ชัวร์ ไม่ต้องเดา:
+    ฟังก์ชัน saveProfile() (dashboard.html บรรทัด ~937) เดิม:
+      fd.append('first_name', currentUser.first_name || '');   // (1) เขียนก่อนเสมอ
+      fd.append('last_name', currentUser.last_name || '');
+      for (const [k, v] of Object.entries(updates)) fd.append(k, v); // (2) เขียนทับ
+
+    ปุ่ม "บันทึกโปรไฟล์" (form submit บรรทัด ~989) ส่ง updates ที่มี
+    first_name/last_name อยู่แล้ว → fd.append ถูกเรียกซ้ำ 2 ครั้งสำหรับ
+    key เดียวกัน → FormData มี 2 ค่าใน field เดียวกัน
+    → multer parse เป็น req.body.first_name = ["", "ชื่อใหม่"] (array แทน string)
+    → pool.query('UPDATE users SET first_name = ?, ...', [arrayค่านี้, ...])
+      mysql2 แปลง array parameter เป็น comma list (สำหรับ IN clause)
+      แต่ context นี้เป็น SET column = ค่าเดียว → กลายเป็น SQL ผิด syntax
+      → throw error → next(err) → 500 (โดน NODE_ENV=production ซ่อนข้อความ)
+
+    ★ เกิดกับทุกครั้งที่กด "บันทึกโปรไฟล์" (มี first_name/last_name ใน updates)
+      ไม่เกิดกับ "บันทึกผลงาน" (awards) เพราะ updates ไม่มี first_name/last_name ซ้ำ
+
+  ◉ แก้แล้ว (dashboard.html):
+  ✓ เปลี่ยนเป็น merge เป็น plain object ก่อน (`{...default, ...updates}`)
+     แล้วค่อย fd.append ทีเดียวต่อ 1 key — ห้ามซ้ำ
+  ✓ ทดสอบ logic การ merge ผ่าน preview_eval จำลอง FormData.getAll()
+     ยืนยันว่าแต่ละ field เหลือค่าเดียวแล้ว (ไม่ใช่ array)
+  ✗ ยังทดสอบ end-to-end ผ่าน login+save จริงไม่ได้ (ไม่มี MySQL local)
+
+  ▌ สรุปสถานะ bug: นี่คือของแท้ ทำให้ "แก้โปรไฟล์ไม่เซฟ" ตามที่พี่ดิวเจอ
+    ไม่ใช่เรื่อง session store (รอบ 6) หรือไฟล์ค้าง (รอบ 7) — คนละเรื่องกัน
+    แต่ 3 เรื่องอยู่ใน commit เดียวกันที่ยังไม่ได้ push (35501c7 push ไปแล้ว
+    เป็นแค่ session-store, ส่วนรอบ 7-8 ยังอยู่ใน working tree เครื่องนี้)
+
 ▌ 2026-07-03 (รอบ 7 — เช็ค API แก้ไขโปรไฟล์) — Claude Sonnet 5
   ★ พี่ดิว: "เช็ค api แก้ไขข้อมูล profile หน่อย"
   (เกิดขึ้นหลังพบว่า commit 35501c7 ของรอบ 6 ถูก push ขึ้น origin/main แล้ว

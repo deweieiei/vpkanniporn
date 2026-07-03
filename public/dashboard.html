@@ -935,11 +935,17 @@
 
         // ===== PUT /api/auth/profile helper =====
         async function saveProfile(updates) {
+            // ส่ง first_name/last_name เป็นค่าเริ่มต้นเสมอ (ให้ผ่าน server validation
+            // ที่ต้องมีอย่างน้อย 1 field) แล้วให้ updates ทับค่าเดิมได้ถ้ามีส่งมา —
+            // ต้อง merge เป็น object เดียวก่อน ห้าม fd.append ซ้ำ key เดิมสองครั้ง
+            // เพราะ multer จะ parse เป็น array แล้วทำให้ SQL query พังตอน UPDATE
+            const merged = {
+                first_name: currentUser.first_name || '',
+                last_name: currentUser.last_name || '',
+                ...updates,
+            };
             const fd = new FormData();
-            // ส่ง first_name/last_name เพื่อให้ผ่าน server validation (route ทำงานแม้ field เดียวก็ได้)
-            fd.append('first_name', currentUser.first_name || '');
-            fd.append('last_name', currentUser.last_name || '');
-            for (const [k, v] of Object.entries(updates)) {
+            for (const [k, v] of Object.entries(merged)) {
                 fd.append(k, v == null ? '' : v);
             }
             const res = await fetch('/api/auth/profile', {
