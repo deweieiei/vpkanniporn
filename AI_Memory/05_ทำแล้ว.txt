@@ -3,6 +3,41 @@
   (ทุกครั้งที่ทำเสร็จอะไร อัปเดตตรงนี้ — ลงชื่อ + วันที่)
 ════════════════════════════════════════════════════════════════
 
+▌ 2026-07-03 (รอบ 7 — เช็ค API แก้ไขโปรไฟล์) — Claude Sonnet 5
+  ★ พี่ดิว: "เช็ค api แก้ไขข้อมูล profile หน่อย"
+  (เกิดขึ้นหลังพบว่า commit 35501c7 ของรอบ 6 ถูก push ขึ้น origin/main แล้ว
+   ทำให้เว็บจริง crash — Passenger error page — สาเหตุคาดว่า Plesk
+   npm install ไม่ทัน dependency ใหม่ ยังรอพี่ดิวเช็ค log ใน Plesk panel)
+
+  ◉ ตรวจ PUT /api/auth/profile (routes/auth.js) พบบั๊ก 2 จุด — แก้แล้ว:
+
+  1) ไฟล์ภาพปก (cover_images) ค้าง disk ถ้าอัปโหลดรวมกันเกิน 6 รูป
+     เดิม: `[...validKept, ...newPaths].slice(0, 6)` ตัดของเกินทิ้งเฉย ๆ
+     ไฟล์ใหม่ที่ multer เขียนลง disk ไปแล้ว (ก่อน handler รันด้วยซ้ำ)
+     ไม่เคยถูกลบ เพราะ logic ลบไฟล์เดิมเช็คแค่ oldCovers ไม่เช็ค newPaths
+     → กลายเป็นขยะสะสมใน public/uploads/covers/<id>/ ตลอดไป
+     แก้: เก็บ `combined` ก่อน slice แล้วเทียบว่า path ไหนใน newPaths
+     ที่หลุดจาก merged ก็ส่งเข้า filesToDelete ด้วย
+     (หน้า UI ปกติ (profile.html MAX_COVERS=6) ป้องกันเคสนี้อยู่แล้ว
+      แต่ API เองไม่ควร trust ฝั่ง client เพียงอย่างเดียว)
+
+  2) ไฟล์ที่อัปโหลดใหม่ (avatar/cover) ค้าง disk ถ้า validation fail ทีหลัง
+     multer เขียนไฟล์ลง disk ก่อน handler เริ่มทำงานเสมอ (เป็น middleware
+     ก่อนหน้า) ถ้า validation fail ที่หลัง (เช่น awards ไม่ใช่ JSON array,
+     cover_images_keep ไม่ใช่ JSON array, gender ไม่ถูกต้อง) โค้ดเดิม
+     return error ทันทีโดยไม่ลบไฟล์ที่เพิ่งอัปโหลด → ค้างเป็นขยะเหมือนกัน
+     แก้: เพิ่ม `cleanupUploadedFiles(req)` helper ลบไฟล์ทุกไฟล์ใน req.files
+     เรียกก่อน return error ในทุกจุดที่ validation อาจ fail
+
+  ◉ ทดสอบ:
+  ✓ node --check routes/auth.js ผ่าน (syntax ok)
+  ✓ npm run dev บูตปกติ ไม่มี regression
+  ✗ ยังทดสอบ end-to-end จริงไม่ได้ (upload + validation fail จริง) เพราะ
+     เครื่องนี้ยังไม่มี MySQL local (รอ Docker Desktop เหมือนเดิม)
+
+  ◉ ยังไม่ได้ commit/push — รอพี่ดิวสั่ง (โดยเฉพาะตอนนี้เว็บจริงกำลัง
+     debug ปัญหา Passenger crash จาก push รอบก่อนอยู่ ควรรอให้ตรงนั้นนิ่งก่อน)
+
 ▌ 2026-07-03 (รอบ 6 — session store persistent) — Claude Sonnet 5
   ★ พี่ดิว: "ต้องการให้จำการ login"
 

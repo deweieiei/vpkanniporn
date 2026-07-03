@@ -42,6 +42,19 @@ function safeUnlink(webPath) {
   });
 }
 
+// multer เขียนไฟล์ลง disk ก่อน handler จะรันเสมอ — ถ้า request ถูก reject
+// ด้วยเหตุผลอื่น (validation fail) ต้องลบไฟล์ที่เพิ่งอัปโหลดทิ้ง ไม่งั้นจะค้างเป็นขยะ
+function cleanupUploadedFiles(req) {
+  if (!req.files) return;
+  Object.values(req.files).flat().forEach((f) => {
+    fs.unlink(f.path, (err) => {
+      if (err && err.code !== 'ENOENT') {
+        console.warn('cleanup upload failed:', f.path, err.message);
+      }
+    });
+  });
+}
+
 function parseJsonArray(v) {
   if (!v) return [];
   try {
@@ -274,6 +287,7 @@ router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
           : req.body.awards;
         updates.awards = Array.isArray(parsed) ? JSON.stringify(parsed) : null;
       } catch (e) {
+        cleanupUploadedFiles(req);
         return res.status(400).json({ error: 'awards ต้องเป็น JSON array' });
       }
     }
@@ -303,6 +317,7 @@ router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
             : req.body.cover_images_keep;
           requestedKeep = Array.isArray(parsed) ? parsed.filter(s => typeof s === 'string') : [];
         } catch (e) {
+          cleanupUploadedFiles(req);
           return res.status(400).json({ error: 'cover_images_keep ต้องเป็น JSON array' });
         }
       }
@@ -311,21 +326,29 @@ router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
       const newPaths = hasNewCovers
         ? req.files.cover_images.map(f => `/uploads/covers/${userId}/${f.filename}`)
         : [];
-      const merged = [...validKept, ...newPaths].slice(0, 6);
+      const combined = [...validKept, ...newPaths];
+      const merged = combined.slice(0, 6);
       updates.cover_images = merged.length > 0 ? JSON.stringify(merged) : null;
 
-      // คอลัมน์ภาพปกที่ไม่อยู่ใน merged = ต้องลบ
+      // คอลัมน์ภาพปกที่ไม่อยู่ใน merged = ต้องลบ (ทั้งของเก่าที่ถูกแทนที่
+      // และไฟล์ใหม่ที่เพิ่งอัปโหลดแต่เกิน 6 รูปเลยถูก slice() ตัดทิ้ง —
+      // ถ้าไม่ลบตรงนี้ไฟล์จะค้างอยู่ที่ disk ตลอดไปเพราะไม่มี reference ใน DB)
       oldCovers.forEach(p => {
         if (!merged.includes(p)) filesToDelete.push(p);
+      });
+      combined.forEach(p => {
+        if (newPaths.includes(p) && !merged.includes(p)) filesToDelete.push(p);
       });
     }
 
     if (updates.gender && !['male', 'female', 'other'].includes(updates.gender)) {
+      cleanupUploadedFiles(req);
       return res.status(400).json({ error: 'เพศไม่ถูกต้อง' });
     }
 
     const keys = Object.keys(updates);
     if (keys.length === 0) {
+      cleanupUploadedFiles(req);
       return res.status(400).json({ error: 'ไม่มีข้อมูลที่ต้องอัพเดต' });
     }
 
