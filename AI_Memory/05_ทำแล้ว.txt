@@ -9,6 +9,17 @@
   ★ เคาะกับพี่ดิวก่อนทำ: (1) สร้างบัญชี Support Admin 1 บัญชี (ใช้ระบบ login
     เดิมแต่แยกหน้า) (2) แก้ได้ทั้งข้อความและรูปทั้งหมดบนหน้า index
 
+  ★★ แก้เพิ่มตามที่พี่ดิวสั่ง (รอบเดียวกัน บ่าย 6 ก.ค.):
+     - เปลี่ยนชื่อเรียกเป็น "SupperAdmin" (สะกดตามที่พี่ดิวต้องการ)
+     - ใช้ role 'admin' (ไม่ใช่ 'support_admin') — เช็คสิทธิ์ทุกที่เป็น role==='admin'
+     - บัญชี: user 'admin' / password '1234' (bcrypt hash ใส่ใน migration แล้ว)
+       ล็อกอินด้วย "ชื่อผู้ใช้" ไม่ใช่อีเมล — เก็บ 'admin' ในคอลัมน์ email
+     - API แยก: POST /api/auth/supperadmin-login ({username,password})
+     - สคริปต์เปลี่ยนเป็น scripts/create_supperadmin.js (ลบ create_support_admin.js)
+     - หน้า login: พื้นหลังเต็มจอจาก public/assets/background.svg + โลโก้ Logo.svg
+       (พี่ดิวเอาไฟล์ 2 ตัวใส่ใน public/assets/ เอง) + เปลี่ยนช่องเป็น "ชื่อผู้ใช้"
+     - หมายเหตุ: enum ยังมีค่า 'support_admin' ค้างอยู่ (ไม่ได้ใช้แล้ว ไม่ลบ เพราะไม่กระทบ)
+
   ◉ Database:
   ✓ db/migration_support_admin.sql (ไฟล์ใหม่ — ยังไม่ได้รันบน DB จริง!)
      - ALTER users.role เพิ่มค่า 'support_admin' (ของเดิม admin/agent/user)

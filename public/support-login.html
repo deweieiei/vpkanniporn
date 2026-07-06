@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Support Admin — เข้าสู่ระบบ | VP Kanniporn</title>
+  <title>SupperAdmin — เข้าสู่ระบบ | VP Kanniporn</title>
   <meta name="robots" content="noindex" />
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --primary-orange: #FF6B00;
-      --secondary-orange: #E65C00;
+      --primary-orange: #E66D18;
+      --secondary-orange: #cf5e10;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -18,51 +18,41 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #FF8A3D 0%, #FF6B00 55%, #E65C00 100%);
       padding: 20px;
       color: #333;
+      /* พื้นหลังเต็มจอจากไฟล์ใน assets — ขยายเต็ม (cover) */
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.25)),
+        url('/assets/background.svg') center center / cover no-repeat fixed,
+        linear-gradient(135deg, #FF8A3D 0%, #FF6B00 55%, #E65C00 100%);
     }
     .card {
-      background: #fff;
+      background: rgba(255, 255, 255, 0.97);
       width: 100%;
       max-width: 400px;
       border-radius: 20px;
-      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
-      padding: 38px 30px 32px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.3);
+      padding: 34px 30px 30px;
+      backdrop-filter: blur(2px);
     }
-    .logo {
-      text-align: center;
-      font-size: 30px;
-      font-weight: 900;
-      color: #1f2937;
-      letter-spacing: 2px;
-      margin-bottom: 4px;
-    }
-    .logo span { color: var(--primary-orange); }
     .hero-logo {
       display: block;
-      margin: 0 auto 18px;
-      width: 88px;
-      height: 88px;
-      border-radius: 22px;
-      background: #fff;
-      padding: 14px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      width: 170px;
+      height: auto;
+      margin: 0 auto 8px;
     }
+    .role-wrap { text-align: center; }
     .role-tag {
-      text-align: center;
+      display: inline-block;
       font-size: 13px;
       font-weight: 700;
       color: var(--primary-orange);
       background: #FFF5EF;
-      display: inline-block;
-      padding: 4px 14px;
+      padding: 4px 16px;
       border-radius: 999px;
-      margin: 0 auto 22px;
+      margin-bottom: 6px;
     }
-    .role-wrap { text-align: center; }
-    h1 { font-size: 20px; text-align: center; margin-bottom: 6px; color: #222; }
-    .sub { text-align: center; font-size: 13px; color: #777; margin-bottom: 26px; }
+    h1 { font-size: 19px; text-align: center; margin: 8px 0 22px; color: #222; }
     label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #444; }
     input {
       width: 100%;
@@ -108,17 +98,16 @@
 </head>
 <body>
   <div class="card">
-    <img src="assets/Logo.svg" alt="FWD Support Admin logo" class="hero-logo" />
-    <div class="logo">FWD<span>.</span></div>
-    <div class="role-wrap"><span class="role-tag">Support Admin</span></div>
+    <img src="/assets/Logo.svg" alt="FWD SupperAdmin logo" class="hero-logo" />
+
+    <div class="role-wrap"><span class="role-tag">SupperAdmin</span></div>
     <h1>เข้าสู่ระบบผู้ดูแลเนื้อหา</h1>
-    <p class="sub">สำหรับแก้ไขข้อความและรูปบนหน้าแรกของเว็บ</p>
 
     <div class="msg" id="msg"></div>
 
     <form id="loginForm">
-      <label for="email">อีเมล</label>
-      <input type="email" id="email" name="email" autocomplete="username" required />
+      <label for="username">ชื่อผู้ใช้</label>
+      <input type="text" id="username" name="username" autocomplete="username" required />
 
       <label for="password">รหัสผ่าน</label>
       <input type="password" id="password" name="password" autocomplete="current-password" required />
@@ -146,12 +135,12 @@
       btn.textContent = 'กำลังเข้าสู่ระบบ...';
 
       try {
-        const res = await fetch('/api/auth/login', {
+        const res = await fetch('/api/auth/supperadmin-login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'same-origin',
           body: JSON.stringify({
-            email: document.getElementById('email').value.trim(),
+            username: document.getElementById('username').value.trim(),
             password: document.getElementById('password').value,
           }),
         });
@@ -161,10 +150,9 @@
           showError(data.error || 'เข้าสู่ระบบไม่สำเร็จ');
           return;
         }
-        if (data.role !== 'support_admin') {
-          // เป็นบัญชีปกติ ไม่ใช่ Support Admin — ออกจากระบบทันทีเพื่อไม่ให้ค้าง session
+        if (data.role !== 'admin') {
           await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
-          showError('บัญชีนี้ไม่มีสิทธิ์ Support Admin');
+          showError('บัญชีนี้ไม่มีสิทธิ์ SupperAdmin');
           return;
         }
         window.location.href = '/support-admin/editor';

@@ -10,12 +10,12 @@ const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const SITE_UPLOAD_DIR = path.join(PUBLIC_DIR, 'uploads', 'site');
 fs.mkdirSync(SITE_UPLOAD_DIR, { recursive: true });
 
-// ===== สิทธิ์: ต้องเป็น Support Admin เท่านั้น =====
+// ===== สิทธิ์: ต้องเป็น SupperAdmin (role = 'admin') เท่านั้น =====
 function requireSupportAdmin(req, res, next) {
-  if (req.session && req.session.userId && req.session.role === 'support_admin') {
+  if (req.session && req.session.userId && req.session.role === 'admin') {
     return next();
   }
-  return res.status(403).json({ error: 'ต้องเข้าสู่ระบบเป็น Support Admin ก่อน' });
+  return res.status(403).json({ error: 'ต้องเข้าสู่ระบบเป็น SupperAdmin ก่อน' });
 }
 
 // ===== แปลง web path (/uploads/...) -> disk path ปลอดภัย กัน path traversal =====

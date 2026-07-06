@@ -124,6 +124,10 @@ INSERT IGNORE INTO site_content (content_key, section, label, content_type, cont
   ('footer_line2',     'ท้ายเว็บ', 'บรรทัด 2',      'text', 'FWD Elite Financial Consultant | กวิสรา จงเจริญ — Unit Manager', 30),
   ('footer_copyright', 'ท้ายเว็บ', 'ลิขสิทธิ์',      'text', '© 2026 VP Kanniporn Office | สำนักงานตัวแทน FWD Insurance', 40);
 
--- 4) บัญชี Support Admin สร้างด้วยสคริปต์ (ต้อง hash รหัสผ่าน):
---    node scripts/create_support_admin.js <email> <password>
---    ดูรายละเอียดในไฟล์สคริปต์
+-- 4) บัญชี SupperAdmin (role = 'admin')
+--    ล็อกอินที่ /support-admin ด้วย  ชื่อผู้ใช้: admin  รหัสผ่าน: 1234
+--    password_hash ด้านล่าง = bcrypt ของ '1234' (เข้ารหัสแล้ว ปลอดภัยเก็บใน git)
+--    *** แนะนำ: หลัง deploy เปลี่ยนรหัสผ่านด้วย node scripts/create_supperadmin.js admin <รหัสใหม่> ***
+--    INSERT IGNORE = ถ้ามี user 'admin' อยู่แล้วจะข้าม (ไม่ทับรหัสเดิม)
+INSERT IGNORE INTO users (email, password_hash, first_name, last_name, role, is_active)
+VALUES ('admin', '$2a$10$8HXHIHfo6XK9qmxnTZzTKukDhwCwe2P750L7iswVTkGrBJs17Vx0.', 'Supper', 'Admin', 'admin', 1);

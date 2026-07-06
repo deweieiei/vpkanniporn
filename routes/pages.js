@@ -10,7 +10,7 @@ function requireAuth(req, res, next) {
 }
 
 function requireSupportAdmin(req, res, next) {
-  if (req.session && req.session.userId && req.session.role === 'support_admin') return next();
+  if (req.session && req.session.userId && req.session.role === 'admin') return next();
   return res.redirect('/support-admin');
 }
 
@@ -55,7 +55,7 @@ router.get('/plans/:id', (_req, res) => {
 
 // Support Admin — หน้า login แยก + หน้าจัดการเนื้อหาหน้า index
 router.get('/support-admin', (req, res) => {
-  if (req.session && req.session.role === 'support_admin') return res.redirect('/support-admin/editor');
+  if (req.session && req.session.role === 'admin') return res.redirect('/support-admin/editor');
   res.sendFile(path.join(PUBLIC_DIR, 'support-login.html'));
 });
 

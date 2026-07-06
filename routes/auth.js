@@ -227,6 +227,42 @@ router.post('/login', express.json(), async (req, res, next) => {
   }
 });
 
+// ===== Login เฉพาะ SupperAdmin (role = 'admin') =====
+// ล็อกอินด้วย "ชื่อผู้ใช้" (ไม่ใช่อีเมล) — แยกจาก /login ปกติที่ตรวจรูปแบบอีเมล
+router.post('/supperadmin-login', express.json(), async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน' });
+    }
+
+    const [rows] = await pool.query(
+      `SELECT id, email, password_hash, first_name, last_name, is_active, role
+       FROM users WHERE email = ? AND role = 'admin' LIMIT 1`,
+      [username]
+    );
+    if (rows.length === 0) {
+      return res.status(401).json({ error: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง' });
+    }
+
+    const user = rows[0];
+    if (!user.is_active) {
+      return res.status(403).json({ error: 'บัญชีนี้ถูกระงับการใช้งาน' });
+    }
+    const ok = await bcrypt.compare(password, user.password_hash);
+    if (!ok) {
+      return res.status(401).json({ error: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง' });
+    }
+
+    req.session.userId = user.id;
+    req.session.email = user.email;
+    req.session.role = user.role;
+    res.json({ ok: true, id: user.id, role: user.role });
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.post('/logout', (req, res) => {
   req.session.destroy(() => {
     res.clearCookie('fwd.sid');

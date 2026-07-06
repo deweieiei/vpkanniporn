@@ -29,11 +29,12 @@
   [ ] /admin/contacts (ตาราง 3 หมวด) — รอ DB
   [ ] /admin/stats — รอ DB
 
-▌ Support Admin — ระบบแก้เนื้อหาหน้าแรก (รอบ 13, 2026-07-06 — เขียนโค้ดเสร็จ รอ DB)
-  ✓ ตาราง site_content + role support_admin + API + หน้า login/editor + data-ck ในหน้า index
-  [ ] รัน db/migration_support_admin.sql บน DB (dev หรือ production)
-  [ ] สร้างบัญชี: node scripts/create_support_admin.js <email> <password>
-  [ ] ทดสอบ flow จริง: login → แก้ข้อความ+อัปรูป → บันทึก → เห็นผลบนหน้าแรก
+▌ SupperAdmin — ระบบแก้เนื้อหาหน้าแรก (รอบ 13, 2026-07-06 — เขียนโค้ดเสร็จ รอ DB)
+  ✓ ตาราง site_content + role admin + API + หน้า login (พื้นหลัง assets) /editor + data-ck ในหน้า index
+  ✓ API แยก POST /api/auth/supperadmin-login + บัญชี admin/1234 (bcrypt) ใน migration
+  [ ] รัน db/migration_support_admin.sql บน DB (สร้างตาราง+บัญชี admin/1234 ให้เลย)
+  [ ] ทดสอบ flow จริง: login (admin/1234) → แก้ข้อความ+อัปรูป → บันทึก → เห็นผลบนหน้าแรก
+  [ ] (ควรทำ) หลัง deploy เปลี่ยนรหัส admin: node scripts/create_supperadmin.js admin <รหัสใหม่>
   [ ] (อนาคต ถ้าอยากได้) ปุ่มลิงก์ไป /support-admin สำหรับพี่ดิว/ลูกค้า (ตอนนี้พิมพ์ URL ตรง)
 
 ▌ Phase 3 — Backend
