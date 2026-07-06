@@ -412,6 +412,29 @@
         }
         .add-cover-btn.disabled { opacity: 0.5; cursor: not-allowed; }
 
+        /* ===== Plans admin list ===== */
+        .plan-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px; border: 1px solid #f3f4f6; border-radius: 12px; margin-bottom: 8px;
+        }
+        .plan-row .cover {
+            width: 48px; height: 48px; border-radius: 8px; overflow: hidden; flex-shrink: 0;
+            background: linear-gradient(135deg, #FFF5EF, #FFE0CC);
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+        }
+        .plan-row .cover img { width: 100%; height: 100%; object-fit: cover; }
+        .plan-row .info { flex: 1; min-width: 0; }
+        .plan-row .info .title { font-size: 13px; font-weight: 700; color: var(--text-main); }
+        .plan-row .info .meta { font-size: 11px; color: var(--text-muted); }
+        .plan-row .inactive-tag { font-size: 9px; font-weight: 700; color: #9ca3af; background: #f3f4f6; padding: 1px 6px; border-radius: 999px; margin-left: 6px; }
+        .plan-row .actions { display: flex; gap: 6px; flex-shrink: 0; }
+        .plan-row .actions button {
+            border: none; background: #f3f4f6; width: 28px; height: 28px; border-radius: 8px;
+            cursor: pointer; font-size: 13px;
+        }
+        .plan-row .actions button.delete:hover { background: #fee2e2; }
+        .plan-row .actions button.edit:hover { background: var(--light-orange-bg); }
+
         /* ===== Reviews ===== */
         .testimonials { padding: 60px 5%; background-color: var(--light-orange-bg); }
         .reviews-container {
@@ -666,7 +689,7 @@
 
         <!-- ============= Services (6 cards) ============= -->
         <section id="services" class="services editable">
-            <button class="edit-btn disabled" data-edit="services" title="ฟีเจอร์ CRUD แบบประกันมาใน Phase 3">🚧 รอเปิด</button>
+            <button class="edit-btn" data-edit="plans">✏️ จัดการแบบประกัน</button>
             <h2 class="section-title">เลือกแผนที่เหมาะกับคุณ</h2>
             <p class="section-subtitle">คุณกำลังมองหาอะไรอยู่?</p>
             <div class="services-grid">
@@ -906,6 +929,66 @@
         </div>
     </div>
 
+    <!-- ===== MODAL: Plans (จัดการแบบประกัน) ===== -->
+    <div class="modal-overlay" data-modal="plans">
+        <div class="modal-card" style="max-width: 680px;">
+            <div id="plans-list-view">
+                <h2>📋 จัดการแบบประกัน</h2>
+                <p class="modal-sub">แบบประกันที่คุณสร้างไว้ — ลูกค้าดูได้ที่หน้า /plans</p>
+                <div id="plans-admin-list" style="max-height: 340px; overflow-y: auto; margin-bottom: 14px;"></div>
+                <div class="modal-actions" style="justify-content: space-between;">
+                    <button type="button" class="btn btn-cancel" data-close>ปิด</button>
+                    <button type="button" class="btn btn-save" id="plans-add-new-btn">+ เพิ่มแบบประกันใหม่</button>
+                </div>
+            </div>
+
+            <div id="plans-form-view" style="display:none;">
+                <h2 id="plans-form-title">✏️ เพิ่มแบบประกัน</h2>
+                <p class="modal-sub">ข้อมูลแบบประกันที่จะแสดงในหน้ารายละเอียดสาธารณะ</p>
+                <form data-form="plan-edit" enctype="multipart/form-data">
+                    <div class="field">
+                        <label>รูปปก</label>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div id="plan-cover-preview-wrap" style="width:64px; height:64px; border-radius:10px; overflow:hidden; background:#f3f4f6; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <img id="plan-cover-preview" src="" style="display:none; width:100%; height:100%; object-fit:cover;">
+                                <span id="plan-cover-placeholder" style="font-size:11px; color:#9ca3af;">ไม่มีรูป</span>
+                            </div>
+                            <input type="file" name="cover_image" id="plan-cover-input" accept="image/*" style="font-size:12px;">
+                        </div>
+                        <p class="help">jpg/png/webp สูงสุด 5MB</p>
+                    </div>
+                    <div class="field">
+                        <label>หมวดหมู่</label>
+                        <select name="category_id" id="plan-category-select" required></select>
+                    </div>
+                    <div class="field">
+                        <label>ชื่อแบบประกัน</label>
+                        <input type="text" name="title" required placeholder="เช่น FWD Health Prestige">
+                    </div>
+                    <div class="field">
+                        <label>คำโปรยสั้น (แสดงในการ์ด)</label>
+                        <input type="text" name="summary" placeholder="ความคุ้มครองสูงสุด 5 ล้านบาท เบี้ยเริ่มต้นวันละ 10 บาท">
+                    </div>
+                    <div class="field">
+                        <label>รายละเอียดเต็ม</label>
+                        <textarea name="content_html" rows="6" placeholder="อธิบายความคุ้มครอง เงื่อนไข จุดเด่นของแบบประกันนี้..."></textarea>
+                        <p class="help">พิมพ์เป็นข้อความล้วน ระบบจะจัดบรรทัดให้อัตโนมัติ</p>
+                    </div>
+                    <div class="field">
+                        <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                            <input type="checkbox" name="is_active" id="plan-is-active" checked style="width:auto;">
+                            เปิดแสดงบนหน้าเว็บ (ยกเลิกติ๊กเพื่อซ่อนชั่วคราว)
+                        </label>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-cancel" id="plans-back-to-list">← กลับรายการ</button>
+                        <button type="submit" class="btn btn-save">💾 บันทึก</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- ===== Toast ===== -->
     <div id="toast" class="toast"></div>
 
@@ -1112,6 +1195,8 @@
             } else if (name === 'awards') {
                 const arr = parseJsonArray(currentUser.awards);
                 form.elements.awards.value = arr.join('\n');
+            } else if (name === 'plans') {
+                showPlansList();
             }
             m.classList.add('open');
         }
@@ -1299,6 +1384,169 @@
                 renderAll();
                 closeModals();
                 toast('✓ บันทึกผลงานเรียบร้อย');
+            } catch (err) {
+                toast(err.message, 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        // ===== PLANS (จัดการแบบประกัน — Phase 3) =====
+        let planCategories = [];
+        let editingPlanId = null; // null = กำลังสร้างใหม่
+        let pendingPlanCoverFile = null;
+
+        async function loadPlanCategoriesOnce() {
+            if (planCategories.length > 0) return planCategories;
+            const res = await fetch('/api/categories');
+            const data = await res.json();
+            planCategories = data.categories || [];
+            const select = document.getElementById('plan-category-select');
+            select.innerHTML = planCategories
+                .map(c => `<option value="${c.id}">${escapeHtml(c.icon || '')} ${escapeHtml(c.name)}</option>`)
+                .join('');
+            return planCategories;
+        }
+
+        function planAdminRow(p) {
+            const cover = p.cover_image
+                ? `<img src="${escapeHtml(p.cover_image)}">`
+                : escapeHtml(p.category_icon || '📄');
+            const inactiveTag = p.is_active ? '' : '<span class="inactive-tag">ซ่อนอยู่</span>';
+            return `
+                <div class="plan-row" data-plan-id="${p.id}">
+                    <div class="cover">${cover}</div>
+                    <div class="info">
+                        <div class="title">${escapeHtml(p.title)}${inactiveTag}</div>
+                        <div class="meta">${escapeHtml(p.category_icon || '')} ${escapeHtml(p.category_name || '')} · ${p.view_count || 0} views</div>
+                    </div>
+                    <div class="actions">
+                        <button type="button" class="edit" data-plan-action="edit" title="แก้ไข">✏️</button>
+                        <button type="button" class="delete" data-plan-action="delete" title="ลบ">🗑️</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function showPlansList() {
+            document.getElementById('plans-list-view').style.display = 'block';
+            document.getElementById('plans-form-view').style.display = 'none';
+            const container = document.getElementById('plans-admin-list');
+            container.innerHTML = '<p style="font-size:12px; color:#9ca3af; text-align:center; padding:20px 0;">⏳ กำลังโหลด…</p>';
+            try {
+                const res = await fetch('/api/plans/mine', { credentials: 'same-origin' });
+                const data = await res.json();
+                const plans = data.plans || [];
+                container.innerHTML = plans.length
+                    ? plans.map(planAdminRow).join('')
+                    : '<p style="font-size:12px; color:#9ca3af; text-align:center; padding:20px 0;">ยังไม่มีแบบประกัน — กด "+ เพิ่มแบบประกันใหม่" ด้านล่าง</p>';
+            } catch (e) {
+                container.innerHTML = '<p style="font-size:12px; color:#ef4444; text-align:center; padding:20px 0;">โหลดรายการไม่สำเร็จ</p>';
+            }
+        }
+
+        async function openPlanForm(plan) {
+            await loadPlanCategoriesOnce();
+            editingPlanId = plan ? plan.id : null;
+            pendingPlanCoverFile = null;
+
+            const form = document.querySelector('[data-form="plan-edit"]');
+            form.elements.title.value = plan ? plan.title : '';
+            form.elements.summary.value = plan ? (plan.summary || '') : '';
+            form.elements.content_html.value = plan ? (plan.content_html || '') : '';
+            form.elements.category_id.value = plan ? plan.category_id : (planCategories[0] ? planCategories[0].id : '');
+            document.getElementById('plan-is-active').checked = plan ? !!plan.is_active : true;
+
+            const prev = document.getElementById('plan-cover-preview');
+            const plh = document.getElementById('plan-cover-placeholder');
+            if (plan && plan.cover_image) {
+                prev.src = plan.cover_image;
+                prev.style.display = 'block';
+                plh.style.display = 'none';
+            } else {
+                prev.style.display = 'none';
+                plh.style.display = 'block';
+            }
+            document.getElementById('plan-cover-input').value = '';
+
+            document.getElementById('plans-form-title').textContent = plan ? '✏️ แก้ไขแบบประกัน' : '✏️ เพิ่มแบบประกัน';
+            document.getElementById('plans-list-view').style.display = 'none';
+            document.getElementById('plans-form-view').style.display = 'block';
+        }
+
+        document.getElementById('plans-add-new-btn').addEventListener('click', () => openPlanForm(null));
+        document.getElementById('plans-back-to-list').addEventListener('click', showPlansList);
+
+        document.getElementById('plan-cover-input').addEventListener('change', (e) => {
+            const f = e.target.files[0];
+            if (!f) return;
+            if (f.size > 5 * 1024 * 1024) {
+                alert('ไฟล์ใหญ่เกิน 5MB');
+                e.target.value = '';
+                return;
+            }
+            pendingPlanCoverFile = f;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const prev = document.getElementById('plan-cover-preview');
+                prev.src = ev.target.result;
+                prev.style.display = 'block';
+                document.getElementById('plan-cover-placeholder').style.display = 'none';
+            };
+            reader.readAsDataURL(f);
+        });
+
+        document.getElementById('plans-admin-list').addEventListener('click', async (e) => {
+            const btn = e.target.closest('[data-plan-action]');
+            if (!btn) return;
+            const row = btn.closest('[data-plan-id]');
+            const planId = Number(row.dataset.planId);
+
+            if (btn.dataset.planAction === 'delete') {
+                if (!confirm('ลบแบบประกันนี้? ลบแล้วกู้คืนไม่ได้')) return;
+                try {
+                    const res = await fetch(`/api/plans/${planId}`, { method: 'DELETE', credentials: 'same-origin' });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || 'ลบไม่สำเร็จ');
+                    toast('✓ ลบแบบประกันแล้ว');
+                    showPlansList();
+                } catch (err) {
+                    toast(err.message, 'error');
+                }
+            } else if (btn.dataset.planAction === 'edit') {
+                try {
+                    const res = await fetch(`/api/plans/${planId}`);
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || 'โหลดข้อมูลไม่สำเร็จ');
+                    openPlanForm(data.plan);
+                } catch (err) {
+                    toast(err.message, 'error');
+                }
+            }
+        });
+
+        document.querySelector('[data-form="plan-edit"]').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            try {
+                const f = e.target;
+                const fd = new FormData();
+                fd.append('title', f.elements.title.value.trim());
+                fd.append('summary', f.elements.summary.value.trim());
+                fd.append('content_html', f.elements.content_html.value.trim());
+                fd.append('category_id', f.elements.category_id.value);
+                fd.append('is_active', document.getElementById('plan-is-active').checked ? '1' : '0');
+                if (pendingPlanCoverFile) fd.append('cover_image', pendingPlanCoverFile);
+
+                const url = editingPlanId ? `/api/plans/${editingPlanId}` : '/api/plans';
+                const method = editingPlanId ? 'PUT' : 'POST';
+                const res = await fetch(url, { method, credentials: 'same-origin', body: fd });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'บันทึกไม่สำเร็จ');
+
+                toast(editingPlanId ? '✓ แก้ไขแบบประกันแล้ว' : '✓ เพิ่มแบบประกันแล้ว');
+                showPlansList();
             } catch (err) {
                 toast(err.message, 'error');
             } finally {

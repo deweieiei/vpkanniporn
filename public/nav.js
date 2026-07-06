@@ -5,6 +5,7 @@
 (function () {
     const NAV_ITEMS = [
         { path: '/',         label: 'หน้าหลัก',      icon: '🏠', exact: true },
+        { path: '/plans',    label: 'แบบประกัน',     icon: '📋' },
         { path: '/search',   label: 'ค้นหาตัวแทน',   icon: '🔍' },
         // เพิ่มเมนูใหม่ที่นี่ในอนาคต เช่น:
         // { path: '/news',   label: 'ข่าวสาร',        icon: '📰' },
