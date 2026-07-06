@@ -35,12 +35,6 @@
                 <p class="text-xs text-gray-500 mt-1">สำหรับตัวแทน FWD เท่านั้น</p>
             </div>
 
-            <!-- Tab toggle -->
-            <div class="flex bg-gray-100 rounded-full p-1 mb-6 text-xs font-bold">
-                <button id="tab-login" class="flex-1 py-2 rounded-full bg-orange-500 text-white shadow transition">เข้าสู่ระบบ</button>
-                <button id="tab-register" class="flex-1 py-2 rounded-full text-gray-500 transition">สมัครสมาชิก</button>
-            </div>
-
             <!-- Alert -->
             <div id="alert" class="hidden mb-4 p-3 rounded-lg text-xs font-medium"></div>
 
@@ -65,90 +59,6 @@
                 </button>
             </form>
 
-            <!-- ============ REGISTER FORM ============ -->
-            <form id="form-register" class="space-y-4 hidden" enctype="multipart/form-data">
-                <!-- Avatar -->
-                <div class="flex flex-col items-center">
-                    <label class="cursor-pointer group">
-                        <div id="avatar-preview" class="w-24 h-24 rounded-full border-4 border-orange-200 bg-gray-100 flex items-center justify-center text-gray-400 text-xs overflow-hidden group-hover:border-orange-400 transition">
-                            <span id="avatar-placeholder">📷 รูปโปรไฟล์</span>
-                            <img id="avatar-img" class="hidden w-full h-full object-cover" alt="preview">
-                        </div>
-                        <input type="file" name="avatar" id="avatar-input" accept="image/*" class="hidden">
-                    </label>
-                    <p class="text-[10px] text-gray-400 mt-1">คลิกเพื่ออัปโหลด (jpg/png, สูงสุด 5MB)</p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">ชื่อ <span class="text-red-500">*</span></label>
-                        <input type="text" name="first_name" required
-                            class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
-                            placeholder="กวิสรา">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">นามสกุล <span class="text-red-500">*</span></label>
-                        <input type="text" name="last_name" required
-                            class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
-                            placeholder="จงเจริญ">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">อีเมล <span class="text-red-500">*</span></label>
-                    <input type="email" name="email" required
-                        class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
-                        placeholder="you@example.com">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">รหัสผ่าน <span class="text-red-500">*</span></label>
-                    <input type="password" name="password" id="reg-password" required minlength="6"
-                        class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
-                        placeholder="อย่างน้อย 6 ตัวอักษร">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">ยืนยันรหัสผ่าน <span class="text-red-500">*</span></label>
-                    <input type="password" name="password_confirm" id="reg-password-confirm" required minlength="6"
-                        class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition"
-                        placeholder="พิมพ์รหัสผ่านอีกครั้ง">
-                    <p id="password-match-msg" class="text-[10px] mt-1 hidden"></p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">วันเดือนปีเกิด <span class="text-[10px] text-gray-400">(วว/ดด/ปปปป)</span></label>
-                        <input type="date" name="birthdate"
-                            class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">เพศ</label>
-                        <select name="gender"
-                            class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition bg-white">
-                            <option value="">-- เลือก --</option>
-                            <option value="male">ชาย</option>
-                            <option value="female">หญิง</option>
-                            <option value="other">อื่นๆ</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">จังหวัด</label>
-                    <select name="province" id="province-select"
-                        class="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition bg-white">
-                        <option value="">-- เลือกจังหวัด --</option>
-                    </select>
-                </div>
-
-                <button type="submit"
-                    class="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm disabled:opacity-50">
-                    <span class="btn-text">สมัครสมาชิก</span>
-                    <span class="btn-spinner hidden animate-spin">⏳</span>
-                </button>
-            </form>
-
             <p class="text-center text-[11px] text-gray-400 mt-6">
                 © 2026 FWD Insurance Agent Office
             </p>
@@ -160,69 +70,8 @@
     </div>
 
     <script>
-        const PROVINCES = [
-            'กรุงเทพมหานคร','กระบี่','กาญจนบุรี','กาฬสินธุ์','กำแพงเพชร','ขอนแก่น','จันทบุรี','ฉะเชิงเทรา',
-            'ชลบุรี','ชัยนาท','ชัยภูมิ','ชุมพร','เชียงราย','เชียงใหม่','ตรัง','ตราด','ตาก','นครนายก',
-            'นครปฐม','นครพนม','นครราชสีมา','นครศรีธรรมราช','นครสวรรค์','นนทบุรี','นราธิวาส','น่าน',
-            'บึงกาฬ','บุรีรัมย์','ปทุมธานี','ประจวบคีรีขันธ์','ปราจีนบุรี','ปัตตานี','พระนครศรีอยุธยา',
-            'พังงา','พัทลุง','พิจิตร','พิษณุโลก','เพชรบุรี','เพชรบูรณ์','แพร่','พะเยา','ภูเก็ต',
-            'มหาสารคาม','มุกดาหาร','แม่ฮ่องสอน','ยะลา','ยโสธร','ร้อยเอ็ด','ระนอง','ระยอง','ราชบุรี',
-            'ลพบุรี','ลำปาง','ลำพูน','เลย','ศรีสะเกษ','สกลนคร','สงขลา','สตูล','สมุทรปราการ',
-            'สมุทรสงคราม','สมุทรสาคร','สระแก้ว','สระบุรี','สิงห์บุรี','สุโขทัย','สุพรรณบุรี',
-            'สุราษฎร์ธานี','สุรินทร์','หนองคาย','หนองบัวลำภู','อ่างทอง','อำนาจเจริญ','อุดรธานี',
-            'อุตรดิตถ์','อุทัยธานี','อุบลราชธานี'
-        ];
-
-        const provinceSelect = document.getElementById('province-select');
-        PROVINCES.forEach(p => {
-            const opt = document.createElement('option');
-            opt.value = p;
-            opt.textContent = p;
-            provinceSelect.appendChild(opt);
-        });
-
-        const tabLogin = document.getElementById('tab-login');
-        const tabRegister = document.getElementById('tab-register');
         const formLogin = document.getElementById('form-login');
-        const formRegister = document.getElementById('form-register');
         const alertBox = document.getElementById('alert');
-
-        function switchTab(target) {
-            const isLogin = target === 'login';
-            tabLogin.className = `flex-1 py-2 rounded-full transition ${isLogin ? 'bg-orange-500 text-white shadow' : 'text-gray-500'}`;
-            tabRegister.className = `flex-1 py-2 rounded-full transition ${!isLogin ? 'bg-orange-500 text-white shadow' : 'text-gray-500'}`;
-            formLogin.classList.toggle('hidden', !isLogin);
-            formRegister.classList.toggle('hidden', isLogin);
-            hideAlert();
-        }
-        tabLogin.addEventListener('click', () => switchTab('login'));
-        tabRegister.addEventListener('click', () => switchTab('register'));
-
-        // ถ้ามาจาก landing ด้วย #register ให้เปิด tab สมัครสมาชิกทันที
-        if (window.location.hash === '#register') {
-            switchTab('register');
-        }
-
-        // Avatar preview
-        const avatarInput = document.getElementById('avatar-input');
-        const avatarImg = document.getElementById('avatar-img');
-        const avatarPlaceholder = document.getElementById('avatar-placeholder');
-        avatarInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            if (file.size > 5 * 1024 * 1024) {
-                showAlert('ไฟล์รูปใหญ่เกิน 5MB', 'error');
-                avatarInput.value = '';
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                avatarImg.src = ev.target.result;
-                avatarImg.classList.remove('hidden');
-                avatarPlaceholder.classList.add('hidden');
-            };
-            reader.readAsDataURL(file);
-        });
 
         function showAlert(msg, type) {
             const styles = {
@@ -263,61 +112,6 @@
                 showAlert('ไม่สามารถเชื่อมต่อ server ได้', 'error');
             } finally {
                 toggleSubmit(formLogin, false);
-            }
-        });
-
-        // ตรวจสอบรหัสผ่านตรงกันแบบเรียลไทม์
-        const pwd = document.getElementById('reg-password');
-        const pwdConfirm = document.getElementById('reg-password-confirm');
-        const pwdMsg = document.getElementById('password-match-msg');
-        function checkPasswordMatch() {
-            if (!pwdConfirm.value) {
-                pwdMsg.classList.add('hidden');
-                pwdConfirm.setCustomValidity('');
-                return true;
-            }
-            if (pwd.value === pwdConfirm.value) {
-                pwdMsg.textContent = '✓ รหัสผ่านตรงกัน';
-                pwdMsg.className = 'text-[10px] mt-1 text-green-600 font-medium';
-                pwdConfirm.setCustomValidity('');
-                return true;
-            }
-            pwdMsg.textContent = '✗ รหัสผ่านไม่ตรงกัน';
-            pwdMsg.className = 'text-[10px] mt-1 text-red-600 font-medium';
-            pwdConfirm.setCustomValidity('รหัสผ่านไม่ตรงกัน');
-            return false;
-        }
-        pwd.addEventListener('input', checkPasswordMatch);
-        pwdConfirm.addEventListener('input', checkPasswordMatch);
-
-        // Register: multipart/form-data
-        formRegister.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            hideAlert();
-
-            if (pwd.value !== pwdConfirm.value) {
-                showAlert('รหัสผ่านทั้งสองช่องไม่ตรงกัน', 'error');
-                pwdConfirm.focus();
-                return;
-            }
-
-            toggleSubmit(formRegister, true);
-            try {
-                const fd = new FormData(formRegister);
-                fd.delete('password_confirm');
-                const res = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    body: fd,
-                });
-                const body = await res.json();
-                if (!res.ok) { showAlert(body.error || 'เกิดข้อผิดพลาด', 'error'); return; }
-                showAlert('สมัครสำเร็จ! กำลังพาคุณไปหน้าโปรไฟล์...', 'success');
-                setTimeout(() => { window.location.href = '/profile'; }, 700);
-            } catch (err) {
-                showAlert('ไม่สามารถเชื่อมต่อ server ได้', 'error');
-            } finally {
-                toggleSubmit(formRegister, false);
             }
         });
     </script>
