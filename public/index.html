@@ -685,10 +685,10 @@
         <a href="/" class="brand">
             <div class="brand-logo">FWD<span class="dot">.</span></div>
             <div class="brand-meta">
-                <p class="title">สำนักงานตัวแทน FWD</p>
+                <p class="title" data-ck="brand_office_title">สำนักงานตัวแทน FWD</p>
                 <p class="sub">
-                    <span>VP Kanniporn</span>
-                    <span class="badge-elite">Elite Agent Office</span>
+                    <span data-ck="brand_name">VP Kanniporn</span>
+                    <span class="badge-elite" data-ck="brand_badge">Elite Agent Office</span>
                 </p>
             </div>
         </a>
@@ -698,23 +698,7 @@
             <li><a href="/search">ค้นหาตัวแทน</a></li>
         </ul>
 
-        <div class="header-cta" style="display:flex; gap:8px; align-items:center;">
-            <!-- ปุ่มสำหรับ visitor (ไม่ login) — โชว์เป็น default -->
-            <a id="cta-register" href="/login#register" class="btn-auth-outline" title="สมัครสมาชิกใหม่">
-                ✍️ สมัครสมาชิก
-            </a>
-            <a id="cta-login" href="/login" class="btn-auth" title="เข้าสู่ระบบสำหรับตัวแทน">
-                🔑 เข้าสู่ระบบ
-            </a>
-
-            <!-- ปุ่มสำหรับตัวแทน (login แล้ว) — JS จะ unhide -->
-            <a id="cta-dashboard" href="/dashboard" class="btn-auth" style="display:none;" title="เข้าหน้าจัดการ">
-                ⚙ หน้าจัดการ
-            </a>
-            <a id="cta-logout" href="#" class="btn-auth-outline" style="display:none;" title="ออกจากระบบ">
-                ↩ ออกจากระบบ
-            </a>
-        </div>
+       
     </header>
 
     <!-- เมนูแถบส้ม (สร้างโดย /nav.js) — ใช้ Tailwind classes -->
@@ -726,89 +710,89 @@
         <!-- ==================== HERO ==================== -->
         <section id="home" class="hero">
             <div class="hero-inner">
-                <h1>วางแผนวันนี้ เพื่ออนาคตที่คุณเลือกได้</h1>
-                <p class="tagline">Plan Today, Live Your Future</p>
-                <p class="sub-tagline">เพราะทุกเป้าหมายในชีวิต ควรมีแผนที่มั่นคงรองรับ</p>
+                <h1 data-ck="hero_title">วางแผนวันนี้ เพื่ออนาคตที่คุณเลือกได้</h1>
+                <p class="tagline" data-ck="hero_tagline">Plan Today, Live Your Future</p>
+                <p class="sub-tagline" data-ck="hero_subtagline">เพราะทุกเป้าหมายในชีวิต ควรมีแผนที่มั่นคงรองรับ</p>
 
                 <div class="hero-categories">
-                    <span>ประกันชีวิต</span>
-                    <span>สุขภาพ</span>
-                    <span>การออม</span>
-                    <span>มรดก</span>
+                    <span data-ck="hero_cat_1">ประกันชีวิต</span>
+                    <span data-ck="hero_cat_2">สุขภาพ</span>
+                    <span data-ck="hero_cat_3">การออม</span>
+                    <span data-ck="hero_cat_4">มรดก</span>
                 </div>
 
                 <div class="hero-buttons">
-                    <a href="#contact" class="btn-free-consult">รับคำปรึกษาฟรี (FREE CONSULTATION)</a>
-                    <a href="#about-agent" class="btn-book">นัดหมายออนไลน์ (BOOK APPOINTMENT)</a>
+                    <a href="#contact" class="btn-free-consult" data-ck="hero_btn_consult">รับคำปรึกษาฟรี (FREE CONSULTATION)</a>
+                    <a href="#about-agent" class="btn-book" data-ck="hero_btn_book">นัดหมายออนไลน์ (BOOK APPOINTMENT)</a>
                 </div>
             </div>
         </section>
 
         <!-- ==================== SERVICES ==================== -->
         <section id="services" class="services">
-            <h2 class="section-title">เลือกแผนที่เหมาะกับคุณ</h2>
-            <p class="section-subtitle">คุณกำลังมองหาอะไรอยู่?</p>
+            <h2 class="section-title" data-ck="services_title">เลือกแผนที่เหมาะกับคุณ</h2>
+            <p class="section-subtitle" data-ck="services_subtitle">คุณกำลังมองหาอะไรอยู่?</p>
 
             <div class="services-grid">
                 <div class="service-card">
                     <div class="service-icon">🏥</div>
-                    <h3>ประกันสุขภาพ</h3>
-                    <p class="en">Health Insurance</p>
-                    <a href="#contact" class="btn-card">สอบถามรายละเอียด</a>
+                    <h3 data-ck="service_1_th">ประกันสุขภาพ</h3>
+                    <p class="en" data-ck="service_1_en">Health Insurance</p>
+                    <a href="/plans?category=health" class="btn-card">สอบถามรายละเอียด</a>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">🛡️</div>
-                    <h3>ประกันชีวิต</h3>
-                    <p class="en">Life Insurance</p>
-                    <a href="#contact" class="btn-card">สอบถามรายละเอียด</a>
+                    <h3 data-ck="service_2_th">ประกันชีวิต</h3>
+                    <p class="en" data-ck="service_2_en">Life Insurance</p>
+                    <a href="/plans?category=life" class="btn-card">สอบถามรายละเอียด</a>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">💰</div>
-                    <h3>ประกันสะสมทรัพย์</h3>
-                    <p class="en">Savings Insurance</p>
-                    <a href="#contact" class="btn-card">สอบถามรายละเอียด</a>
+                    <h3 data-ck="service_3_th">ประกันสะสมทรัพย์</h3>
+                    <p class="en" data-ck="service_3_en">Savings Insurance</p>
+                    <a href="/plans?category=savings" class="btn-card">สอบถามรายละเอียด</a>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">👴</div>
-                    <h3>ประกันบำนาญ</h3>
-                    <p class="en">Retirement Planning</p>
-                    <a href="#contact" class="btn-card">สอบถามรายละเอียด</a>
+                    <h3 data-ck="service_4_th">ประกันบำนาญ</h3>
+                    <p class="en" data-ck="service_4_en">Retirement Planning</p>
+                    <a href="/plans?category=retirement" class="btn-card">สอบถามรายละเอียด</a>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">🏢</div>
-                    <h3>ประกันกลุ่ม</h3>
-                    <p class="en">Group Insurance</p>
-                    <a href="#contact" class="btn-card">สอบถามรายละเอียด</a>
+                    <h3 data-ck="service_5_th">ประกันกลุ่ม</h3>
+                    <p class="en" data-ck="service_5_en">Group Insurance</p>
+                    <a href="/plans?category=group" class="btn-card">สอบถามรายละเอียด</a>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">📜</div>
-                    <h3>วางแผนมรดก</h3>
-                    <p class="en">Legacy Planning</p>
-                    <a href="#contact" class="btn-card">สอบถามรายละเอียด</a>
+                    <h3 data-ck="service_6_th">วางแผนมรดก</h3>
+                    <p class="en" data-ck="service_6_en">Legacy Planning</p>
+                    <a href="/plans?category=legacy" class="btn-card">สอบถามรายละเอียด</a>
                 </div>
             </div>
         </section>
 
         <!-- ==================== WHY US ==================== -->
         <section class="why-us">
-            <h2 class="section-title">ทำไมต้องวางแผนกับเรา</h2>
-            <p class="section-subtitle">ประสบการณ์และมาตรฐานที่ลูกค้าไว้วางใจ</p>
+            <h2 class="section-title" data-ck="whyus_title">ทำไมต้องวางแผนกับเรา</h2>
+            <p class="section-subtitle" data-ck="whyus_subtitle">ประสบการณ์และมาตรฐานที่ลูกค้าไว้วางใจ</p>
             <div class="why-us-grid">
                 <div class="stat-item">
-                    <span class="number">1,000+</span>
-                    <p>ลูกค้าที่ดูแล</p>
+                    <span class="number" data-ck="stat_1_num">1,000+</span>
+                    <p data-ck="stat_1_label">ลูกค้าที่ดูแล</p>
                 </div>
                 <div class="stat-item">
-                    <span class="number">6+</span>
-                    <p>ปีประสบการณ์</p>
+                    <span class="number" data-ck="stat_2_num">6+</span>
+                    <p data-ck="stat_2_label">ปีประสบการณ์</p>
                 </div>
                 <div class="stat-item">
-                    <span class="number">MDRT</span>
-                    <p>มาตรฐานระดับโลก</p>
+                    <span class="number" data-ck="stat_3_num">MDRT</span>
+                    <p data-ck="stat_3_label">มาตรฐานระดับโลก</p>
                 </div>
                 <div class="stat-item">
-                    <span class="number">Pro</span>
-                    <p>Financial Consultant</p>
+                    <span class="number" data-ck="stat_4_num">Pro</span>
+                    <p data-ck="stat_4_label">Financial Consultant</p>
                 </div>
             </div>
         </section>
@@ -816,7 +800,7 @@
         <!-- ==================== PROFILE + POPULAR PLANS ==================== -->
         <section id="about-agent" class="profile-section">
             <div class="profile-info">
-                <h2>รู้จักที่ปรึกษาของคุณ</h2>
+                <h2 data-ck="profile_heading">รู้จักที่ปรึกษาของคุณ</h2>
                 <p class="name" id="agent-name">กวิสรา จงเจริญ</p>
                 <p class="position" id="agent-position">Unit Manager | Financial Consultant</p>
                 <blockquote id="agent-quote">
@@ -844,23 +828,23 @@
             </div>
 
             <div class="popular-plans">
-                <h2>แผนยอดนิยม</h2>
+                <h2 data-ck="popular_heading">แผนยอดนิยม</h2>
                 <div class="popular-plans-grid">
                     <div class="plan-card">
-                        <h4>Health Protection</h4>
-                        <p>ดูแลค่ารักษาพยาบาล</p>
+                        <h4 data-ck="popular_1_title">Health Protection</h4>
+                        <p data-ck="popular_1_desc">ดูแลค่ารักษาพยาบาล</p>
                     </div>
                     <div class="plan-card">
-                        <h4>Wealth Builder</h4>
-                        <p>ออมเงินสร้างอนาคต</p>
+                        <h4 data-ck="popular_2_title">Wealth Builder</h4>
+                        <p data-ck="popular_2_desc">ออมเงินสร้างอนาคต</p>
                     </div>
                     <div class="plan-card">
-                        <h4>Legacy Planning</h4>
-                        <p>ส่งต่อมรดกให้คนที่รัก</p>
+                        <h4 data-ck="popular_3_title">Legacy Planning</h4>
+                        <p data-ck="popular_3_desc">ส่งต่อมรดกให้คนที่รัก</p>
                     </div>
                     <div class="plan-card">
-                        <h4>Retirement Income</h4>
-                        <p>รายได้หลังเกษียณ</p>
+                        <h4 data-ck="popular_4_title">Retirement Income</h4>
+                        <p data-ck="popular_4_desc">รายได้หลังเกษียณ</p>
                     </div>
                 </div>
             </div>
@@ -868,59 +852,59 @@
 
         <!-- ==================== TESTIMONIALS ==================== -->
         <section id="reviews" class="testimonials">
-            <h2 class="section-title">เรื่องราวจากลูกค้าของเรา</h2>
-            <p class="section-subtitle">เสียงจริงจากผู้ที่วางใจให้เราดูแล</p>
+            <h2 class="section-title" data-ck="reviews_title">เรื่องราวจากลูกค้าของเรา</h2>
+            <p class="section-subtitle" data-ck="reviews_subtitle">เสียงจริงจากผู้ที่วางใจให้เราดูแล</p>
             <div class="reviews-container">
                 <div class="review-card">
-                    <p>"อธิบายเข้าใจง่าย ไม่ยัดเยียดการขาย แนะนำสิ่งที่เหมาะสมกับเราจริงๆ ค่ะ"</p>
-                    <p class="review-name">— คุณภัทรา / กรุงเทพฯ</p>
+                    <p data-ck="review_1_text">"อธิบายเข้าใจง่าย ไม่ยัดเยียดการขาย แนะนำสิ่งที่เหมาะสมกับเราจริงๆ ค่ะ"</p>
+                    <p class="review-name" data-ck="review_1_name">— คุณภัทรา / กรุงเทพฯ</p>
                 </div>
                 <div class="review-card">
-                    <p>"ช่วยวางแผนให้บรรลุเป้าหมาย ทำให้ครอบครัวมีความมั่นคงและอบอุ่นใจมากค่ะ"</p>
-                    <p class="review-name">— คุณวิทยา / นนทบุรี</p>
+                    <p data-ck="review_2_text">"ช่วยวางแผนให้บรรลุเป้าหมาย ทำให้ครอบครัวมีความมั่นคงและอบอุ่นใจมากค่ะ"</p>
+                    <p class="review-name" data-ck="review_2_name">— คุณวิทยา / นนทบุรี</p>
                 </div>
                 <div class="review-card">
-                    <p>"ดูแลดีมาก แม้หลังจากทำสัญญาแล้วก็ยังคอยติดตามและให้คำแนะนำเสมอ"</p>
-                    <p class="review-name">— คุณนิตยา / สมุทรปราการ</p>
+                    <p data-ck="review_3_text">"ดูแลดีมาก แม้หลังจากทำสัญญาแล้วก็ยังคอยติดตามและให้คำแนะนำเสมอ"</p>
+                    <p class="review-name" data-ck="review_3_name">— คุณนิตยา / สมุทรปราการ</p>
                 </div>
             </div>
         </section>
 
         <!-- ==================== ACHIEVEMENTS ==================== -->
         <section class="achievements">
-            <h2 class="section-title">ความสำเร็จและรางวัล</h2>
-            <p class="section-subtitle">ผลงานที่ได้รับการยอมรับจากองค์กรชั้นนำ</p>
+            <h2 class="section-title" data-ck="ach_title">ความสำเร็จและรางวัล</h2>
+            <p class="section-subtitle" data-ck="ach_subtitle">ผลงานที่ได้รับการยอมรับจากองค์กรชั้นนำ</p>
             <div class="timeline">
-                <div class="year">2022 — MDRT Qualifier</div>
-                <div class="year">2023 — Top Unit Manager / Elite Agent</div>
-                <div class="year">2024 — Financial Advisor Award</div>
-                <div class="year">2025 — Leadership Achievement</div>
+                <div class="year" data-ck="ach_1">2022 — MDRT Qualifier</div>
+                <div class="year" data-ck="ach_2">2023 — Top Unit Manager / Elite Agent</div>
+                <div class="year" data-ck="ach_3">2024 — Financial Advisor Award</div>
+                <div class="year" data-ck="ach_4">2025 — Leadership Achievement</div>
             </div>
         </section>
 
         <!-- ==================== CAREER ==================== -->
-        <section id="join" class="career">
-            <h2>กำลังมองหาอาชีพที่เติบโตไปพร้อมกับคุณอยู่หรือไม่?</h2>
+        <section id="join" class="career" data-ck-bg="career_bg_image">
+            <h2 data-ck="career_title">กำลังมองหาอาชีพที่เติบโตไปพร้อมกับคุณอยู่หรือไม่?</h2>
             <div class="career-benefits">
-                <div>💼 สร้างรายได้</div>
-                <div>👥 สร้างทีมงาน</div>
-                <div>🚀 สร้างธุรกิจของตัวเอง</div>
+                <div data-ck="career_benefit_1">💼 สร้างรายได้</div>
+                <div data-ck="career_benefit_2">👥 สร้างทีมงาน</div>
+                <div data-ck="career_benefit_3">🚀 สร้างธุรกิจของตัวเอง</div>
             </div>
-            <a href="/login#register" class="btn-apply">สมัครเป็นตัวแทน FWD</a>
+            <a href="/login#register" class="btn-apply" data-ck="career_btn">สมัครเป็นตัวแทน FWD</a>
         </section>
 
         <!-- ==================== BOTTOM CTA ==================== -->
         <section id="contact" class="cta-bottom">
-            <h2>พร้อมเริ่มต้นวางแผนกับเราไหม?</h2>
-            <blockquote>"อนาคตที่ดี เริ่มต้นจากการตัดสินใจในวันนี้ ให้เราช่วยออกแบบแผนที่เหมาะกับชีวิตของคุณ"</blockquote>
+            <h2 data-ck="cta_title">พร้อมเริ่มต้นวางแผนกับเราไหม?</h2>
+            <blockquote data-ck="cta_quote">"อนาคตที่ดี เริ่มต้นจากการตัดสินใจในวันนี้ ให้เราช่วยออกแบบแผนที่เหมาะกับชีวิตของคุณ"</blockquote>
             <div class="cta-buttons">
-                <a href="https://line.me/ti/p/~kavisara.fwd" target="_blank" class="line-btn">
+                <a href="https://line.me/ti/p/~kavisara.fwd" target="_blank" class="line-btn" data-ck="cta_line">
                     💬 LINE Official: @kavisara.fwd
                 </a>
-                <a href="tel:062-2397362" class="call-btn">
+                <a href="tel:062-2397362" class="call-btn" data-ck="cta_call">
                     📞 โทรหาเรา: 062-239-7362
                 </a>
-                <a href="#about-agent" class="appoint-btn">
+                <a href="#about-agent" class="appoint-btn" data-ck="cta_appoint">
                     📅 นัดหมายปรึกษาฟรี! ไม่มีค่าใช้จ่าย
                 </a>
             </div>
@@ -930,16 +914,16 @@
 
     <!-- ==================== FOOTER ==================== -->
     <footer class="site-footer">
-        <div class="footer-logo">FWD Insurance</div>
-        <p>Beyond Protection • Beyond Wealth • Beyond Possibilities</p>
-        <p>FWD Elite Financial Consultant | กวิสรา จงเจริญ — Unit Manager</p>
+        <div class="footer-logo" data-ck="footer_logo">FWD Insurance</div>
+        <p data-ck="footer_line1">Beyond Protection • Beyond Wealth • Beyond Possibilities</p>
+        <p data-ck="footer_line2">FWD Elite Financial Consultant | กวิสรา จงเจริญ — Unit Manager</p>
         <div class="social-links">
             <a href="#" target="_blank">Facebook</a>
             <a href="https://line.me/ti/p/~kavisara.fwd" target="_blank">LINE</a>
             <a href="#" target="_blank">Instagram</a>
             <a href="#" target="_blank">YouTube</a>
         </div>
-        <p style="margin-top: 20px; font-size: 11px; color: #666;">
+        <p style="margin-top: 20px; font-size: 11px; color: #666;" data-ck="footer_copyright">
             © 2026 VP Kanniporn Office | สำนักงานตัวแทน FWD Insurance
         </p>
     </footer>
@@ -952,33 +936,37 @@
 
     <!-- ==================== Dynamic data injection ==================== -->
     <script>
-        // เช็คว่า login อยู่มั้ย — toggle ปุ่มเข้าระบบ vs เข้าหน้าจัดการ
-        async function checkAuth() {
+        // ===== ดึงเนื้อหาที่ Support Admin แก้ไว้ มาแทนข้อความ/รูปบนหน้า =====
+        // ถ้าดึงไม่ได้ (DB ล่ม/ยังไม่ตั้งค่า) จะใช้ข้อความ static ที่เขียนไว้ในหน้าเป็น fallback
+        async function loadSiteContent() {
             try {
-                const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
+                const res = await fetch('/api/content');
+                if (!res.ok) return;
                 const data = await res.json();
-                if (data && data.authenticated) {
-                    document.getElementById('cta-login').style.display = 'none';
-                    document.getElementById('cta-register').style.display = 'none';
-                    document.getElementById('cta-dashboard').style.display = 'inline-flex';
-                    document.getElementById('cta-logout').style.display = 'inline-flex';
-                }
+                const content = (data && data.content) || {};
+
+                document.querySelectorAll('[data-ck]').forEach((el) => {
+                    const k = el.getAttribute('data-ck');
+                    const v = content[k];
+                    if (v != null && v !== '') el.textContent = v;
+                });
+
+                // รูปพื้นหลัง (คงเงาดำทับไว้เพื่อให้ตัวอักษรอ่านง่าย)
+                document.querySelectorAll('[data-ck-bg]').forEach((el) => {
+                    const v = content[el.getAttribute('data-ck-bg')];
+                    if (v) {
+                        el.style.backgroundImage =
+                            "linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)), url('" + v + "')";
+                        el.style.backgroundSize = 'cover';
+                        el.style.backgroundPosition = 'center';
+                    }
+                });
             } catch (e) {
-                // ถ้า fetch fail ก็ปล่อยให้ default (visitor view)
+                // เงียบไว้ ใช้ค่า static
+                console.debug('site content fetch skipped:', e.message);
             }
         }
-        checkAuth();
-
-        // Logout จาก landing
-        document.getElementById('cta-logout').addEventListener('click', async (e) => {
-            e.preventDefault();
-            if (!confirm('ออกจากระบบ?')) return;
-            try {
-                await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
-            } finally {
-                window.location.reload();
-            }
-        });
+        loadSiteContent();
 
         // ดึงข้อมูลตัวแทนหลัก (กวิสรา = user id 1 เริ่มต้น)
         // ถ้า fetch ไม่ได้ ใช้ค่า static ที่ hard-code ไว้แล้ว

@@ -9,6 +9,11 @@ function requireAuth(req, res, next) {
   return res.redirect('/login');
 }
 
+function requireSupportAdmin(req, res, next) {
+  if (req.session && req.session.userId && req.session.role === 'support_admin') return next();
+  return res.redirect('/support-admin');
+}
+
 router.get('/', (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
 });
@@ -37,6 +42,25 @@ router.get('/agent/:id', (_req, res) => {
 
 router.get('/search', (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'search.html'));
+});
+
+// Phase 3: แบบประกัน (public, ไม่ต้อง login)
+router.get('/plans', (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'plans.html'));
+});
+
+router.get('/plans/:id', (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'plan-detail.html'));
+});
+
+// Support Admin — หน้า login แยก + หน้าจัดการเนื้อหาหน้า index
+router.get('/support-admin', (req, res) => {
+  if (req.session && req.session.role === 'support_admin') return res.redirect('/support-admin/editor');
+  res.sendFile(path.join(PUBLIC_DIR, 'support-login.html'));
+});
+
+router.get('/support-admin/editor', requireSupportAdmin, (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'support-editor.html'));
 });
 
 module.exports = router;

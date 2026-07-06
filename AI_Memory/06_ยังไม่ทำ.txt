@@ -9,26 +9,40 @@
        ✓ ลบ awards / bio sections
        ✓ เพิ่มปุ่ม "ดูในมุมมองผู้มุ่งหวัง"
        — ยังไม่ได้แก้สีชื่อ (รอ feedback พี่ดิว)
-  [ ] หน้าแสดงแบบประกัน public (/plans/:id) — รอ Phase 3 (DB)
-  [ ] ฟอร์มติดต่อ 3 แบบ — รอ Phase 3 (DB)
+  ✓ หน้าแสดงแบบประกัน public (/plans, /plans/:id) — เสร็จ 2026-07-03
+       public/plans.html (list + filter category), public/plan-detail.html
+  [ ] ฟอร์มติดต่อ 3 แบบ — รอ Phase 3 (DB contact_submissions ยังไม่ทำ)
 
 ▌ Phase 2 — Dashboard (รื้อรอบ 4 — sidebar → preview landing)
   ✓ Dashboard preview เหมือน landing + nav 4 อัน (เสร็จ 2026-06-19 รอบ 4)
   ✓ Edit modal: Hero / Profile / Awards ใช้ได้จริง
   [ ] DB field สำหรับ hero text (ตอนนี้ใช้ localStorage local-only)
-  [ ] CRUD แบบประกัน (services section) — รอ DB Phase 3
+  ✓ CRUD แบบประกัน (services section) — เสร็จ 2026-07-03
+       เปิดจากปุ่ม "✏️ จัดการแบบประกัน" ใน dashboard.html → modal data-modal="plans"
+       (list + add/edit form ในโมดัลเดียว ไม่ได้แยกเป็นหน้า /admin/plans ต่างหาก)
+       ★ services section บนหน้า preview ยังเป็น static 6 การ์ดเหมือนเดิม
+         (ไม่ได้ผูกกับข้อมูลจริงจาก DB) — ผู้เยี่ยมชมดูแบบประกันจริงผ่าน
+         /plans แยกต่างหาก ไม่ใช่จาก services section นี้
   [ ] CRUD รีวิวลูกค้า (reviews section) — รอ DB Phase 3
   [ ] Career section + footer แก้ได้ (ยังไม่มี edit button)
-  [ ] /admin/plans (list + filter category) — รอ DB
-  [ ] /admin/plans/new + /:id/edit — รอ DB
   [ ] /admin/articles (CRUD บทความ) — รอ DB
   [ ] /admin/contacts (ตาราง 3 หมวด) — รอ DB
   [ ] /admin/stats — รอ DB
 
+▌ Support Admin — ระบบแก้เนื้อหาหน้าแรก (รอบ 13, 2026-07-06 — เขียนโค้ดเสร็จ รอ DB)
+  ✓ ตาราง site_content + role support_admin + API + หน้า login/editor + data-ck ในหน้า index
+  [ ] รัน db/migration_support_admin.sql บน DB (dev หรือ production)
+  [ ] สร้างบัญชี: node scripts/create_support_admin.js <email> <password>
+  [ ] ทดสอบ flow จริง: login → แก้ข้อความ+อัปรูป → บันทึก → เห็นผลบนหน้าแรก
+  [ ] (อนาคต ถ้าอยากได้) ปุ่มลิงก์ไป /support-admin สำหรับพี่ดิว/ลูกค้า (ตอนนี้พิมพ์ URL ตรง)
+
 ▌ Phase 3 — Backend
-  [ ] DB migration: insurance_categories, insurance_plans,
-       articles, contact_submissions, page_views
-  [ ] /api/plans/* CRUD
+  ✓ DB migration: insurance_categories, insurance_plans (เสร็จ 2026-07-03)
+       — ยังไม่ได้รันบน production DB จริง! เขียนโค้ดเสร็จในเครื่อง dev เท่านั้น
+       ดู db/migration_insurance_plans.sql + README "รัน schema ครั้งแรก"
+  [ ] articles, contact_submissions, page_views (ยังไม่ทำ)
+  ✓ /api/plans/* CRUD (เสร็จ 2026-07-03 — routes/plans.js)
+  ✓ /api/categories (เสร็จ 2026-07-03)
   [ ] /api/articles/* CRUD
   [ ] /api/contacts/* (POST จากผู้เยี่ยม, GET ดู, PATCH mark-read)
   [ ] /api/stats/*

@@ -3,6 +3,137 @@
   (ทุกครั้งที่ทำเสร็จอะไร อัปเดตตรงนี้ — ลงชื่อ + วันที่)
 ════════════════════════════════════════════════════════════════
 
+▌ 2026-07-06 (รอบ 13 — Support Admin: ระบบแก้เนื้อหาหน้าแรก) — Claude Opus 4.8
+  ★ พี่ดิว: "ต้องการเพิ่ม Support Admin ที่แก้ข้อความ+ภาพที่ index ได้
+    ช่วยเพิ่มในส่วนของดาต้าเบส หน้า login ของ Support Admin"
+  ★ เคาะกับพี่ดิวก่อนทำ: (1) สร้างบัญชี Support Admin 1 บัญชี (ใช้ระบบ login
+    เดิมแต่แยกหน้า) (2) แก้ได้ทั้งข้อความและรูปทั้งหมดบนหน้า index
+
+  ◉ Database:
+  ✓ db/migration_support_admin.sql (ไฟล์ใหม่ — ยังไม่ได้รันบน DB จริง!)
+     - ALTER users.role เพิ่มค่า 'support_admin' (ของเดิม admin/agent/user)
+     - CREATE TABLE site_content (content_key PK, section, label, content_type
+       text|image, content_value, sort_order) — เก็บเนื้อหาหน้า index เป็น key→ค่า
+     - INSERT IGNORE ค่าตั้งต้น ~70 key = ข้อความ/รูปบนหน้า index ปัจจุบัน
+       (จัดกลุ่ม section + label ไทย ไว้ให้หน้า editor สร้างฟอร์มอัตโนมัติ)
+  ✓ scripts/create_support_admin.js (ไฟล์ใหม่) — สร้าง/รีเซ็ตบัญชี support admin
+     วิธีใช้: node scripts/create_support_admin.js <email> <password> [ชื่อ] [นามสกุล]
+     (bcrypt hash, upsert, ตั้ง role=support_admin) — ยังไม่ได้รัน (รอ DB)
+
+  ◉ Backend:
+  ✓ routes/content.js (ไฟล์ใหม่) — mount ที่ /api ใน index.js
+     - GET  /api/content        (public) คืน map {key:value} ให้หน้า index
+     - GET  /api/content/admin  (support admin) คืนข้อมูลเต็มไว้สร้าง editor
+     - PUT  /api/content        (support admin) บันทึกข้อความหลายช่อง (transaction,
+       อัปเดตเฉพาะ key ที่มีจริง + ชนิด text เท่านั้น)
+     - POST /api/content/image  (support admin) อัปโหลดรูป → /uploads/site/,
+       ลบรูปเก่าอัตโนมัติ, กัน path traversal
+  ✓ routes/auth.js — login/register เก็บ req.session.role เพิ่ม (จำเป็นต่อการเช็คสิทธิ์)
+     login SELECT ดึง role มาด้วย + คืน role ใน response
+  ✓ routes/pages.js — เพิ่ม GET /support-admin (หน้า login) + /support-admin/editor
+     (มี requireSupportAdmin: ถ้าไม่ใช่ → redirect กลับ /support-admin)
+
+  ◉ Frontend:
+  ✓ public/support-login.html (ไฟล์ใหม่) — หน้า login แยกของ Support Admin
+     (โทนส้ม FWD, เช็ค role==='support_admin' ถ้าไม่ใช่ logout+แจ้งเตือน)
+  ✓ public/support-editor.html (ไฟล์ใหม่) — หน้าจัดการเนื้อหา
+     - ดึง /api/content/admin มาสร้างฟอร์มอัตโนมัติ จัดกลุ่มตาม section
+     - ข้อความ = textarea auto-resize, กด "บันทึกทั้งหมด" → PUT
+     - รูป = เลือกไฟล์แล้วอัปโหลดทันที (POST) + แสดง preview
+     - จัดการ session หมดอายุ (401/403 → เด้งกลับ login)
+  ✓ public/index.html — ใส่ data-ck="key" 74 จุด + data-ck-bg (career) 1 จุด
+     - เพิ่ม script loadSiteContent(): fetch /api/content มาแทนข้อความ/รูป
+       ถ้าดึงไม่ได้ ใช้ข้อความ static เดิมเป็น fallback (ไม่พัง)
+     - แก้บั๊กเดิม: script ท้ายหน้าอ้าง element cta-login/cta-logout ที่ไม่มีจริง
+       → throw ตั้งแต่ต้น ทำให้ loadFeaturedAgent ไม่เคยทำงาน — ลบโค้ดตายทิ้งแล้ว
+
+  ◉ ทดสอบแล้ว (เท่าที่ทำได้โดยไม่มี DB):
+  ✓ node --check ผ่านทุกไฟล์, server restart สะอาด, mount router ได้
+  ✓ หน้า index render ครบ (fallback static) ไม่มี JS error, / = 200
+  ✓ /support-admin = 200 (มีฟอร์ม), /support-admin/editor เด้ง login เมื่อไม่ล็อกอิน
+  ✓ /api/content = 500 เพราะ DB ปิด (พิสูจน์ว่า route ติดตั้งแล้ว)
+
+  ▌ ยังไม่ได้ทำ/ต้องทำต่อ (ดู 06):
+  - เครื่อง serverdew นี้ MySQL80 ปิดอยู่ + ไม่มี Docker → รัน DB ไม่ได้ตอนนี้
+    (start service ต้องสิทธิ์แอดมิน) ยังทดสอบ flow เต็ม (login→แก้→บันทึก→เห็นผล)
+    ไม่ได้ — ต้องเปิด DB หรือทดสอบหลัง deploy บน HostAtom
+  - รัน migration_support_admin.sql + create_support_admin.js บน DB
+  - ยังไม่ได้ commit/push (รวมงาน Phase 3 รอบ 12 ที่ค้างด้วย)
+
+▌ 2026-07-03 (รอบ 12 — เปิด Phase 3: ระบบแบบประกันจริง) — Claude Sonnet 5
+  ★ พี่ดิว: กดที่การ์ด "สอบถามรายละเอียด" 6 ใบในหน้าแรก แล้วบอกว่าอยากให้
+    "สร้างหน้าเพิ่มแล้วกดไปยังหน้าแนะรายละเอียดเพิ่มเติม"
+  ★ ถามกลับว่าจะเอาแบบไหน (static หน้าเดียว / static แยกหน้า / DB Phase 3
+    เต็มรูป) → พี่ดิวเลือก "รอระบบแบบประกันเต็มรูป (Phase 3)"
+    → เริ่มทำ Phase 3.1 + 3.2 (ตามแผนใน 04_แผนการรื้อใหม่.txt) เลย
+
+  ◉ ตัดสินใจเรื่องหมวดหมู่ (Q4 ใน 08_คำถามรอตอบ ที่ค้างมานาน):
+    ใช้ 6 หมวดตามที่มีอยู่จริงในหน้าแรกตอนนี้ (health/life/savings/
+    retirement/group/legacy) ไม่ใช่ 3 หมวดจาก PDF/dashboard design เก่า
+    เพราะ 6 หมวดคือของจริงที่ deploy อยู่ในหน้าแรกแล้ว
+
+  ◉ DB Schema (db/migration_insurance_plans.sql + เพิ่มใน schema.sql ด้วย):
+  ✓ insurance_categories (id, slug, name, icon, sort_order) — seed 6 หมวด
+  ✓ insurance_plans (id, user_id, category_id, title, summary,
+     content_html, cover_image, is_active, view_count, timestamps)
+     FK ผูกกับ users(id) แบบ ON DELETE CASCADE
+  ★ ยังไม่ได้รันบน production DB จริง! ต้องรัน migration_insurance_plans.sql
+    ผ่าน phpMyAdmin ก่อน deploy ฟีเจอร์นี้ถึงจะใช้งานได้จริง
+
+  ◉ API (routes/plans.js — mount ที่ /api ใน index.js):
+  ✓ GET /api/categories, GET /api/plans (filter category/user_id, public
+     เห็นเฉพาะ is_active), GET /api/plans/mine (ของตัวเอง รวมที่ซ่อน),
+     GET /api/plans/:id (public, นับ view_count), POST/PUT/DELETE /api/plans
+     (requireAuth + เช็ค ownership ก่อนแก้/ลบเสมอ)
+  ✓ Multer upload cover_image แยกโฟลเดอร์ public/uploads/plans/<user_id>/
+  ✓ ป้องกัน orphaned upload file แต่แรก (เรียนจากบั๊กรอบ 7): มี
+     cleanupUploadedFile(req) เรียกทุกจุดที่ validation fail หลัง multer
+     เขียนไฟล์ลง disk ไปแล้ว
+
+  ◉ Public pages:
+  ✓ public/plans.html — list + filter tabs ตามหมวดหมู่ (ดึงจาก /api/categories)
+  ✓ public/plan-detail.html — รายละเอียด 1 แบบ + ปุ่ม "สนใจแบบนี้" ลิงก์ไป
+     /agent/:user_id#contact
+  ★ ความปลอดภัย: content_html render เป็น plain text เท่านั้น (escapeHtml
+     แล้วแปลง \n เป็น <br>) ไม่ใช้ innerHTML ดิบๆ เพราะเนื้อหามาจากตัวแทน
+     กรอกเอง ถ้าไม่ escape จะเป็นช่องโหว่ stored XSS (ตัวแทนคนหนึ่งใส่
+     payload แล้วไปโจมตี visitor คนอื่นที่มาดูหน้า /plans/:id ได้)
+  ✓ แก้ public/index.html: การ์ดบริการ 6 ใบ ลิงก์จาก #contact →
+     /plans?category=health|life|savings|retirement|group|legacy
+  ✓ เพิ่ม "📋 แบบประกัน" ใน public/nav.js (โชว์ทุกหน้าที่ใช้ nav.js ร่วม)
+  ✓ เพิ่ม routes /plans, /plans/:id ใน routes/pages.js
+
+  ◉ Admin (public/dashboard.html):
+  ✓ เปิดปุ่ม "จัดการแบบประกัน" ใน services section (เดิม disabled
+     "🚧 รอเปิด" — ตอนนี้เปิดใช้งานจริงแล้ว)
+  ✓ Modal data-modal="plans": list ของตัวเอง (edit/delete ต่อแถว) +
+     ฟอร์ม add/edit (cover upload, หมวดหมู่, ชื่อ, คำโปรยสั้น, เนื้อหาเต็ม,
+     toggle เปิด/ปิดแสดงผล) สลับ view ในโมดัลเดียว ไม่แยกหน้า /admin/plans
+  ★ services section บน dashboard/index ยังเป็น static 6 การ์ดเหมือนเดิม
+     (ตั้งใจไม่ผูกกับ DB ในรอบนี้ กันงานบวมเกินไป) ผู้เยี่ยมชมดูแบบประกัน
+     จริงผ่าน /plans ที่แยกต่างหาก
+
+  ◉ ทดสอบ:
+  ✓ node --check ทุกไฟล์ (routes/plans.js, index.js, dashboard.html,
+     plans.html, plan-detail.html) ผ่านหมด
+  ✓ cross-check id/name/data-form ใน dashboard.html ครบ ไม่มี typo
+  ✓ ทดสอบ routing จริงใน browser: /, /plans, /plans/1, /search, /agent/1
+     → 200 ทั้งหมด / /dashboard, /profile → redirect /login ถูกต้อง
+     (ทดสอบตอนไม่มี DB — ได้ผลลัพธ์ตามที่คาดคือ error แบบ graceful
+     ไม่ crash ไม่ hang)
+  ✓ ทดสอบ API: /api/categories, /api/plans, /api/plans/1 → 500 (คาดไว้
+     เพราะไม่มี DB local), /api/plans/mine → 401 (requireAuth ทำงานถูก
+     ก่อนแตะ DB ด้วยซ้ำ)
+  ✗ ยังไม่ได้ทดสอบ end-to-end จริง (login → เปิดโมดัล → เพิ่ม/แก้/ลบ
+     แบบประกันจริง → เห็นผลที่ /plans) เพราะเครื่องนี้ไม่มี MySQL local
+     — รอ Docker Desktop เหมือนทุกรอบก่อนหน้า
+
+  ▌ สิ่งที่ต้องทำก่อนใช้งานจริงบน production:
+    1. รัน db/migration_insurance_plans.sql บน HostAtom phpMyAdmin
+    2. Deploy โค้ด (push แล้ว Plesk auto-pull)
+    3. Login แล้วลองกด "จัดการแบบประกัน" เพิ่มแบบประกันจริง 1 รายการ
+       เช็คว่าขึ้นที่ /plans และ /plans/:id ถูกต้อง
+
 ▌ 2026-07-03 (รอบ 11 — ตรวจไฟล์/dependency ไม่ใช้) — Claude Sonnet 5
   ★ พี่ดิว: "ตรวจสอบความสมเหตุสมผลทั้งหมด ไฟล์ไหนไม่ใช้ลบออก
     ไปที่ AI_Memory เพิ่มสรุปให้อ่าน"

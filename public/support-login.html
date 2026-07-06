@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support Admin — เข้าสู่ระบบ | VP Kanniporn</title>
+  <meta name="robots" content="noindex" />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary-orange: #FF6B00;
+      --secondary-orange: #E65C00;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Prompt', 'Helvetica Neue', Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #FF8A3D 0%, #FF6B00 55%, #E65C00 100%);
+      padding: 20px;
+      color: #333;
+    }
+    .card {
+      background: #fff;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 20px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+      padding: 38px 30px 32px;
+    }
+    .logo {
+      text-align: center;
+      font-size: 30px;
+      font-weight: 900;
+      color: #1f2937;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+    .logo span { color: var(--primary-orange); }
+    .role-tag {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary-orange);
+      background: #FFF5EF;
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 999px;
+      margin: 0 auto 22px;
+    }
+    .role-wrap { text-align: center; }
+    h1 { font-size: 20px; text-align: center; margin-bottom: 6px; color: #222; }
+    .sub { text-align: center; font-size: 13px; color: #777; margin-bottom: 26px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #444; }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: inherit;
+      margin-bottom: 18px;
+      transition: border-color 0.2s;
+    }
+    input:focus { outline: none; border-color: var(--primary-orange); }
+    button {
+      width: 100%;
+      padding: 13px;
+      background: var(--primary-orange);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover { background: var(--secondary-orange); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .msg {
+      display: none;
+      background: #FEECEC;
+      color: #C0392B;
+      border: 1px solid #F5C6C6;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .back { text-align: center; margin-top: 20px; }
+    .back a { color: #888; font-size: 12px; text-decoration: none; }
+    .back a:hover { color: var(--primary-orange); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">FWD<span>.</span></div>
+    <div class="role-wrap"><span class="role-tag">Support Admin</span></div>
+    <h1>เข้าสู่ระบบผู้ดูแลเนื้อหา</h1>
+    <p class="sub">สำหรับแก้ไขข้อความและรูปบนหน้าแรกของเว็บ</p>
+
+    <div class="msg" id="msg"></div>
+
+    <form id="loginForm">
+      <label for="email">อีเมล</label>
+      <input type="email" id="email" name="email" autocomplete="username" required />
+
+      <label for="password">รหัสผ่าน</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required />
+
+      <button type="submit" id="submitBtn">เข้าสู่ระบบ</button>
+    </form>
+
+    <div class="back"><a href="/">← กลับหน้าเว็บหลัก</a></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const msg = document.getElementById('msg');
+    const btn = document.getElementById('submitBtn');
+
+    function showError(text) {
+      msg.textContent = text;
+      msg.style.display = 'block';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'กำลังเข้าสู่ระบบ...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({
+            email: document.getElementById('email').value.trim(),
+            password: document.getElementById('password').value,
+          }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(data.error || 'เข้าสู่ระบบไม่สำเร็จ');
+          return;
+        }
+        if (data.role !== 'support_admin') {
+          // เป็นบัญชีปกติ ไม่ใช่ Support Admin — ออกจากระบบทันทีเพื่อไม่ให้ค้าง session
+          await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
+          showError('บัญชีนี้ไม่มีสิทธิ์ Support Admin');
+          return;
+        }
+        window.location.href = '/support-admin/editor';
+      } catch (err) {
+        showError('เชื่อมต่อไม่สำเร็จ กรุณาลองใหม่');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'เข้าสู่ระบบ';
+      }
+    });
+  </script>
+</body>
+</html>

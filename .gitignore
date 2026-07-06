@@ -36,3 +36,7 @@ public/uploads/avatars/*
 !public/uploads/avatars/.gitkeep
 public/uploads/covers/*
 !public/uploads/covers/.gitkeep
+public/uploads/plans/*
+!public/uploads/plans/.gitkeep
+public/uploads/site/*
+!public/uploads/site/.gitkeep

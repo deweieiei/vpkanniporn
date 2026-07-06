@@ -178,6 +178,7 @@ router.post('/register', upload.single('avatar'), async (req, res, next) => {
 
     req.session.userId = userId;
     req.session.email = email;
+    req.session.role = 'user';
     res.json({ ok: true, id: userId, email, avatar_path: avatarPath });
   } catch (err) {
     next(err);
@@ -192,7 +193,7 @@ router.post('/login', express.json(), async (req, res, next) => {
     }
 
     const [rows] = await pool.query(
-      `SELECT id, email, password_hash, first_name, last_name, avatar_path, is_active
+      `SELECT id, email, password_hash, first_name, last_name, avatar_path, is_active, role
        FROM users WHERE email = ? LIMIT 1`,
       [email]
     );
@@ -211,6 +212,7 @@ router.post('/login', express.json(), async (req, res, next) => {
 
     req.session.userId = user.id;
     req.session.email = user.email;
+    req.session.role = user.role;
     res.json({
       ok: true,
       id: user.id,
@@ -218,6 +220,7 @@ router.post('/login', express.json(), async (req, res, next) => {
       first_name: user.first_name,
       last_name: user.last_name,
       avatar_path: user.avatar_path,
+      role: user.role,
     });
   } catch (err) {
     next(err);
