@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>จัดการตัวแทน — SupperAdmin</title>
+  <meta name="robots" content="noindex" />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root { --primary-orange: #E66D18; --secondary-orange: #cf5e10; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Prompt', sans-serif; background: #f4f5f7; color: #333; line-height: 1.5; }
+    header {
+      background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.06); padding: 14px 5%;
+      display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; gap: 12px;
+    }
+    .brand { font-size: 22px; font-weight: 900; letter-spacing: 1px; color: #1f2937; }
+    .brand span { color: var(--primary-orange); }
+    .brand small { display: block; font-size: 11px; font-weight: 600; color: #888; letter-spacing: 0; }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .header-actions a, .header-actions button {
+      font-size: 13px; font-weight: 600; font-family: inherit; padding: 8px 14px; border-radius: 8px;
+      cursor: pointer; text-decoration: none; border: 1.5px solid #e5e7eb; background: #fff; color: #444;
+    }
+    .header-actions a:hover, .header-actions button:hover { border-color: var(--primary-orange); color: var(--primary-orange); }
+
+    .wrap { max-width: 960px; margin: 24px auto; padding: 0 16px; }
+    .card { background: #fff; border-radius: 14px; box-shadow: 0 3px 14px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; }
+    .card-head { background: linear-gradient(135deg, #FFF5EF, #FFE8D6); padding: 13px 20px; font-weight: 700; font-size: 15px; color: #92400e; border-bottom: 1px solid #ffe0c2; }
+    .card-body { padding: 18px 20px; }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 620px) { .grid { grid-template-columns: 1fr; } }
+    label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 5px; }
+    input, select {
+      width: 100%; padding: 10px 12px; border: 1.5px solid #e5e7eb; border-radius: 9px;
+      font-size: 14px; font-family: inherit; outline: none; transition: border-color .15s;
+    }
+    input:focus, select:focus { border-color: var(--primary-orange); }
+    .field { margin-bottom: 12px; }
+    .btn {
+      background: var(--primary-orange); color: #fff; border: none; padding: 11px 24px; border-radius: 9px;
+      font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background .2s;
+    }
+    .btn:hover { background: var(--secondary-orange); }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 7px; }
+    .btn-ghost { background: #f3f4f6; color: #444; }
+    .btn-ghost:hover { background: #e5e7eb; }
+    .btn-danger { background: #ef4444; }
+    .btn-danger:hover { background: #dc2626; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
+    th { font-size: 11px; color: #888; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+    tr:hover td { background: #fafafa; }
+    .tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; display: inline-block; }
+    .tag-admin { background: #fee2e2; color: #b91c1c; }
+    .tag-agent { background: #ffedd5; color: #9a3412; }
+    .tag-user  { background: #e0e7ff; color: #3730a3; }
+    .tag-off   { background: #f3f4f6; color: #6b7280; }
+    .row-actions { display: flex; gap: 6px; justify-content: flex-end; }
+    .muted { color: #9ca3af; font-size: 12px; }
+
+    .toast {
+      position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+      background: #1f2937; color: #fff; padding: 11px 22px; border-radius: 10px; font-size: 14px; font-weight: 600;
+      opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 200;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
+    .toast.ok { background: #15803d; } .toast.err { background: #b91c1c; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">FWD<span>.</span> <small>จัดการตัวแทน</small></div>
+    <div class="header-actions">
+      <a href="/" target="_blank">↗ ดูหน้าเว็บ</a>
+      <button type="button" id="logoutBtn">ออกจากระบบ</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <!-- เพิ่มผู้ใช้ -->
+    <div class="card">
+      <div class="card-head">➕ เพิ่มตัวแทน / ผู้ใช้ใหม่</div>
+      <div class="card-body">
+        <form id="addForm">
+          <div class="grid">
+            <div class="field"><label>ชื่อ *</label><input type="text" name="first_name" required></div>
+            <div class="field"><label>นามสกุล *</label><input type="text" name="last_name" required></div>
+          </div>
+          <div class="grid">
+            <div class="field"><label>อีเมล (ใช้ล็อกอิน) *</label><input type="email" name="email" required></div>
+            <div class="field"><label>รหัสผ่าน (อย่างน้อย 6 ตัว) *</label><input type="text" name="password" required minlength="6"></div>
+          </div>
+          <div class="grid">
+            <div class="field"><label>เบอร์โทร</label><input type="text" name="phone"></div>
+            <div class="field"><label>ตำแหน่ง</label><input type="text" name="position" placeholder="เช่น ตัวแทน / Unit Manager"></div>
+          </div>
+          <div class="grid">
+            <div class="field"><label>จังหวัด</label><input type="text" name="province"></div>
+            <div class="field">
+              <label>บทบาท</label>
+              <select name="role">
+                <option value="agent" selected>ตัวแทน (agent)</option>
+                <option value="user">ผู้ใช้ทั่วไป (user)</option>
+                <option value="admin">SupperAdmin (admin)</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn" id="addBtn">บันทึกผู้ใช้ใหม่</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- รายชื่อ -->
+    <div class="card">
+      <div class="card-head">👥 รายชื่อผู้ใช้ทั้งหมด (<span id="count">0</span>)</div>
+      <div class="card-body">
+        <div id="usersWrap"><p class="muted" id="loading">กำลังโหลด...</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const toastEl = document.getElementById('toast');
+    function toast(t, kind) { toastEl.textContent = t; toastEl.className = 'toast show ' + (kind || ''); setTimeout(() => toastEl.className = 'toast', 2600); }
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function authFail(res) { if (res.status === 401 || res.status === 403) { window.location.href = '/support-admin'; return true; } return false; }
+
+    async function loadUsers() {
+      const wrap = document.getElementById('usersWrap');
+      try {
+        const res = await fetch('/api/admin/users', { credentials: 'same-origin' });
+        if (authFail(res)) return;
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        const users = data.users || [];
+        document.getElementById('count').textContent = users.length;
+        if (users.length === 0) { wrap.innerHTML = '<p class="muted">ยังไม่มีผู้ใช้</p>'; return; }
+
+        wrap.innerHTML = `
+          <div style="overflow-x:auto"><table>
+            <thead><tr><th>ชื่อ</th><th>อีเมล</th><th>บทบาท</th><th>สถานะ</th><th></th></tr></thead>
+            <tbody>${users.map(rowHtml).join('')}</tbody>
+          </table></div>`;
+        wrap.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => delUser(b.dataset.del, b.dataset.name)));
+        wrap.querySelectorAll('[data-toggle]').forEach(b => b.addEventListener('click', () => toggleActive(b.dataset.toggle, b.dataset.active === '1')));
+      } catch (e) { wrap.innerHTML = '<p class="muted">โหลดข้อมูลไม่สำเร็จ</p>'; }
+    }
+
+    function rowHtml(u) {
+      const name = esc(`${u.first_name || ''} ${u.last_name || ''}`.trim() || '—');
+      const roleTag = u.role === 'admin' ? '<span class="tag tag-admin">SupperAdmin</span>'
+        : u.role === 'agent' ? '<span class="tag tag-agent">ตัวแทน</span>'
+        : '<span class="tag tag-user">ผู้ใช้</span>';
+      const status = u.is_active
+        ? '<span class="tag tag-agent" style="background:#dcfce7;color:#15803d">ใช้งาน</span>'
+        : '<span class="tag tag-off">ปิด</span>';
+      return `<tr>
+        <td>${name}</td>
+        <td>${esc(u.email)}</td>
+        <td>${roleTag}</td>
+        <td>${status}</td>
+        <td><div class="row-actions">
+          <button class="btn btn-sm btn-ghost" data-toggle="${u.id}" data-active="${u.is_active ? 1 : 0}">${u.is_active ? 'ปิดใช้งาน' : 'เปิดใช้งาน'}</button>
+          <button class="btn btn-sm btn-danger" data-del="${u.id}" data-name="${esc(name)}">ลบ</button>
+        </div></td>
+      </tr>`;
+    }
+
+    async function delUser(id, name) {
+      if (!confirm(`ลบผู้ใช้ "${name}" ?\nการลบนี้ย้อนกลับไม่ได้`)) return;
+      try {
+        const res = await fetch('/api/admin/users/' + id, { method: 'DELETE', credentials: 'same-origin' });
+        if (authFail(res)) return;
+        const d = await res.json();
+        if (!res.ok) { toast(d.error || 'ลบไม่สำเร็จ', 'err'); return; }
+        toast('ลบเรียบร้อย', 'ok'); loadUsers();
+      } catch (e) { toast('ลบไม่สำเร็จ', 'err'); }
+    }
+
+    async function toggleActive(id, isActive) {
+      try {
+        const res = await fetch('/api/admin/users/' + id, {
+          method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+          body: JSON.stringify({ is_active: !isActive }),
+        });
+        if (authFail(res)) return;
+        const d = await res.json();
+        if (!res.ok) { toast(d.error || 'ไม่สำเร็จ', 'err'); return; }
+        toast('อัปเดตสถานะแล้ว', 'ok'); loadUsers();
+      } catch (e) { toast('ไม่สำเร็จ', 'err'); }
+    }
+
+    document.getElementById('addForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('addBtn');
+      btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
+      try {
+        const payload = Object.fromEntries(new FormData(e.target).entries());
+        const res = await fetch('/api/admin/users', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+          body: JSON.stringify(payload),
+        });
+        if (authFail(res)) return;
+        const d = await res.json();
+        if (!res.ok) { toast(d.error || 'บันทึกไม่สำเร็จ', 'err'); return; }
+        toast('เพิ่มผู้ใช้เรียบร้อย', 'ok');
+        e.target.reset();
+        loadUsers();
+      } catch (err) { toast('บันทึกไม่สำเร็จ', 'err'); }
+      finally { btn.disabled = false; btn.textContent = 'บันทึกผู้ใช้ใหม่'; }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
+      window.location.href = '/support-admin';
+    });
+
+    loadUsers();
+  </script>
+</body>
+</html>

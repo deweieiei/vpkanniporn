@@ -91,7 +91,7 @@ app.get('/api/health/db', async (_req, res) => {
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api', require('./routes/plans')); // /api/plans, /api/categories
-app.use('/api', require('./routes/content')); // /api/content, /api/content/admin, /api/content/image
+app.use('/api/admin', require('./routes/admin')); // /api/admin/users (จัดการตัวแทน — เฉพาะ SupperAdmin)
 
 // ===== HTML Pages =====
 app.use('/', require('./routes/pages'));

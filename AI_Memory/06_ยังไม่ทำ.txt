@@ -29,13 +29,21 @@
   [ ] /admin/contacts (ตาราง 3 หมวด) — รอ DB
   [ ] /admin/stats — รอ DB
 
-▌ SupperAdmin — ระบบแก้เนื้อหาหน้าแรก (รอบ 13, 2026-07-06 — เขียนโค้ดเสร็จ รอ DB)
-  ✓ ตาราง site_content + role admin + API + หน้า login (พื้นหลัง assets) /editor + data-ck ในหน้า index
-  ✓ API แยก POST /api/auth/supperadmin-login + บัญชี admin/1234 (bcrypt) ใน migration
-  [ ] รัน db/migration_supperadmin.sql บน DB (สร้างตาราง+บัญชี admin/1234 ให้เลย)
-  [ ] ทดสอบ flow จริง: login (admin/1234) → แก้ข้อความ+อัปรูป → บันทึก → เห็นผลบนหน้าแรก
+▌ SupperAdmin + เปลี่ยนทิศเว็บ (รอบ 14, 2026-07-06 — เขียนโค้ดเสร็จ รอ DB ทดสอบ)
+  ✓ Index = ค้นหาตัวแทนล้วนๆ / Admin = จัดการตัวแทน (เพิ่ม/ปิด/ลบ) / ตัดหน้าสมัคร / เลิก CMS
+  ✓ บัญชี admin/1234 อยู่ใน db/seed_admin.sql + migration (bcrypt)
+  [ ] รัน SQL บน DB: db/seed_admin.sql (หรือ migration_supperadmin.sql) เพื่อสร้างบัญชี admin
+  [ ] ทดสอบ flow จริงเมื่อมี DB:
+        - login SupperAdmin (admin/1234) ที่ /support-admin → /support-admin/users
+        - เพิ่มตัวแทน → ตัวแทนนั้น login /login → เห็นหน้าโปรไฟล์ตัวเอง
+        - หน้า index แสดงรายชื่อตัวแทน + ค้นหาได้
   [ ] (ควรทำ) หลัง deploy เปลี่ยนรหัส admin: node scripts/create_supperadmin.js admin <รหัสใหม่>
-  [ ] (อนาคต ถ้าอยากได้) ปุ่มลิงก์ไป /support-admin สำหรับพี่ดิว/ลูกค้า (ตอนนี้พิมพ์ URL ตรง)
+
+▌ *** ยกไปทำต่อ: แต่งหน้าโปรไฟล์ (dashboard.html) ให้สวยเหมือน index (รอบ 14 ยังไม่ทำ) ***
+  - พี่ดิวขอ "เปลี่ยนสีและความสวยงามให้เหมือน index"
+  - dashboard.html = 1583 บรรทัด (โปรไฟล์ตัวแทน + โมดัลแก้ไข hero/plans/awards + อัปรูป)
+  - ใช้ธีมส้มเดียวกับ index เดิมอยู่แล้ว — ต้องดูของจริงตอนมี DB ว่าพี่อยากปรับตรงไหน
+  - หมายเหตุ: index เปลี่ยนเป็นหน้าค้นหาแล้ว "เหมือน index" ควรเช็คกับพี่ว่าหมายถึงโทน/สไตล์ไหน
 
 ▌ Phase 3 — Backend
   ✓ DB migration: insurance_categories, insurance_plans (เสร็จ 2026-07-03)

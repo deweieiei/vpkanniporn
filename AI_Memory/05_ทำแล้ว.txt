@@ -3,6 +3,40 @@
   (ทุกครั้งที่ทำเสร็จอะไร อัปเดตตรงนี้ — ลงชื่อ + วันที่)
 ════════════════════════════════════════════════════════════════
 
+▌ 2026-07-06 (รอบ 14 — เปลี่ยนทิศเว็บ: Index=ค้นหาตัวแทน + Admin จัดการตัวแทน) — Claude Opus 4.8
+  ★ พี่ดิวเปลี่ยนทิศทางเว็บครั้งใหญ่:
+    (1) Index = "ค้นหาตัวแทนอย่างเดียว" เอาส่วนการตลาด (hero/บริการ/รีวิว/รางวัล/career) ออกหมด
+    (2) Admin = "จัดการตัวแทน" (เพิ่ม/ปิด-เปิด/ลบ ผู้ใช้) — เลิกระบบแก้ข้อความ CMS ไปเลย
+    (3) ตัดหน้าลงทะเบียน (สมัครเอง) ออก — ให้ admin สร้างบัญชีให้แทน
+    (4) [ยังไม่ทำ] แต่งหน้าโปรไฟล์ (dashboard.html) ให้สวยเหมือน index — ยกไปรอบหน้า (ไฟล์ 1583 บรรทัด)
+
+  ◉ Admin login (พี่ดิวรัน node script เองไม่ได้):
+  ✓ db/seed_admin.sql (ไฟล์ใหม่) — รันใน phpMyAdmin ไฟล์เดียวได้บัญชี admin/1234 (bcrypt)
+    มีคำสั่ง UPDATE (comment ไว้) สำหรับรีเซ็ตรหัสถ้าล็อกอินไม่ได้ + คำสั่งนี้อยู่ใน migration ด้วย
+
+  ◉ จัดการตัวแทน (แทน CMS):
+  ✓ routes/admin.js (ไฟล์ใหม่) mount /api/admin — GET/POST/PUT/DELETE /users (เฉพาะ role admin)
+    - POST เพิ่มผู้ใช้ (email+password bcrypt, role agent/user/admin), PUT แก้/เปลี่ยนรหัส/สถานะ,
+      DELETE ลบ — กันปิด/ลบ/ลดสิทธิ์บัญชีตัวเอง
+  ✓ public/supperadmin-users.html (ไฟล์ใหม่) — ฟอร์มเพิ่มผู้ใช้ + ตารางรายชื่อ (ปิด/เปิด/ลบ)
+  ✓ routes/pages.js — /support-admin/users (หน้าจัดการ), /support-admin/editor → redirect ไป /users
+  ✓ supperadmin-login.html — หลัง login ไป /support-admin/users
+
+  ◉ เลิกระบบ CMS แก้ข้อความ index:
+  ✓ ลบ routes/content.js + public/supperadmin-editor.html + ถอด mount ใน index.js
+    (ตาราง site_content ยังอยู่ใน DB แต่ไม่ได้ใช้แล้ว — ไม่ลบ ไม่กระทบ)
+
+  ◉ Index ใหม่ = หน้าค้นหาตัวแทน:
+  ✓ เขียน public/index.html ใหม่ทั้งหน้า (ทำจากฐาน search.html) — โลโก้ + แถบส้ม + ช่องค้นหา
+    (ชื่อ/รหัส/จังหวัด/สาขา) + การ์ดตัวแทน (ดึง /api/users) + ปุ่มเข้าสู่ระบบ — เอา data-ck/CMS ออกหมด
+
+  ◉ ตัดหน้าสมัคร:
+  ✓ พี่ดิวจัดการเองแล้ว: ลบ route /register ใน auth.js + ลบฟอร์มสมัครใน login.html
+    (login.html เหลือแค่ล็อกอิน + โลโก้ + พื้นหลัง — ตรวจแล้วสมบูรณ์)
+
+  ◉ ทดสอบ (ไม่มี DB): node --check ผ่านหมด, server รันสะอาด, index/support-admin = 200,
+    /api/admin/users = 403 (ต้องล็อกอิน), /api/content = 404 (CMS หายแล้ว), ไม่มี JS error
+
 ▌ 2026-07-06 (รอบ 13 — Support Admin: ระบบแก้เนื้อหาหน้าแรก) — Claude Opus 4.8
   ★ พี่ดิว: "ต้องการเพิ่ม Support Admin ที่แก้ข้อความ+ภาพที่ index ได้
     ช่วยเพิ่มในส่วนของดาต้าเบส หน้า login ของ Support Admin"

@@ -3,1023 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VP Kanniporn — กวิสรา จงเจริญ | ตัวแทนประกัน FWD Insurance</title>
-    <meta name="description" content="วางแผนวันนี้ เพื่ออนาคตที่คุณเลือกได้ — กวิสรา จงเจริญ Unit Manager FWD Insurance ที่ปรึกษาประกันชีวิต สุขภาพ การออม และมรดก">
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="VP Kanniporn — กวิสรา จงเจริญ | ตัวแทน FWD">
-    <meta property="og:description" content="วางแผนวันนี้ เพื่ออนาคตที่คุณเลือกได้">
-    <meta property="og:type" content="website">
-
-    <!-- Tailwind สำหรับ nav.js -->
+    <title>ค้นหาตัวแทน — VP Kanniporn | FWD Insurance</title>
+    <meta name="description" content="ค้นหาตัวแทนประกัน FWD สำนักงาน VP Kanniporn — ค้นด้วยชื่อ รหัสตัวแทน จังหวัด หรือสาขา">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Sarabun:wght@400;700;800&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* ===== CSS Variables ===== */
-        :root {
-            --primary-orange: #FF6B00;
-            --secondary-orange: #E65C00;
-            --light-orange-bg: #FFF5EF;
-            --dark-bg: #1A1A1A;
-            --text-main: #333333;
-            --text-muted: #666666;
-            --white: #ffffff;
-            --line-green: #06C755;
-            --gold: #D4AF37;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Prompt', 'Sarabun', 'Helvetica Neue', Arial, sans-serif;
-            color: var(--text-main);
-            margin: 0;
-            min-height: 100vh;
-            background-image: url('assets/background.svg');
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-size: cover;
-            background-attachment: fixed;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        a { text-decoration: none; color: inherit; }
-        img { display: block; max-width: 100%; height: auto; }
-
-        /* ===== Header ===== */
-        .site-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 5%;
-            background-color: var(--white);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            gap: 12px;
-        }
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .brand-logo {
-            font-size: 28px;
-            font-weight: 900;
-            color: #1f2937;
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-        }
-        .brand-logo .dot {
-            color: var(--primary-orange);
-            font-size: 34px;
-            line-height: 1;
-        }
-        .brand-meta {
-            border-left: 2px solid #e5e7eb;
-            padding-left: 12px;
-            line-height: 1.2;
-        }
-        .brand-meta .title {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--primary-orange);
-        }
-        .brand-meta .sub {
-            font-size: 11px;
-            color: #6b7280;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 2px;
-        }
-        .badge-elite {
-            background: rgba(212, 175, 55, 0.15);
-            color: #92760e;
-            font-size: 9px;
-            padding: 2px 8px;
-            border-radius: 999px;
-            font-weight: 700;
-        }
-        .nav-desktop {
-            display: none;
-            list-style: none;
-            gap: 18px;
-        }
-        .nav-desktop a {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-main);
-            transition: color 0.2s;
-        }
-        .nav-desktop a:hover { color: var(--primary-orange); }
-        .header-cta {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-auth {
-            background-color: var(--primary-orange);
-            color: var(--white);
-            padding: 9px 18px;
-            border-radius: 999px;
-            font-weight: 700;
-            font-size: 13px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
-            transition: background 0.2s, transform 0.15s;
-            white-space: nowrap;
-        }
-        .btn-auth:hover {
-            background-color: var(--secondary-orange);
-            transform: translateY(-1px);
-        }
-        .btn-auth-outline {
-            background-color: var(--white);
-            color: var(--primary-orange);
-            padding: 8px 16px;
-            border-radius: 999px;
-            border: 2px solid var(--primary-orange);
-            font-weight: 700;
-            font-size: 13px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-        .btn-auth-outline:hover {
-            background-color: var(--light-orange-bg);
-        }
-        @media (max-width: 640px) {
-            .btn-auth, .btn-auth-outline { padding: 7px 12px; font-size: 12px; }
-            .btn-auth-outline { display: none; } /* hide register on tiny screen */
-        }
-
-        @media (min-width: 1024px) {
-            .nav-desktop { display: flex; }
-        }
-
-        /* ===== Hero Section ===== */
-        .hero {
-            background: linear-gradient(135deg, #FFF0E6 0%, #FFE0CC 50%, #FFD0B0 100%);
-            padding: 60px 5% 70px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .hero::before {
-            content: "";
-            position: absolute;
-            top: -120px;
-            right: -120px;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 200, 150, 0.5) 0%, transparent 70%);
-        }
-        .hero-inner {
-            max-width: 1000px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-        .hero h1 {
-            font-size: clamp(28px, 5vw, 44px);
-            color: var(--text-main);
-            margin-bottom: 12px;
-            font-weight: 800;
-            line-height: 1.2;
-        }
-        .hero .tagline {
-            font-size: clamp(18px, 3vw, 24px);
-            color: var(--primary-orange);
-            font-family: 'Georgia', serif;
-            font-style: italic;
-            margin-bottom: 14px;
-        }
-        .hero .sub-tagline {
-            font-size: clamp(14px, 2vw, 18px);
-            color: var(--text-muted);
-            margin-bottom: 28px;
-        }
-        .hero-categories {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 32px;
-            flex-wrap: wrap;
-        }
-        .hero-categories span {
-            background-color: rgba(255, 255, 255, 0.08);
-            padding: 7px 18px;
-            border-radius: 20px;
-            font-weight: 700;
-            color: var(--primary-orange);
-            border: 1px solid rgba(255, 107, 0, 0.25);
-            font-size: 13px;
-        }
-        .hero-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
-        .hero-buttons a, .hero-buttons button {
-            padding: 13px 26px;
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.25s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            border: none;
-            font-family: inherit;
-        }
-        .btn-free-consult {
-            background-color: var(--primary-orange);
-            color: var(--white);
-            box-shadow: 0 6px 18px rgba(255, 107, 0, 0.35);
-        }
-        .btn-free-consult:hover {
-            background-color: var(--secondary-orange);
-            transform: translateY(-2px);
-        }
-        .btn-book {
-            background-color: var(--white);
-            color: var(--primary-orange);
-            border: 2px solid var(--primary-orange);
-        }
-        .btn-book:hover {
-            background-color: var(--primary-orange);
-            color: var(--white);
-        }
-
-        /* ===== Section Titles ===== */
-        .section-title {
-            text-align: center;
-            font-size: clamp(22px, 3vw, 32px);
-            color: var(--text-main);
-            margin-bottom: 6px;
-            font-weight: 700;
-        }
-        .section-subtitle {
-            text-align: center;
-            font-size: clamp(13px, 2vw, 17px);
-            color: var(--text-muted);
-            margin-bottom: 36px;
-        }
-
-        /* ===== Services Section ===== */
-        .services {
-            padding: 60px 5%;
-            background-color: var(--white);
-        }
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-            gap: 18px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .service-card {
-            background-color: rgba(255, 255, 255, 0.08);
-            border: 1px solid #F0F0F0;
-            border-radius: 16px;
-            padding: 24px 16px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-            transition: transform 0.25s, box-shadow 0.25s;
-            display: flex;
-            flex-direction: column;
-        }
-        .service-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 28px rgba(255, 107, 0, 0.12);
-        }
-        .service-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, #FFF5EF, #FFE0CC);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            margin: 0 auto 14px;
-        }
-        .service-card h3 {
-            font-size: 17px;
-            margin-bottom: 4px;
-            color: var(--text-main);
-        }
-        .service-card p.en {
-            color: var(--text-muted);
-            font-size: 12px;
-            margin-bottom: 16px;
-            flex-grow: 1;
-        }
-        .service-card .btn-card {
-            background-color: var(--primary-orange);
-            color: var(--white);
-            border: none;
-            padding: 9px 18px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-family: inherit;
-            display: inline-block;
-        }
-        .service-card .btn-card:hover {
-            background-color: var(--secondary-orange);
-        }
-
-        /* ===== Why Us ===== */
-        .why-us {
-            padding: 50px 5%;
-            background-color: var(--light-orange-bg);
-        }
-        .why-us-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 24px;
-            text-align: center;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        .stat-item .number {
-            font-size: clamp(28px, 4vw, 40px);
-            font-weight: 800;
-            color: var(--primary-orange);
-            display: block;
-            margin-bottom: 4px;
-            line-height: 1;
-        }
-        .stat-item p {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        /* ===== Profile + Popular Plans ===== */
-        .profile-section {
-            padding: 60px 5%;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 36px;
-            background-color: var(--white);
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        @media (min-width: 900px) {
-            .profile-section { grid-template-columns: 1fr 1fr; gap: 50px; }
-        }
-        .profile-info h2 {
-            font-size: 24px;
-            margin-bottom: 8px;
-            color: var(--text-main);
-        }
-        .profile-info .name {
-            font-size: clamp(24px, 4vw, 32px);
-            color: var(--primary-orange);
-            margin-bottom: 4px;
-            font-weight: 800;
-        }
-        .profile-info .position {
-            font-size: 15px;
-            color: var(--text-muted);
-            margin-bottom: 22px;
-        }
-        .profile-info blockquote {
-            font-style: italic;
-            font-size: 16px;
-            border-left: 4px solid var(--primary-orange);
-            padding-left: 14px;
-            margin-bottom: 24px;
-            color: #444;
-            line-height: 1.7;
-        }
-        .profile-contact p {
-            margin-bottom: 8px;
-            font-size: 15px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .profile-contact p span.label {
-            color: var(--primary-orange);
-            font-size: 17px;
-        }
-        .profile-contact a { color: inherit; }
-        .profile-contact a:hover { color: var(--primary-orange); }
-
-        .popular-plans h2 {
-            font-size: 22px;
-            margin-bottom: 24px;
-            border-bottom: 2px solid var(--light-orange-bg);
-            padding-bottom: 10px;
-            color: var(--text-main);
-        }
-        .popular-plans-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-        .plan-card {
-            background-color: rgba(250, 250, 250, 0.08);
-            padding: 18px;
-            border-radius: 12px;
-            border-left: 5px solid var(--primary-orange);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            transition: transform 0.2s;
-        }
-        .plan-card:hover { transform: translateY(-3px); }
-        .plan-card h4 {
-            font-size: 16px;
-            color: var(--text-main);
-            margin-bottom: 4px;
-        }
-        .plan-card p {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        /* ===== Testimonials ===== */
-        .testimonials {
-            padding: 60px 5%;
-            background-color: var(--light-orange-bg);
-        }
-        .reviews-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 22px;
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-        .review-card {
-            background-color: rgba(255, 255, 255, 0.08);
-            padding: 30px 26px 26px;
-            border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            border: 1px solid rgba(255, 107, 0, 0.1);
-            position: relative;
-            text-align: center;
-        }
-        .review-card::before {
-            content: "\201C";
-            font-size: 56px;
-            color: rgba(255, 107, 0, 0.18);
-            position: absolute;
-            top: 6px;
-            left: 18px;
-            line-height: 1;
-            font-family: Georgia, serif;
-        }
-        .review-card p {
-            font-size: 14px;
-            color: #555;
-            margin-top: 12px;
-            line-height: 1.7;
-        }
-        .review-card .review-name {
-            margin-top: 14px;
-            font-size: 12px;
-            color: var(--primary-orange);
-            font-weight: 700;
-        }
-
-        /* ===== Achievements ===== */
-        .achievements {
-            padding: 60px 5%;
-            background-color: var(--white);
-            text-align: center;
-        }
-        .timeline {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 14px;
-            margin-top: 32px;
-            max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .timeline .year {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 245, 239, 0.08));
-            border: 2px solid var(--gold);
-            padding: 13px 22px;
-            border-radius: 30px;
-            font-weight: 700;
-            font-size: 14px;
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.12);
-            color: #5c4515;
-        }
-
-        /* ===== Career ===== */
-        .career {
+        body { font-family: 'Prompt', sans-serif; }
+        .fwd-orange { color: #FF6B00; }
+        .fwd-bg-orange { background-color: #FF6B00; }
+        .hero-band {
             background:
-                linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.85)),
-                url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=80')
-                no-repeat center/cover;
-            color: var(--white);
-            text-align: center;
-            padding: 70px 5%;
+                linear-gradient(135deg, rgba(255,107,0,0.92) 0%, rgba(214,85,0,0.95) 100%),
+                url('/assets/background.svg') center center / cover no-repeat;
         }
-        .career h2 {
-            font-size: clamp(20px, 3vw, 28px);
-            margin-bottom: 32px;
-            font-weight: 700;
-        }
-        .career-benefits {
-            display: flex;
-            justify-content: center;
-            gap: 18px;
-            margin-bottom: 32px;
-            flex-wrap: wrap;
-        }
-        .career-benefits div {
-            font-size: 15px;
-            font-weight: 700;
-            background: rgba(255, 255, 255, 0.08);
-            padding: 12px 24px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .btn-apply {
-            background-color: var(--primary-orange);
-            color: var(--white);
-            border: none;
-            padding: 14px 36px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.25s;
-            font-family: inherit;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn-apply:hover { background-color: var(--secondary-orange); }
-
-        /* ===== Bottom CTA ===== */
-        .cta-bottom {
-            padding: 60px 5%;
-            text-align: center;
-            background-color: var(--white);
-        }
-        .cta-bottom h2 {
-            font-size: clamp(24px, 3vw, 32px);
-            margin-bottom: 14px;
-            color: var(--text-main);
-            font-weight: 700;
-        }
-        .cta-bottom blockquote {
-            font-size: 15px;
-            color: var(--text-muted);
-            margin-bottom: 32px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            font-style: italic;
-        }
-        .cta-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
-        .cta-buttons a {
-            padding: 13px 26px;
-            border-radius: 30px;
-            font-weight: 700;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.25s;
-        }
-        .line-btn { background-color: var(--line-green); color: var(--white); }
-        .line-btn:hover { background-color: #05a847; transform: translateY(-2px); }
-        .call-btn { background-color: var(--primary-orange); color: var(--white); }
-        .call-btn:hover { background-color: var(--secondary-orange); transform: translateY(-2px); }
-        .appoint-btn { background-color: #222; color: var(--white); }
-        .appoint-btn:hover { background-color: #000; transform: translateY(-2px); }
-
-        /* ===== Footer ===== */
-        .site-footer {
-            background-color: var(--dark-bg);
-            color: #999;
-            padding: 40px 5%;
-            text-align: center;
-        }
-        .footer-logo {
-            font-size: 22px;
-            font-weight: 800;
-            color: var(--white);
-            margin-bottom: 8px;
-            letter-spacing: 2px;
-        }
-        .site-footer p { font-size: 13px; margin-bottom: 6px; }
-        .social-links {
-            margin-top: 22px;
-            display: flex;
-            justify-content: center;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
-        .social-links a {
-            color: #fff;
-            font-size: 12px;
-            background: rgba(255,255,255,0.07);
-            padding: 8px 14px;
-            border-radius: 20px;
-            transition: background 0.25s;
-        }
-        .social-links a:hover { background: var(--primary-orange); }
-
-        /* ===== Sticky Bottom CTA ===== */
-        .sticky-cta {
-            position: fixed;
-            bottom: 18px;
-            right: 18px;
-            z-index: 999;
-            background-color: var(--primary-orange);
-            color: var(--white);
-            padding: 11px 18px;
-            border-radius: 999px;
-            font-weight: 700;
-            font-size: 13px;
-            box-shadow: 0 8px 22px rgba(255, 107, 0, 0.4);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: transform 0.2s, background 0.2s;
-        }
-        .sticky-cta:hover {
-            background-color: var(--secondary-orange);
-            transform: scale(1.05);
-        }
-
-        /* ===== Hide on small screens ===== */
-        @media (max-width: 640px) {
-            .brand-meta { display: none; }
-            .hero-buttons { width: 100%; }
-            .hero-buttons a, .hero-buttons button {
-                width: 100%;
-                justify-content: center;
-            }
-            .sticky-cta span.label { display: none; }
-        }
+        .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
     </style>
 </head>
+<body class="bg-gray-50 text-gray-800 antialiased">
 
-<body>
-
-    <!-- ==================== HEADER ==================== -->
-    <header class="site-header">
-        <a href="/" class="brand">
-            <div class="brand-logo">FWD<span class="dot">.</span></div>
-            <div class="brand-meta">
-                <p class="title" data-ck="brand_office_title">สำนักงานตัวแทน FWD</p>
-                <p class="sub">
-                    <span data-ck="brand_name">VP Kanniporn</span>
-                    <span class="badge-elite" data-ck="brand_badge">Elite Agent Office</span>
-                </p>
-            </div>
-        </a>
-
-        <ul class="nav-desktop">
-            <li><a href="#home">หน้าแรก</a></li>
-            <li><a href="/search">ค้นหาตัวแทน</a></li>
-        </ul>
-
-       
+    <!-- ===== HEADER ===== -->
+    <header class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 py-2.5 flex justify-between items-center">
+            <a href="/" class="flex items-center gap-3">
+                <img src="/assets/Logo.svg" alt="VP Kanniporn FWD" class="h-11 w-auto">
+                <div class="border-l-2 border-gray-200 pl-3 hidden sm:block">
+                    <p class="font-bold text-sm text-orange-600 leading-tight">สำนักงานตัวแทน FWD</p>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-semibold text-gray-600">VP Kanniporn</span>
+                        <span class="bg-amber-500/20 text-amber-800 text-[9px] px-2 py-0.5 rounded-full font-bold">Elite Agent Office</span>
+                    </div>
+                </div>
+            </a>
+            <a href="/login" class="fwd-bg-orange text-white text-xs font-bold px-4 py-2 rounded-full shadow-md hover:bg-orange-600 transition inline-flex items-center gap-1.5" title="เข้าสู่ระบบตัวแทน">
+                🔑 เข้าสู่ระบบ
+            </a>
+        </div>
     </header>
 
-    <!-- เมนูแถบส้ม (สร้างโดย /nav.js) — ใช้ Tailwind classes -->
-    <div id="main-nav"></div>
-    <script src="/nav.js"></script>
-
-    <main>
-
-        <!-- ==================== HERO ==================== -->
-        <section id="home" class="hero">
-            <div class="hero-inner">
-                <h1 data-ck="hero_title">วางแผนวันนี้ เพื่ออนาคตที่คุณเลือกได้</h1>
-                <p class="tagline" data-ck="hero_tagline">Plan Today, Live Your Future</p>
-                <p class="sub-tagline" data-ck="hero_subtagline">เพราะทุกเป้าหมายในชีวิต ควรมีแผนที่มั่นคงรองรับ</p>
-
-                <div class="hero-categories">
-                    <span data-ck="hero_cat_1">ประกันชีวิต</span>
-                    <span data-ck="hero_cat_2">สุขภาพ</span>
-                    <span data-ck="hero_cat_3">การออม</span>
-                    <span data-ck="hero_cat_4">มรดก</span>
-                </div>
-
-                <div class="hero-buttons">
-                    <a href="#contact" class="btn-free-consult" data-ck="hero_btn_consult">รับคำปรึกษาฟรี (FREE CONSULTATION)</a>
-                    <a href="#about-agent" class="btn-book" data-ck="hero_btn_book">นัดหมายออนไลน์ (BOOK APPOINTMENT)</a>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== SERVICES ==================== -->
-        <section id="services" class="services">
-            <h2 class="section-title" data-ck="services_title">เลือกแผนที่เหมาะกับคุณ</h2>
-            <p class="section-subtitle" data-ck="services_subtitle">คุณกำลังมองหาอะไรอยู่?</p>
-
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">🏥</div>
-                    <h3 data-ck="service_1_th">ประกันสุขภาพ</h3>
-                    <p class="en" data-ck="service_1_en">Health Insurance</p>
-                    <a href="/plans?category=health" class="btn-card">สอบถามรายละเอียด</a>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🛡️</div>
-                    <h3 data-ck="service_2_th">ประกันชีวิต</h3>
-                    <p class="en" data-ck="service_2_en">Life Insurance</p>
-                    <a href="/plans?category=life" class="btn-card">สอบถามรายละเอียด</a>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">💰</div>
-                    <h3 data-ck="service_3_th">ประกันสะสมทรัพย์</h3>
-                    <p class="en" data-ck="service_3_en">Savings Insurance</p>
-                    <a href="/plans?category=savings" class="btn-card">สอบถามรายละเอียด</a>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">👴</div>
-                    <h3 data-ck="service_4_th">ประกันบำนาญ</h3>
-                    <p class="en" data-ck="service_4_en">Retirement Planning</p>
-                    <a href="/plans?category=retirement" class="btn-card">สอบถามรายละเอียด</a>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🏢</div>
-                    <h3 data-ck="service_5_th">ประกันกลุ่ม</h3>
-                    <p class="en" data-ck="service_5_en">Group Insurance</p>
-                    <a href="/plans?category=group" class="btn-card">สอบถามรายละเอียด</a>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">📜</div>
-                    <h3 data-ck="service_6_th">วางแผนมรดก</h3>
-                    <p class="en" data-ck="service_6_en">Legacy Planning</p>
-                    <a href="/plans?category=legacy" class="btn-card">สอบถามรายละเอียด</a>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== WHY US ==================== -->
-        <section class="why-us">
-            <h2 class="section-title" data-ck="whyus_title">ทำไมต้องวางแผนกับเรา</h2>
-            <p class="section-subtitle" data-ck="whyus_subtitle">ประสบการณ์และมาตรฐานที่ลูกค้าไว้วางใจ</p>
-            <div class="why-us-grid">
-                <div class="stat-item">
-                    <span class="number" data-ck="stat_1_num">1,000+</span>
-                    <p data-ck="stat_1_label">ลูกค้าที่ดูแล</p>
-                </div>
-                <div class="stat-item">
-                    <span class="number" data-ck="stat_2_num">6+</span>
-                    <p data-ck="stat_2_label">ปีประสบการณ์</p>
-                </div>
-                <div class="stat-item">
-                    <span class="number" data-ck="stat_3_num">MDRT</span>
-                    <p data-ck="stat_3_label">มาตรฐานระดับโลก</p>
-                </div>
-                <div class="stat-item">
-                    <span class="number" data-ck="stat_4_num">Pro</span>
-                    <p data-ck="stat_4_label">Financial Consultant</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== PROFILE + POPULAR PLANS ==================== -->
-        <section id="about-agent" class="profile-section">
-            <div class="profile-info">
-                <h2 data-ck="profile_heading">รู้จักที่ปรึกษาของคุณ</h2>
-                <p class="name" id="agent-name">กวิสรา จงเจริญ</p>
-                <p class="position" id="agent-position">Unit Manager | Financial Consultant</p>
-                <blockquote id="agent-quote">
-                    "การวางแผนการเงินที่ดี ไม่ใช่เรื่องของคนรวย แต่เป็นเรื่องของคนที่อยากให้อนาคตของตัวเองมั่นคง"
-                </blockquote>
-                <div class="profile-contact">
-                    <p>
-                        <span class="label">📞</span>
-                        <a href="tel:062-2397362" id="agent-phone-link">062-239-7362</a>
-                    </p>
-                    <p>
-                        <span class="label">✉️</span>
-                        <a href="mailto:kavisara.fwd@gmail.com" id="agent-email-link">kavisara.fwd@gmail.com</a>
-                    </p>
-                    <p>
-                        <span class="label">💬</span>
-                        <a href="https://line.me/ti/p/~kavisara.fwd" target="_blank" id="agent-line-link">@kavisara.fwd</a>
-                    </p>
-                </div>
-                <div style="margin-top: 22px;">
-                    <a href="/agent/1" class="btn-card" style="background-color: var(--primary-orange); color: var(--white); padding: 11px 22px; border-radius: 22px; font-size: 13px; text-decoration: none; display: inline-block;">
-                        ดูโปรไฟล์ฉบับเต็ม →
-                    </a>
-                </div>
-            </div>
-
-            <div class="popular-plans">
-                <h2 data-ck="popular_heading">แผนยอดนิยม</h2>
-                <div class="popular-plans-grid">
-                    <div class="plan-card">
-                        <h4 data-ck="popular_1_title">Health Protection</h4>
-                        <p data-ck="popular_1_desc">ดูแลค่ารักษาพยาบาล</p>
-                    </div>
-                    <div class="plan-card">
-                        <h4 data-ck="popular_2_title">Wealth Builder</h4>
-                        <p data-ck="popular_2_desc">ออมเงินสร้างอนาคต</p>
-                    </div>
-                    <div class="plan-card">
-                        <h4 data-ck="popular_3_title">Legacy Planning</h4>
-                        <p data-ck="popular_3_desc">ส่งต่อมรดกให้คนที่รัก</p>
-                    </div>
-                    <div class="plan-card">
-                        <h4 data-ck="popular_4_title">Retirement Income</h4>
-                        <p data-ck="popular_4_desc">รายได้หลังเกษียณ</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== TESTIMONIALS ==================== -->
-        <section id="reviews" class="testimonials">
-            <h2 class="section-title" data-ck="reviews_title">เรื่องราวจากลูกค้าของเรา</h2>
-            <p class="section-subtitle" data-ck="reviews_subtitle">เสียงจริงจากผู้ที่วางใจให้เราดูแล</p>
-            <div class="reviews-container">
-                <div class="review-card">
-                    <p data-ck="review_1_text">"อธิบายเข้าใจง่าย ไม่ยัดเยียดการขาย แนะนำสิ่งที่เหมาะสมกับเราจริงๆ ค่ะ"</p>
-                    <p class="review-name" data-ck="review_1_name">— คุณภัทรา / กรุงเทพฯ</p>
-                </div>
-                <div class="review-card">
-                    <p data-ck="review_2_text">"ช่วยวางแผนให้บรรลุเป้าหมาย ทำให้ครอบครัวมีความมั่นคงและอบอุ่นใจมากค่ะ"</p>
-                    <p class="review-name" data-ck="review_2_name">— คุณวิทยา / นนทบุรี</p>
-                </div>
-                <div class="review-card">
-                    <p data-ck="review_3_text">"ดูแลดีมาก แม้หลังจากทำสัญญาแล้วก็ยังคอยติดตามและให้คำแนะนำเสมอ"</p>
-                    <p class="review-name" data-ck="review_3_name">— คุณนิตยา / สมุทรปราการ</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== ACHIEVEMENTS ==================== -->
-        <section class="achievements">
-            <h2 class="section-title" data-ck="ach_title">ความสำเร็จและรางวัล</h2>
-            <p class="section-subtitle" data-ck="ach_subtitle">ผลงานที่ได้รับการยอมรับจากองค์กรชั้นนำ</p>
-            <div class="timeline">
-                <div class="year" data-ck="ach_1">2022 — MDRT Qualifier</div>
-                <div class="year" data-ck="ach_2">2023 — Top Unit Manager / Elite Agent</div>
-                <div class="year" data-ck="ach_3">2024 — Financial Advisor Award</div>
-                <div class="year" data-ck="ach_4">2025 — Leadership Achievement</div>
-            </div>
-        </section>
-
-        <!-- ==================== CAREER ==================== -->
-        <section id="join" class="career" data-ck-bg="career_bg_image">
-            <h2 data-ck="career_title">กำลังมองหาอาชีพที่เติบโตไปพร้อมกับคุณอยู่หรือไม่?</h2>
-            <div class="career-benefits">
-                <div data-ck="career_benefit_1">💼 สร้างรายได้</div>
-                <div data-ck="career_benefit_2">👥 สร้างทีมงาน</div>
-                <div data-ck="career_benefit_3">🚀 สร้างธุรกิจของตัวเอง</div>
-            </div>
-            <a href="/login" class="btn-apply" data-ck="career_btn">เข้าสู่ระบบ</a>
-        </section>
-
-        <!-- ==================== BOTTOM CTA ==================== -->
-        <section id="contact" class="cta-bottom">
-            <h2 data-ck="cta_title">พร้อมเริ่มต้นวางแผนกับเราไหม?</h2>
-            <blockquote data-ck="cta_quote">"อนาคตที่ดี เริ่มต้นจากการตัดสินใจในวันนี้ ให้เราช่วยออกแบบแผนที่เหมาะกับชีวิตของคุณ"</blockquote>
-            <div class="cta-buttons">
-                <a href="https://line.me/ti/p/~kavisara.fwd" target="_blank" class="line-btn" data-ck="cta_line">
-                    💬 LINE Official: @kavisara.fwd
-                </a>
-                <a href="tel:062-2397362" class="call-btn" data-ck="cta_call">
-                    📞 โทรหาเรา: 062-239-7362
-                </a>
-                <a href="#about-agent" class="appoint-btn" data-ck="cta_appoint">
-                    📅 นัดหมายปรึกษาฟรี! ไม่มีค่าใช้จ่าย
-                </a>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- ==================== FOOTER ==================== -->
-    <footer class="site-footer">
-        <div class="footer-logo" data-ck="footer_logo">FWD Insurance</div>
-        <p data-ck="footer_line1">Beyond Protection • Beyond Wealth • Beyond Possibilities</p>
-        <p data-ck="footer_line2">FWD Elite Financial Consultant | กวิสรา จงเจริญ — Unit Manager</p>
-        <div class="social-links">
-            <a href="#" target="_blank">Facebook</a>
-            <a href="https://line.me/ti/p/~kavisara.fwd" target="_blank">LINE</a>
-            <a href="#" target="_blank">Instagram</a>
-            <a href="#" target="_blank">YouTube</a>
+    <!-- ===== HERO + SEARCH ===== -->
+    <section class="hero-band text-white pt-10 pb-24 px-4 text-center relative">
+        <div class="max-w-3xl mx-auto">
+            <h1 class="text-2xl md:text-4xl font-extrabold drop-shadow-sm">ค้นหาตัวแทนประกัน FWD</h1>
+            <p class="text-sm md:text-base text-white/90 mt-3">พิมพ์ชื่อ รหัสตัวแทน จังหวัด หรือสาขา เพื่อค้นหาตัวแทนที่ดูแลคุณ</p>
         </div>
-        <p style="margin-top: 20px; font-size: 11px; color: #666;" data-ck="footer_copyright">
-            © 2026 VP Kanniporn Office | สำนักงานตัวแทน FWD Insurance
-        </p>
+    </section>
+
+    <!-- Search card (ลอยทับ hero) -->
+    <section class="max-w-5xl mx-auto px-4 -mt-16 relative z-10">
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-5 md:p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <input type="text" id="search-name" placeholder="รหัสตัวแทน / ชื่อ-นามสกุล"
+                    class="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition">
+                <select id="search-province"
+                    class="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition bg-white">
+                    <option value="">เลือกจังหวัด</option>
+                </select>
+                <select id="search-branch"
+                    class="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition bg-white">
+                    <option value="">สาขา</option>
+                </select>
+            </div>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-2 mt-4">
+                <button id="search-btn" class="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-8 py-2.5 rounded-full text-sm shadow-md transition">
+                    🔍 ค้นหา
+                </button>
+                <button id="search-reset" class="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold px-6 py-2.5 rounded-full text-sm transition">
+                    ล้างค้นหา
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-5 text-center font-medium">
+                พบตัวแทน <span id="result-count-num" class="text-orange-600 font-bold">0</span> รายการ
+            </p>
+        </div>
+
+        <!-- Agent Cards Grid -->
+        <div class="mt-6 mb-14">
+            <div id="agents-loading" class="text-center text-xs text-gray-400 py-10">
+                <span class="inline-block animate-pulse">⏳ กำลังโหลดรายชื่อตัวแทน…</span>
+            </div>
+            <div id="agents-empty" class="hidden text-center text-sm text-gray-400 py-10">
+                😔 ไม่พบตัวแทนที่ตรงกับเงื่อนไข
+            </div>
+            <div id="agents-grid" class="hidden grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="bg-slate-900 text-gray-400 text-center py-6 text-xs border-t-4 border-orange-500">
+        <p>© 2026 VP Kanniporn Office | สำนักงานตัวแทน FWD Insurance</p>
     </footer>
 
-    <!-- Sticky CTA ขวาล่าง -->
-    <a href="https://line.me/ti/p/~kavisara.fwd" target="_blank" class="sticky-cta">
-        <span>💬</span>
-        <span class="label">สอบถามเจ้าหน้าที่</span>
-    </a>
-
-    <!-- ==================== Dynamic data injection ==================== -->
     <script>
-        // ===== ดึงเนื้อหาที่ Support Admin แก้ไว้ มาแทนข้อความ/รูปบนหน้า =====
-        // ถ้าดึงไม่ได้ (DB ล่ม/ยังไม่ตั้งค่า) จะใช้ข้อความ static ที่เขียนไว้ในหน้าเป็น fallback
-        async function loadSiteContent() {
-            try {
-                const res = await fetch('/api/content');
-                if (!res.ok) return;
-                const data = await res.json();
-                const content = (data && data.content) || {};
+        const PROVINCES = [
+            'กรุงเทพมหานคร','กระบี่','กาญจนบุรี','กาฬสินธุ์','กำแพงเพชร','ขอนแก่น','จันทบุรี','ฉะเชิงเทรา',
+            'ชลบุรี','ชัยนาท','ชัยภูมิ','ชุมพร','เชียงราย','เชียงใหม่','ตรัง','ตราด','ตาก','นครนายก',
+            'นครปฐม','นครพนม','นครราชสีมา','นครศรีธรรมราช','นครสวรรค์','นนทบุรี','นราธิวาส','น่าน',
+            'บึงกาฬ','บุรีรัมย์','ปทุมธานี','ประจวบคีรีขันธ์','ปราจีนบุรี','ปัตตานี','พระนครศรีอยุธยา',
+            'พังงา','พัทลุง','พิจิตร','พิษณุโลก','เพชรบุรี','เพชรบูรณ์','แพร่','พะเยา','ภูเก็ต',
+            'มหาสารคาม','มุกดาหาร','แม่ฮ่องสอน','ยะลา','ยโสธร','ร้อยเอ็ด','ระนอง','ระยอง','ราชบุรี',
+            'ลพบุรี','ลำปาง','ลำพูน','เลย','ศรีสะเกษ','สกลนคร','สงขลา','สตูล','สมุทรปราการ',
+            'สมุทรสงคราม','สมุทรสาคร','สระแก้ว','สระบุรี','สิงห์บุรี','สุโขทัย','สุพรรณบุรี',
+            'สุราษฎร์ธานี','สุรินทร์','หนองคาย','หนองบัวลำภู','อ่างทอง','อำนาจเจริญ','อุดรธานี',
+            'อุตรดิตถ์','อุทัยธานี','อุบลราชธานี'
+        ];
 
-                document.querySelectorAll('[data-ck]').forEach((el) => {
-                    const k = el.getAttribute('data-ck');
-                    const v = content[k];
-                    if (v != null && v !== '') el.textContent = v;
-                });
+        const provinceSelect = document.getElementById('search-province');
+        PROVINCES.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p; opt.textContent = p;
+            provinceSelect.appendChild(opt);
+        });
 
-                // รูปพื้นหลัง (คงเงาดำทับไว้เพื่อให้ตัวอักษรอ่านง่าย)
-                document.querySelectorAll('[data-ck-bg]').forEach((el) => {
-                    const v = content[el.getAttribute('data-ck-bg')];
-                    if (v) {
-                        el.style.backgroundImage =
-                            "linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)), url('" + v + "')";
-                        el.style.backgroundSize = 'cover';
-                        el.style.backgroundPosition = 'center';
-                    }
-                });
-            } catch (e) {
-                // เงียบไว้ ใช้ค่า static
-                console.debug('site content fetch skipped:', e.message);
+        function escapeHtml(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+                ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+        function initials(first, last) {
+            const a = (first || '').trim().charAt(0);
+            const b = (last || '').trim().charAt(0);
+            return (a + b).toUpperCase() || '?';
+        }
+
+        function agentCard(u) {
+            const fullName = escapeHtml(`${u.first_name || ''} ${u.last_name || ''}`.trim() || '—');
+            const position = escapeHtml(u.position || 'ตัวแทน FWD');
+            const branch = u.branch ? `<span class="text-[10px] text-gray-400">📍 ${escapeHtml(u.branch)}</span>` : '';
+            const province = u.province ? `<span class="text-[10px] text-gray-400">${escapeHtml(u.province)}</span>` : '';
+            const phone = u.phone ? `<span class="text-[10px] text-orange-500 font-medium">📞 ${escapeHtml(u.phone)}</span>` : '';
+            const quote = u.quote ? `<p class="text-[10px] text-gray-400 italic line-clamp-2 mt-1">"${escapeHtml(u.quote)}"</p>` : '';
+            const avatar = u.avatar_path
+                ? `<img src="${escapeHtml(u.avatar_path)}" alt="${fullName}" class="w-full h-full object-cover">`
+                : `<span class="text-2xl font-bold text-orange-500">${initials(u.first_name, u.last_name)}</span>`;
+
+            return `
+                <a href="/agent/${u.id}" class="group bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center text-center relative overflow-hidden">
+                    <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-orange-600"></div>
+                    <div class="w-20 h-20 rounded-full border-4 border-amber-300 bg-orange-50 overflow-hidden flex items-center justify-center mt-2 mb-3 shadow-md group-hover:scale-105 transition">
+                        ${avatar}
+                    </div>
+                    <h4 class="font-bold text-sm text-gray-800">${fullName}</h4>
+                    <p class="text-xs text-orange-500 font-semibold mt-0.5">${position}</p>
+                    <div class="flex flex-col items-center gap-1 mt-2">
+                        ${branch}
+                        ${province}
+                        ${phone}
+                    </div>
+                    ${quote}
+                    <div class="mt-3 text-[10px] font-bold text-orange-400 group-hover:text-orange-600 flex items-center gap-1">
+                        ดูโปรไฟล์ <span class="group-hover:translate-x-1 transition">➔</span>
+                    </div>
+                </a>
+            `;
+        }
+
+        let allAgents = [];
+
+        function renderResults(agents) {
+            const loading = document.getElementById('agents-loading');
+            const empty = document.getElementById('agents-empty');
+            const grid = document.getElementById('agents-grid');
+            const countEl = document.getElementById('result-count-num');
+
+            loading.classList.add('hidden');
+            countEl.textContent = agents.length;
+
+            if (agents.length === 0) {
+                grid.classList.add('hidden');
+                empty.classList.remove('hidden');
+            } else {
+                empty.classList.add('hidden');
+                grid.innerHTML = agents.map(agentCard).join('');
+                grid.classList.remove('hidden');
             }
         }
-        loadSiteContent();
 
-        // ดึงข้อมูลตัวแทนหลัก (กวิสรา = user id 1 เริ่มต้น)
-        // ถ้า fetch ไม่ได้ ใช้ค่า static ที่ hard-code ไว้แล้ว
-        async function loadFeaturedAgent() {
+        function applyFilters() {
+            const name = document.getElementById('search-name').value.trim().toLowerCase();
+            const province = document.getElementById('search-province').value;
+            const branch = document.getElementById('search-branch').value;
+
+            const filtered = allAgents.filter(u => {
+                if (province && u.province !== province) return false;
+                if (branch && u.branch !== branch) return false;
+                if (name) {
+                    const fullName = `${u.first_name || ''} ${u.last_name || ''}`.toLowerCase();
+                    const license = String(u.license_number || '').toLowerCase();
+                    const license2 = String(u.license_number_2 || '').toLowerCase();
+                    const id = String(u.id || '');
+                    if (!fullName.includes(name) &&
+                        !license.includes(name) &&
+                        !license2.includes(name) &&
+                        id !== name) return false;
+                }
+                return true;
+            });
+
+            renderResults(filtered);
+        }
+
+        async function loadAgents() {
+            const loading = document.getElementById('agents-loading');
             try {
-                const res = await fetch('/api/users/1');
-                if (!res.ok) return;
+                const res = await fetch('/api/users');
                 const data = await res.json();
-                const u = data.user;
-                if (!u) return;
+                allAgents = data.users || [];
 
-                const fullName = `${u.first_name || ''} ${u.last_name || ''}`.trim();
-                if (fullName) document.getElementById('agent-name').textContent = fullName;
+                const branchSelect = document.getElementById('search-branch');
+                const branches = [...new Set(allAgents.map(u => u.branch).filter(Boolean))].sort();
+                branches.forEach(b => {
+                    const opt = document.createElement('option');
+                    opt.value = b; opt.textContent = b;
+                    branchSelect.appendChild(opt);
+                });
 
-                if (u.position) {
-                    const pos = u.company ? `${u.position} | ${u.company}` : u.position;
-                    document.getElementById('agent-position').textContent = pos;
-                }
-
-                if (u.quote) {
-                    document.getElementById('agent-quote').textContent = `"${u.quote}"`;
-                }
-
-                if (u.phone) {
-                    const el = document.getElementById('agent-phone-link');
-                    el.textContent = u.phone;
-                    el.href = `tel:${u.phone.replace(/[^0-9+]/g, '')}`;
-                }
-
-                if (u.email) {
-                    const el = document.getElementById('agent-email-link');
-                    el.textContent = u.email;
-                    el.href = `mailto:${u.email}`;
-                }
-
-                if (u.line_id) {
-                    const el = document.getElementById('agent-line-link');
-                    const clean = u.line_id.replace(/^@/, '');
-                    el.textContent = '@' + clean;
-                    el.href = `https://line.me/ti/p/~${clean}`;
-                }
+                renderResults(allAgents);
             } catch (e) {
-                // เงียบไว้ ใช้ค่า static
-                console.debug('featured agent fetch skipped:', e.message);
+                loading.textContent = 'โหลดรายชื่อตัวแทนไม่สำเร็จ';
+                console.error(e);
             }
         }
-        loadFeaturedAgent();
+        loadAgents();
+
+        document.getElementById('search-btn').addEventListener('click', applyFilters);
+        document.getElementById('search-reset').addEventListener('click', () => {
+            document.getElementById('search-name').value = '';
+            document.getElementById('search-province').value = '';
+            document.getElementById('search-branch').value = '';
+            renderResults(allAgents);
+        });
+        document.getElementById('search-name').addEventListener('keydown', e => {
+            if (e.key === 'Enter') { e.preventDefault(); applyFilters(); }
+        });
     </script>
 
 </body>

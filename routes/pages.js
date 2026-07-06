@@ -53,14 +53,17 @@ router.get('/plans/:id', (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'plan-detail.html'));
 });
 
-// Support Admin — หน้า login แยก + หน้าจัดการเนื้อหาหน้า index
+// SupperAdmin — หน้า login แยก + หน้าจัดการตัวแทน (เพิ่ม/แก้/ลบ ผู้ใช้)
 router.get('/support-admin', (req, res) => {
-  if (req.session && req.session.role === 'admin') return res.redirect('/support-admin/editor');
+  if (req.session && req.session.role === 'admin') return res.redirect('/support-admin/users');
   res.sendFile(path.join(PUBLIC_DIR, 'supperadmin-login.html'));
 });
 
-router.get('/support-admin/editor', requireSupportAdmin, (_req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, 'supperadmin-editor.html'));
+router.get('/support-admin/users', requireSupportAdmin, (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'supperadmin-users.html'));
 });
+
+// back-compat: ลิงก์เก่า /support-admin/editor → หน้าจัดการตัวแทน
+router.get('/support-admin/editor', (_req, res) => res.redirect('/support-admin/users'));
 
 module.exports = router;
