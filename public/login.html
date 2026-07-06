@@ -9,7 +9,11 @@
     <style>
         body { font-family: 'Prompt', sans-serif; }
         .fwd-bg-gradient {
-            background: linear-gradient(135deg, #FFF3EB 0%, #FF6B00 60%, #D45500 100%);
+            /* พื้นหลังเต็มจอจากไฟล์ใน assets ให้เข้าชุดกับหน้า SupperAdmin */
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.3)),
+                url('/assets/background.svg') center center / cover no-repeat fixed,
+                linear-gradient(135deg, #FFF3EB 0%, #FF6B00 60%, #D45500 100%);
         }
         input, select { font-family: inherit; }
     </style>
@@ -19,11 +23,9 @@
     <div class="w-full max-w-lg">
         <!-- Logo Header -->
         <div class="text-center mb-6">
-            <div class="inline-flex items-center bg-white/20 backdrop-blur rounded-2xl px-5 py-3 shadow-lg">
-                <span class="text-4xl font-black text-white tracking-wider">FWD</span>
-                <span class="ml-2 text-amber-200 text-3xl">🛡️</span>
-            </div>
-            <p class="text-white mt-3 font-semibold text-sm">FWD Agent Office Portal</p>
+            <img src="/assets/Logo.svg" alt="VP Kanniporn — FWD Agent Office"
+                class="w-44 mx-auto drop-shadow-lg">
+            <p class="text-white mt-2 font-semibold text-sm drop-shadow">FWD Agent Office Portal</p>
         </div>
 
         <!-- Card -->

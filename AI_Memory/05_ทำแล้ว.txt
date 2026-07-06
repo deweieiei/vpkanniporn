@@ -20,6 +20,16 @@
        (พี่ดิวเอาไฟล์ 2 ตัวใส่ใน public/assets/ เอง) + เปลี่ยนช่องเป็น "ชื่อผู้ใช้"
      - หมายเหตุ: enum ยังมีค่า 'support_admin' ค้างอยู่ (ไม่ได้ใช้แล้ว ไม่ลบ เพราะไม่กระทบ)
 
+  ★★★ แก้เพิ่มอีก (พี่ดิวสั่งต่อ 6 ก.ค.): เปลี่ยนชื่อไฟล์ + แต่งหน้า login ผู้ใช้ทั่วไป
+     - เปลี่ยนชื่อไฟล์ (git mv) ให้ตรงกับชื่อ SupperAdmin:
+         public/support-login.html   → public/supperadmin-login.html
+         public/support-editor.html  → public/supperadmin-editor.html
+         db/migration_support_admin.sql → db/migration_supperadmin.sql
+       (อัปเดต path ใน routes/pages.js + README แล้ว; URL ยังเป็น /support-admin เหมือนเดิม)
+     - public/login.html (หน้า login/สมัคร ของตัวแทน/ผู้ใช้ทั่วไป):
+       เปลี่ยนโลโก้ตัวอักษร "FWD 🛡️" → รูปจริง /assets/Logo.svg + พื้นหลัง /assets/background.svg
+       ให้เข้าชุดกับหน้า SupperAdmin (ฟอร์ม login/register เหมือนเดิม ไม่แตะ logic)
+
   ◉ Database:
   ✓ db/migration_support_admin.sql (ไฟล์ใหม่ — ยังไม่ได้รันบน DB จริง!)
      - ALTER users.role เพิ่มค่า 'support_admin' (ของเดิม admin/agent/user)

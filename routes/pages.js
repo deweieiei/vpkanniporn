@@ -56,11 +56,11 @@ router.get('/plans/:id', (_req, res) => {
 // Support Admin — หน้า login แยก + หน้าจัดการเนื้อหาหน้า index
 router.get('/support-admin', (req, res) => {
   if (req.session && req.session.role === 'admin') return res.redirect('/support-admin/editor');
-  res.sendFile(path.join(PUBLIC_DIR, 'support-login.html'));
+  res.sendFile(path.join(PUBLIC_DIR, 'supperadmin-login.html'));
 });
 
 router.get('/support-admin/editor', requireSupportAdmin, (_req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, 'support-editor.html'));
+  res.sendFile(path.join(PUBLIC_DIR, 'supperadmin-editor.html'));
 });
 
 module.exports = router;
