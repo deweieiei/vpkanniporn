@@ -475,7 +475,11 @@
         .lf-shade { position: absolute; inset: 0; background: rgba(0,0,0,0.34); }
         .lf-card.lf-noimg .lf-shade { background: transparent; }
         .lf-label { position: relative; z-index: 1; padding: 14px 12px; color: #fff; font-weight: 700; font-size: 16px; text-align: center; line-height: 1.35; text-shadow: 0 1px 6px rgba(0,0,0,0.55); }
-        .lf-del { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border: none; border-radius: 50%; background: rgba(255,255,255,0.92); color: #ef4444; font-size: 13px; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; z-index: 2; }
+        .lf-tools { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; z-index: 2; }
+        .lf-tools button { width: 28px; height: 28px; border: none; border-radius: 50%; background: rgba(255,255,255,0.92); font-size: 13px; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
+        .lf-edit { color: #ea580c; }
+        .lf-edit:hover { background: #ffedd5; }
+        .lf-del { color: #ef4444; }
         .lf-del:hover { background: #fee2e2; }
         .lf-add { cursor: pointer; border: 2px dashed #f0b787; background: #fff8f2; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 160px; border-radius: 14px; color: var(--primary-orange); font-weight: 700; gap: 6px; transition: background .15s; }
         .lf-add:hover { background: var(--light-orange-bg); }
@@ -943,12 +947,12 @@
         </div>
     </div>
 
-    <!-- ===== MODAL: เพิ่มหัวข้อใหม่ (ส่วน "คุณกำลังมองหาอะไรอยู่?") ===== -->
-    <div class="modal-overlay" data-modal="lookfor-new">
+    <!-- ===== MODAL: เพิ่ม/แก้ไขหัวข้อ (ส่วน "คุณกำลังมองหาอะไรอยู่?") ===== -->
+    <div class="modal-overlay" data-modal="lookfor-edit">
         <div class="modal-card" style="max-width: 460px;">
-            <h2>➕ เพิ่มหัวข้อใหม่</h2>
+            <h2 id="lfedit-title">➕ เพิ่มหัวข้อใหม่</h2>
             <p class="modal-sub">การ์ดนี้จะแสดงในส่วน "คุณกำลังมองหาอะไรอยู่?" — กดที่การ์ดเพื่อไปหน้าเนื้อหา</p>
-            <form data-form="lookfor-new" enctype="multipart/form-data">
+            <form data-form="lookfor-edit" enctype="multipart/form-data">
                 <div class="field">
                     <label>ชื่อรายการ *</label>
                     <input type="text" name="button_text" maxlength="120" required placeholder="เช่น ประกันสุขภาพ">
@@ -957,16 +961,22 @@
                     <label>รูปการ์ด (ไม่ใส่ก็ได้ — ใช้เป็นพื้นหลังการ์ด)</label>
                     <div style="display:flex; align-items:center; gap:10px;">
                         <div style="width:88px; height:56px; border-radius:10px; overflow:hidden; background:#f3f4f6; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                            <img id="lfnew-preview" src="" style="display:none; width:100%; height:100%; object-fit:cover;">
-                            <span id="lfnew-ph" style="font-size:11px; color:#9ca3af;">ไม่มีรูป</span>
+                            <img id="lfedit-preview" src="" style="display:none; width:100%; height:100%; object-fit:cover;">
+                            <span id="lfedit-ph" style="font-size:11px; color:#9ca3af;">ไม่มีรูป</span>
                         </div>
-                        <input type="file" name="image" id="lfnew-input" accept="image/*" style="font-size:12px;">
+                        <input type="file" name="image" id="lfedit-input" accept="image/*" style="font-size:12px;">
                     </div>
-                    <p class="help">jpg/png/webp สูงสุด 5MB</p>
+                    <p class="help">แนะนำขนาด <b>800 × 800 px</b> (จัตุรัส) • jpg/png/webp สูงสุด 5MB</p>
+                </div>
+                <div class="field">
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:400;">
+                        <input type="checkbox" name="is_active" id="lfedit-active" checked style="width:auto;">
+                        แสดงการ์ดนี้บนหน้า agent <span class="help" style="margin:0;">(เอาติ๊กออก = ซ่อน ไม่แสดงให้ลูกค้าเห็น)</span>
+                    </label>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
-                    <button type="submit" class="btn btn-save">💾 สร้าง</button>
+                    <button type="submit" class="btn btn-save">💾 บันทึก</button>
                 </div>
             </form>
         </div>
@@ -1402,11 +1412,14 @@
             const noimg = hasImg ? '' : ' lf-noimg';
             const inactive = (!isViewingOther && p.is_active === 0)
                 ? ' <span class="inactive-tag">ซ่อนอยู่</span>' : '';
-            const del = !isViewingOther
-                ? `<button type="button" class="lf-del" data-del="${p.id}" title="ลบหัวข้อนี้">🗑️</button>` : '';
+            const tools = !isViewingOther
+                ? `<div class="lf-tools">
+                        <button type="button" class="lf-edit" data-edit-id="${p.id}" title="แก้ไข">✏️</button>
+                        <button type="button" class="lf-del" data-del="${p.id}" title="ลบหัวข้อนี้">🗑️</button>
+                   </div>` : '';
             return `
                 <div class="lf-card${noimg}" data-page-id="${p.id}"${style}>
-                    ${del}
+                    ${tools}
                     <div class="lf-shade"></div>
                     <div class="lf-label">${escapeHtml(p.button_text)}${inactive}</div>
                 </div>`;
@@ -1437,6 +1450,13 @@
         }
 
         document.getElementById('lookfor-grid').addEventListener('click', async (e) => {
+            // ปุ่มแก้ไข (เจ้าของ)
+            const editBtn = e.target.closest('.lf-edit');
+            if (editBtn) {
+                e.stopPropagation();
+                openLookforEdit(Number(editBtn.dataset.editId));
+                return;
+            }
             // ปุ่มลบ (เจ้าของ)
             const delBtn = e.target.closest('.lf-del');
             if (delBtn) {
@@ -1463,51 +1483,98 @@
             window.location.href = '/page/' + Number(card.dataset.pageId);
         });
 
-        // เปิด modal สร้างหัวข้อใหม่ (ล้างฟอร์มก่อนทุกครั้ง)
-        function openLookforNew() {
-            const form = document.querySelector('[data-form="lookfor-new"]');
+        // ===== ฟอร์มเพิ่ม/แก้ไขหัวข้อ (popcard) =====
+        let editingPageId = null; // null = สร้างใหม่
+
+        function resetLookforForm() {
+            const form = document.querySelector('[data-form="lookfor-edit"]');
             form.reset();
-            document.getElementById('lfnew-preview').style.display = 'none';
-            document.getElementById('lfnew-ph').style.display = 'block';
-            document.querySelector('[data-modal="lookfor-new"]').classList.add('open');
+            document.getElementById('lfedit-preview').style.display = 'none';
+            document.getElementById('lfedit-ph').style.display = 'block';
+            document.getElementById('lfedit-active').checked = true;
+        }
+
+        function openLookforNew() {
+            editingPageId = null;
+            resetLookforForm();
+            document.getElementById('lfedit-title').textContent = '➕ เพิ่มหัวข้อใหม่';
+            document.querySelector('[data-modal="lookfor-edit"]').classList.add('open');
+        }
+
+        async function openLookforEdit(id) {
+            try {
+                const res = await fetch('/api/pages/' + id, { credentials: 'same-origin' });
+                const d = await res.json();
+                if (!res.ok) throw new Error(d.error || 'โหลดข้อมูลไม่สำเร็จ');
+                const p = d.page;
+                editingPageId = p.id;
+                resetLookforForm();
+                const form = document.querySelector('[data-form="lookfor-edit"]');
+                form.elements.button_text.value = p.button_text || '';
+                form.elements.is_active.checked = p.is_active != 0;
+                if (p.button_image) {
+                    const prev = document.getElementById('lfedit-preview');
+                    prev.src = p.button_image; prev.style.display = 'block';
+                    document.getElementById('lfedit-ph').style.display = 'none';
+                }
+                document.getElementById('lfedit-title').textContent = '✏️ แก้ไขหัวข้อ';
+                document.querySelector('[data-modal="lookfor-edit"]').classList.add('open');
+            } catch (err) { toast(err.message, 'error'); }
         }
 
         // preview รูปตอนเลือกไฟล์
-        document.getElementById('lfnew-input').addEventListener('change', (e) => {
+        document.getElementById('lfedit-input').addEventListener('change', (e) => {
             const file = e.target.files[0];
-            const prev = document.getElementById('lfnew-preview');
-            const ph = document.getElementById('lfnew-ph');
+            const prev = document.getElementById('lfedit-preview');
+            const ph = document.getElementById('lfedit-ph');
             if (file) { prev.src = URL.createObjectURL(file); prev.style.display = 'block'; ph.style.display = 'none'; }
             else { prev.style.display = 'none'; ph.style.display = 'block'; }
         });
 
-        // สร้างหัวข้อใหม่: POST สร้างก่อน → ถ้ามีรูปค่อยอัปโหลด → รีเฟรชการ์ด
-        document.querySelector('[data-form="lookfor-new"]').addEventListener('submit', async (e) => {
+        // บันทึก: แก้ไข = PUT / สร้างใหม่ = POST แล้วค่อยอัปโหลดรูป (ถ้ามี) → รีเฟรช
+        document.querySelector('[data-form="lookfor-edit"]').addEventListener('submit', async (e) => {
             e.preventDefault();
             const form = e.target;
             const btn = form.querySelector('button[type="submit"]');
             btn.disabled = true;
             try {
                 const button_text = form.elements.button_text.value.trim() || 'หัวข้อใหม่';
-                const res = await fetch('/api/pages', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'same-origin',
-                    body: JSON.stringify({ button_text }),
-                });
-                const d = await res.json();
-                if (!res.ok) throw new Error(d.error || 'สร้างไม่สำเร็จ');
+                const is_active = form.elements.is_active.checked ? 1 : 0;
+                let pageId = editingPageId;
+
+                if (pageId) {
+                    const r = await fetch('/api/pages/' + pageId, {
+                        method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+                        body: JSON.stringify({ button_text, is_active }),
+                    });
+                    const d = await r.json();
+                    if (!r.ok) throw new Error(d.error || 'บันทึกไม่สำเร็จ');
+                } else {
+                    const r = await fetch('/api/pages', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+                        body: JSON.stringify({ button_text }),
+                    });
+                    const d = await r.json();
+                    if (!r.ok) throw new Error(d.error || 'สร้างไม่สำเร็จ');
+                    pageId = d.id;
+                    if (is_active === 0) {
+                        await fetch('/api/pages/' + pageId, {
+                            method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+                            body: JSON.stringify({ is_active }),
+                        });
+                    }
+                }
 
                 const file = form.elements.image.files[0];
                 if (file) {
                     const fd = new FormData();
                     fd.append('image', file);
-                    const r2 = await fetch(`/api/pages/${d.id}/image`, { method: 'POST', credentials: 'same-origin', body: fd });
+                    const r2 = await fetch(`/api/pages/${pageId}/image`, { method: 'POST', credentials: 'same-origin', body: fd });
                     const d2 = await r2.json();
                     if (!r2.ok) throw new Error(d2.error || 'อัปโหลดรูปไม่สำเร็จ');
                 }
                 closeModals();
-                toast('✓ สร้างหัวข้อแล้ว');
+                toast(editingPageId ? '✓ บันทึกแล้ว' : '✓ สร้างหัวข้อแล้ว');
                 loadLookforPages();
             } catch (err) {
                 toast(err.message, 'error');
