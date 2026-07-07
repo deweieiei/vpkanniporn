@@ -56,28 +56,14 @@ const upload = multer({
   },
 });
 
-// ===== GET /api/pages — สาธารณะ: รายการบลอค (เฉพาะที่เปิด) =====
-//   ?user_id=N              → บลอคชั้นบนสุดของตัวแทนคนนั้น (parent_id IS NULL) — ใช้ในโปรไฟล์
-//   ?parent_id=X            → บลอคย่อยที่อยู่ข้างในหน้า X — ใช้ในหน้า /page/X
+// ===== GET /api/pages?user_id=N — สาธารณะ: รายการปุ่มของตัวแทนคนหนึ่ง (เฉพาะที่เปิด) =====
 router.get('/pages', async (req, res, next) => {
   try {
-    const parentRaw = req.query.parent_id;
-    if (parentRaw != null && parentRaw !== '') {
-      const parentId = Number(parentRaw);
-      if (!Number.isInteger(parentId) || parentId <= 0) return res.status(400).json({ error: 'parent_id ไม่ถูกต้อง' });
-      const [rows] = await pool.query(
-        `SELECT id, button_text, button_image, sort_order
-           FROM user_pages WHERE parent_id = ? AND is_active = 1
-          ORDER BY sort_order, id`,
-        [parentId]
-      );
-      return res.json({ ok: true, pages: rows });
-    }
     const userId = Number(req.query.user_id);
     if (!Number.isInteger(userId) || userId <= 0) return res.status(400).json({ error: 'user_id ไม่ถูกต้อง' });
     const [rows] = await pool.query(
       `SELECT id, button_text, button_image, sort_order
-         FROM user_pages WHERE user_id = ? AND parent_id IS NULL AND is_active = 1
+         FROM user_pages WHERE user_id = ? AND is_active = 1
         ORDER BY sort_order, id`,
       [userId]
     );
@@ -85,28 +71,12 @@ router.get('/pages', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-// ===== GET /api/pages/mine — เจ้าของ: รายการบลอคของตัวเอง (รวมที่ปิด) =====
-//   (ไม่มี query)  → บลอคชั้นบนสุด (parent_id IS NULL)
-//   ?parent_id=X   → บลอคย่อยข้างในหน้า X (ต้องเป็นเจ้าของหน้า X)
+// ===== GET /api/pages/mine — เจ้าของ: รายการปุ่มของตัวเอง (รวมที่ปิด) =====
 router.get('/pages/mine', requireAuth, async (req, res, next) => {
   try {
-    const parentRaw = req.query.parent_id;
-    if (parentRaw != null && parentRaw !== '') {
-      const parentId = Number(parentRaw);
-      if (!Number.isInteger(parentId) || parentId <= 0) return res.status(400).json({ error: 'parent_id ไม่ถูกต้อง' });
-      const [p] = await pool.query('SELECT user_id FROM user_pages WHERE id = ? LIMIT 1', [parentId]);
-      if (p.length === 0) return res.status(404).json({ error: 'ไม่พบหน้านี้' });
-      if (p[0].user_id !== req.session.userId) return res.status(403).json({ error: 'ไม่ใช่เจ้าของหน้านี้' });
-      const [rows] = await pool.query(
-        `SELECT id, button_text, button_image, content, sort_order, is_active
-           FROM user_pages WHERE parent_id = ? ORDER BY sort_order, id`,
-        [parentId]
-      );
-      return res.json({ ok: true, pages: rows });
-    }
     const [rows] = await pool.query(
       `SELECT id, button_text, button_image, content, sort_order, is_active
-         FROM user_pages WHERE user_id = ? AND parent_id IS NULL ORDER BY sort_order, id`,
+         FROM user_pages WHERE user_id = ? ORDER BY sort_order, id`,
       [req.session.userId]
     );
     res.json({ ok: true, pages: rows });
@@ -119,7 +89,7 @@ router.get('/pages/:id', async (req, res, next) => {
     const id = Number(req.params.id);
     if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ error: 'id ไม่ถูกต้อง' });
     const [rows] = await pool.query(
-      `SELECT id, user_id, parent_id, button_text, button_image, content, is_active FROM user_pages WHERE id = ? LIMIT 1`,
+      `SELECT id, user_id, button_text, button_image, content, is_active FROM user_pages WHERE id = ? LIMIT 1`,
       [id]
     );
     if (rows.length === 0) return res.status(404).json({ error: 'ไม่พบหน้านี้' });
@@ -129,52 +99,24 @@ router.get('/pages/:id', async (req, res, next) => {
       return res.status(404).json({ error: 'ไม่พบหน้านี้' });
     }
     const isOwner = !!(req.session && req.session.userId === page.user_id);
-
-    // breadcrumb: เดินขึ้นไปหาหน้าแม่ทีละชั้น (จำกัด 30 ชั้นกันวนไม่รู้จบ)
-    // ผลลัพธ์เรียงจากบนสุด → ล่างสุด (ไม่รวมหน้าปัจจุบัน) เช่น [จังหวัด, อำเภอ]
-    const breadcrumb = [];
-    let cursor = page.parent_id;
-    let guard = 0;
-    while (cursor && guard < 30) {
-      const [pr] = await pool.query('SELECT id, parent_id, button_text FROM user_pages WHERE id = ? LIMIT 1', [cursor]);
-      if (pr.length === 0) break;
-      breadcrumb.unshift({ id: pr[0].id, button_text: pr[0].button_text });
-      cursor = pr[0].parent_id;
-      guard++;
-    }
-
-    res.json({ ok: true, page, is_owner: isOwner, breadcrumb });
+    res.json({ ok: true, page, is_owner: isOwner });
   } catch (err) { next(err); }
 });
 
-// ===== POST /api/pages — เจ้าของ: เพิ่มบลอค/หน้าใหม่ =====
-//   body.parent_id (ไม่ใส่ = บลอคชั้นบนสุดในโปรไฟล์ / ใส่ = บลอคย่อยข้างในหน้านั้น)
+// ===== POST /api/pages — เจ้าของ: เพิ่มปุ่ม/หน้าใหม่ =====
 router.post('/pages', requireAuth, express.json(), async (req, res, next) => {
   try {
     const userId = req.session.userId;
     const buttonText = (req.body && req.body.button_text ? String(req.body.button_text) : '').trim() || 'ปุ่มใหม่';
     const content = req.body && req.body.content != null ? String(req.body.content) : '';
 
-    // ตรวจ parent_id (ถ้ามี): ต้องมีจริง และต้องเป็นของ user คนเดียวกัน
-    let parentId = null;
-    if (req.body && req.body.parent_id != null && req.body.parent_id !== '') {
-      parentId = Number(req.body.parent_id);
-      if (!Number.isInteger(parentId) || parentId <= 0) return res.status(400).json({ error: 'parent_id ไม่ถูกต้อง' });
-      const [p] = await pool.query('SELECT user_id FROM user_pages WHERE id = ? LIMIT 1', [parentId]);
-      if (p.length === 0) return res.status(404).json({ error: 'ไม่พบหน้าแม่' });
-      if (p[0].user_id !== userId) return res.status(403).json({ error: 'ไม่ใช่เจ้าของหน้าแม่' });
-    }
-
-    // sort_order นับต่อในกลุ่มพี่น้องเดียวกัน (parent เดียวกัน)
     const [[{ maxOrder }]] = await pool.query(
-      parentId == null
-        ? 'SELECT COALESCE(MAX(sort_order), 0) AS maxOrder FROM user_pages WHERE user_id = ? AND parent_id IS NULL'
-        : 'SELECT COALESCE(MAX(sort_order), 0) AS maxOrder FROM user_pages WHERE parent_id = ?',
-      parentId == null ? [userId] : [parentId]
+      'SELECT COALESCE(MAX(sort_order), 0) AS maxOrder FROM user_pages WHERE user_id = ?',
+      [userId]
     );
     const [result] = await pool.query(
-      `INSERT INTO user_pages (user_id, parent_id, button_text, content, sort_order) VALUES (?, ?, ?, ?, ?)`,
-      [userId, parentId, buttonText.slice(0, 120), content, maxOrder + 1]
+      `INSERT INTO user_pages (user_id, button_text, content, sort_order) VALUES (?, ?, ?, ?)`,
+      [userId, buttonText.slice(0, 120), content, maxOrder + 1]
     );
     res.json({ ok: true, id: result.insertId });
   } catch (err) { next(err); }
@@ -240,33 +182,15 @@ router.post('/pages/:id/content-image', requireAuth, upload.single('image'), asy
   } catch (err) { next(err); }
 });
 
-// ===== DELETE /api/pages/:id — เจ้าของ: ลบบลอค/หน้า (ลูกหลานถูกลบตาม ON DELETE CASCADE) =====
+// ===== DELETE /api/pages/:id — เจ้าของ: ลบปุ่ม/หน้า =====
 router.delete('/pages/:id', requireAuth, async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const [rows] = await pool.query('SELECT user_id, button_image FROM user_pages WHERE id = ? LIMIT 1', [id]);
     if (rows.length === 0) return res.status(404).json({ error: 'ไม่พบหน้านี้' });
     if (rows[0].user_id !== req.session.userId) return res.status(403).json({ error: 'ไม่ใช่เจ้าของหน้านี้' });
-
-    // เก็บ path รูปของหน้านี้ + ลูกหลานทุกชั้น (ไล่ทีละชั้นแบบ BFS) ไว้ลบไฟล์หลัง DB cascade
-    // เพราะ ON DELETE CASCADE ลบแถวในฐานข้อมูลให้ แต่ไม่ได้ลบไฟล์รูปบนดิสก์
-    const images = [];
-    if (rows[0].button_image) images.push(rows[0].button_image);
-    let frontier = [id];
-    let guard = 0;
-    while (frontier.length && guard < 5000) {
-      const [children] = await pool.query(
-        `SELECT id, button_image FROM user_pages WHERE parent_id IN (${frontier.map(() => '?').join(',')})`,
-        frontier
-      );
-      if (children.length === 0) break;
-      children.forEach(c => { if (c.button_image) images.push(c.button_image); });
-      frontier = children.map(c => c.id);
-      guard += children.length;
-    }
-
     await pool.query('DELETE FROM user_pages WHERE id = ?', [id]);
-    images.forEach(safeUnlink);
+    if (rows[0].button_image) safeUnlink(rows[0].button_image);
     res.json({ ok: true });
   } catch (err) { next(err); }
 });
