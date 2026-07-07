@@ -62,36 +62,18 @@ const upload = multer({
 });
 
 const PLAN_SELECT = `
-  SELECT p.id, p.user_id, p.category_id, p.title, p.summary, p.content_html,
+  SELECT p.id, p.user_id, p.title, p.summary, p.content_html,
          p.cover_image, p.is_active, p.view_count, p.created_at, p.updated_at,
-         c.slug AS category_slug, c.name AS category_name, c.icon AS category_icon,
          u.first_name AS agent_first_name, u.last_name AS agent_last_name, u.avatar_path AS agent_avatar_path
   FROM insurance_plans p
-  JOIN insurance_categories c ON c.id = p.category_id
   JOIN users u ON u.id = p.user_id
 `;
-
-// GET /api/categories
-router.get('/categories', async (_req, res, next) => {
-  try {
-    const [rows] = await pool.query(
-      'SELECT id, slug, name, icon, sort_order FROM insurance_categories ORDER BY sort_order'
-    );
-    res.json({ ok: true, categories: rows });
-  } catch (err) {
-    next(err);
-  }
-});
 
 // GET /api/plans?category=slug&user_id=1  — list (public, เฉพาะ is_active)
 router.get('/plans', async (req, res, next) => {
   try {
     const conditions = ['p.is_active = 1'];
     const params = [];
-    if (req.query.category) {
-      conditions.push('c.slug = ?');
-      params.push(req.query.category);
-    }
     if (req.query.user_id) {
       const uid = Number(req.query.user_id);
       if (!Number.isInteger(uid) || uid <= 0) {
@@ -144,29 +126,19 @@ router.get('/plans/:id', async (req, res, next) => {
 // POST /api/plans — สร้างใหม่
 router.post('/plans', requireAuth, upload.single('cover_image'), async (req, res, next) => {
   try {
-    const { title, summary, content_html, category_id } = req.body;
-    const categoryId = Number(category_id);
+    const { title, summary, content_html } = req.body;
 
     if (!title || !title.trim()) {
       cleanupUploadedFile(req);
       return res.status(400).json({ error: 'กรุณากรอกชื่อแบบประกัน' });
     }
-    if (!Number.isInteger(categoryId) || categoryId <= 0) {
-      cleanupUploadedFile(req);
-      return res.status(400).json({ error: 'กรุณาเลือกหมวดหมู่' });
-    }
-    const [cat] = await pool.query('SELECT id FROM insurance_categories WHERE id = ? LIMIT 1', [categoryId]);
-    if (cat.length === 0) {
-      cleanupUploadedFile(req);
-      return res.status(400).json({ error: 'ไม่พบหมวดหมู่นี้' });
-    }
 
     const coverPath = req.file ? `/uploads/plans/${req.session.userId}/${req.file.filename}` : null;
 
     const [result] = await pool.query(
-      `INSERT INTO insurance_plans (user_id, category_id, title, summary, content_html, cover_image)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [req.session.userId, categoryId, title.trim(), summary || null, content_html || null, coverPath]
+      `INSERT INTO insurance_plans (user_id, title, summary, content_html, cover_image)
+       VALUES (?, ?, ?, ?, ?)`,
+      [req.session.userId, title.trim(), summary || null, content_html || null, coverPath]
     );
 
     const [rows] = await pool.query(`${PLAN_SELECT} WHERE p.id = ? LIMIT 1`, [result.insertId]);
@@ -205,19 +177,6 @@ router.put('/plans/:id', requireAuth, upload.single('cover_image'), async (req, 
     if ('summary' in req.body) updates.summary = req.body.summary || null;
     if ('content_html' in req.body) updates.content_html = req.body.content_html || null;
     if ('is_active' in req.body) updates.is_active = req.body.is_active === '1' || req.body.is_active === 'true' ? 1 : 0;
-    if ('category_id' in req.body) {
-      const categoryId = Number(req.body.category_id);
-      if (!Number.isInteger(categoryId) || categoryId <= 0) {
-        cleanupUploadedFile(req);
-        return res.status(400).json({ error: 'หมวดหมู่ไม่ถูกต้อง' });
-      }
-      const [cat] = await pool.query('SELECT id FROM insurance_categories WHERE id = ? LIMIT 1', [categoryId]);
-      if (cat.length === 0) {
-        cleanupUploadedFile(req);
-        return res.status(400).json({ error: 'ไม่พบหมวดหมู่นี้' });
-      }
-      updates.category_id = categoryId;
-    }
 
     let oldCoverToDelete = null;
     if (req.file) {

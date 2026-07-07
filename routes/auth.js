@@ -142,6 +142,8 @@ router.post('/login', express.json(), async (req, res, next) => {
     req.session.userId = user.id;
     req.session.email = user.email;
     req.session.role = user.role;
+    req.session.cookie.maxAge = null;
+    req.session.cookie.expires = null;
     res.json({
       ok: true,
       id: user.id,
@@ -186,6 +188,8 @@ router.post('/supperadmin-login', express.json(), async (req, res, next) => {
     req.session.userId = user.id;
     req.session.email = user.email;
     req.session.role = user.role;
+    req.session.cookie.maxAge = null;
+    req.session.cookie.expires = null;
     res.json({ ok: true, id: user.id, role: user.role });
   } catch (err) {
     next(err);

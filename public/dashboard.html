@@ -692,7 +692,7 @@
             <button class="edit-btn" data-edit="plans">✏️ จัดการแบบประกัน</button>
             <h2 class="section-title">เลือกแผนที่เหมาะกับคุณ</h2>
             <p class="section-subtitle">คุณกำลังมองหาอะไรอยู่?</p>
-            <div class="services-grid">
+            <!-- <div class="services-grid">
                 <div class="service-card">
                     <div class="service-icon">🏥</div>
                     <h3>ประกันสุขภาพ</h3>
@@ -723,7 +723,7 @@
                     <h3>วางแผนมรดก</h3>
                     <p class="en">Legacy Planning</p>
                 </div>
-            </div>
+            </div> -->
         </section>
 
         <!-- ============= Profile (วางแผนการเงิน) ============= -->
@@ -956,10 +956,6 @@
                             <input type="file" name="cover_image" id="plan-cover-input" accept="image/*" style="font-size:12px;">
                         </div>
                         <p class="help">jpg/png/webp สูงสุด 5MB</p>
-                    </div>
-                    <div class="field">
-                        <label>หมวดหมู่</label>
-                        <select name="category_id" id="plan-category-select" required></select>
                     </div>
                     <div class="field">
                         <label>ชื่อแบบประกัน</label>
@@ -1392,21 +1388,8 @@
         });
 
         // ===== PLANS (จัดการแบบประกัน — Phase 3) =====
-        let planCategories = [];
         let editingPlanId = null; // null = กำลังสร้างใหม่
         let pendingPlanCoverFile = null;
-
-        async function loadPlanCategoriesOnce() {
-            if (planCategories.length > 0) return planCategories;
-            const res = await fetch('/api/categories');
-            const data = await res.json();
-            planCategories = data.categories || [];
-            const select = document.getElementById('plan-category-select');
-            select.innerHTML = planCategories
-                .map(c => `<option value="${c.id}">${escapeHtml(c.icon || '')} ${escapeHtml(c.name)}</option>`)
-                .join('');
-            return planCategories;
-        }
 
         function planAdminRow(p) {
             const cover = p.cover_image
@@ -1446,7 +1429,6 @@
         }
 
         async function openPlanForm(plan) {
-            await loadPlanCategoriesOnce();
             editingPlanId = plan ? plan.id : null;
             pendingPlanCoverFile = null;
 
@@ -1454,7 +1436,6 @@
             form.elements.title.value = plan ? plan.title : '';
             form.elements.summary.value = plan ? (plan.summary || '') : '';
             form.elements.content_html.value = plan ? (plan.content_html || '') : '';
-            form.elements.category_id.value = plan ? plan.category_id : (planCategories[0] ? planCategories[0].id : '');
             document.getElementById('plan-is-active').checked = plan ? !!plan.is_active : true;
 
             const prev = document.getElementById('plan-cover-preview');
@@ -1535,7 +1516,6 @@
                 fd.append('title', f.elements.title.value.trim());
                 fd.append('summary', f.elements.summary.value.trim());
                 fd.append('content_html', f.elements.content_html.value.trim());
-                fd.append('category_id', f.elements.category_id.value);
                 fd.append('is_active', document.getElementById('plan-is-active').checked ? '1' : '0');
                 if (pendingPlanCoverFile) fd.append('cover_image', pendingPlanCoverFile);
 

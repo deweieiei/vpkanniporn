@@ -53,8 +53,8 @@ app.use(
     saveUninitialized: false,
     rolling: false,
     cookie: {
-      // ไม่ตั้ง maxAge = "session cookie": ปิดเบราว์เซอร์แล้ว cookie หาย ต้องล็อกอินใหม่
-      // (ตามที่ต้องการ: ไม่จำ login ทั้ง admin และ user)
+      // ใช้ session cookie อย่างชัดเจน: ไม่จำ login และจะหายเมื่อปิดเบราว์เซอร์/เซสชันสิ้นสุด
+      maxAge: null,
       httpOnly: true,
       secure: IS_PROD, // production ใช้ HTTPS เท่านั้น
       sameSite: 'lax',
