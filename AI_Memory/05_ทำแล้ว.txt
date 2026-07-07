@@ -3,6 +3,30 @@
   (ทุกครั้งที่ทำเสร็จอะไร อัปเดตตรงนี้ — ลงชื่อ + วันที่)
 ════════════════════════════════════════════════════════════════
 
+▌ 2026-07-06 (รอบ 15 — login เป็นหน้าแรก + ระบบปุ่ม/หน้าของ user) — Claude Opus 4.8
+  ★ พี่ดิวสั่ง: (1) / = หน้า login, ย้ายหน้าค้นหาเดิมไป /home
+    (2) login ไม่จำ (ปิดเบราว์เซอร์ต้องล็อกอินใหม่) ทั้ง admin/user
+    (3) แต่ละ user เพิ่ม "ปุ่ม/หน้า" เองได้ไม่จำกัด (text+รูป) กดแล้วเปิดหน้าเนื้อหา
+        คนทั่วไปเห็นเนื้อหา / เจ้าของที่ล็อกอินเห็น toolbar แก้ไข — ขอ SQL ไปรันเอง
+
+  ◉ ทำเสร็จ:
+  ✓ db/migration_user_pages.sql (ไฟล์ใหม่) — ตาราง user_pages
+    (user_id, button_text, button_image, content, sort_order, is_active) 1 แถว=1 ปุ่ม=1 หน้า
+  ✓ routes/userpages.js (ใหม่) mount /api:
+    GET /api/pages?user_id=N (public list ปุ่ม), GET /api/pages/mine (เจ้าของ),
+    GET /api/pages/:id (public เนื้อหา + is_owner), POST /api/pages (สร้าง),
+    PUT /api/pages/:id, POST /api/pages/:id/image, DELETE /api/pages/:id (เช็คเจ้าของทุกตัว)
+  ✓ public/page.html (ใหม่) + route /page/:id — แสดงเนื้อหาหน้า; เจ้าของเห็น toolbar แก้ (title/รูป/เนื้อหา)
+  ✓ index.js session: rolling=false + ไม่ตั้ง cookie.maxAge = session cookie (ไม่จำ login)
+  ✓ routing: / = login.html (ล็อกอินแล้ว→/home), /home = หน้าค้นหา (เดิม index.html → เปลี่ยนชื่อเป็น home.html)
+    login สำเร็จ → ไป /home
+  ✓ ทดสอบ (ไม่มี DB): syntax ผ่าน, / = login, /home = ค้นหา, /page/:id = 200,
+    /api/pages ทำงาน (500/401 = mount แล้ว)
+
+  ◉ ยังไม่ทำ (รอ DB + งานหน้าโปรไฟล์):
+  - ผูกปุ่ม user_pages เข้าไปแสดงใน "เลือกแผนที่เหมาะกับคุณ" บนหน้าโปรไฟล์ (dashboard.html)
+    + ปุ่ม "เพิ่มหน้า" สำหรับเจ้าของ — รวมกับงานแต่งหน้าโปรไฟล์ (ทำตอนมี DB จะเห็นผลจริง)
+
 ▌ 2026-07-06 (รอบ 14 — เปลี่ยนทิศเว็บ: Index=ค้นหาตัวแทน + Admin จัดการตัวแทน) — Claude Opus 4.8
   ★ พี่ดิวเปลี่ยนทิศทางเว็บครั้งใหญ่:
     (1) Index = "ค้นหาตัวแทนอย่างเดียว" เอาส่วนการตลาด (hero/บริการ/รีวิว/รางวัล/career) ออกหมด

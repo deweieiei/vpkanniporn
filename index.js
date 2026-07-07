@@ -51,9 +51,10 @@ app.use(
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
-    rolling: true,
+    rolling: false,
     cookie: {
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 วัน
+      // ไม่ตั้ง maxAge = "session cookie": ปิดเบราว์เซอร์แล้ว cookie หาย ต้องล็อกอินใหม่
+      // (ตามที่ต้องการ: ไม่จำ login ทั้ง admin และ user)
       httpOnly: true,
       secure: IS_PROD, // production ใช้ HTTPS เท่านั้น
       sameSite: 'lax',
@@ -92,6 +93,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api', require('./routes/plans')); // /api/plans, /api/categories
 app.use('/api/admin', require('./routes/admin')); // /api/admin/users (จัดการตัวแทน — เฉพาะ SupperAdmin)
+app.use('/api', require('./routes/userpages')); // /api/pages (ปุ่ม/หน้าที่ตัวแทนสร้างเอง)
 
 // ===== HTML Pages =====
 app.use('/', require('./routes/pages'));

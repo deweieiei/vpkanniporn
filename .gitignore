@@ -40,3 +40,5 @@ public/uploads/plans/*
 !public/uploads/plans/.gitkeep
 public/uploads/site/*
 !public/uploads/site/.gitkeep
+public/uploads/userpages/*
+!public/uploads/userpages/.gitkeep

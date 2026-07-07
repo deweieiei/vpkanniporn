@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>หน้าข้อมูล — VP Kanniporn FWD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Prompt', sans-serif; } </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased min-h-screen">
+
+    <!-- HEADER -->
+    <header class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
+        <div class="max-w-4xl mx-auto px-4 py-2.5 flex justify-between items-center">
+            <a href="/home" class="flex items-center gap-3">
+                <img src="/assets/Logo.svg" alt="VP Kanniporn FWD" class="h-10 w-auto">
+            </a>
+            <a id="back-link" href="/home" class="text-xs font-semibold text-gray-500 hover:text-orange-600">← กลับ</a>
+        </div>
+    </header>
+
+    <!-- OWNER TOOLBAR (เฉพาะเจ้าของที่ล็อกอิน) -->
+    <div id="toolbar" class="hidden bg-slate-900 text-white sticky top-[57px] z-30">
+        <div class="max-w-4xl mx-auto px-4 py-2 flex items-center gap-2 text-xs">
+            <span class="font-bold text-orange-400">🛠️ โหมดเจ้าของ</span>
+            <span class="text-white/50">— แก้ไขหน้านี้ได้</span>
+            <div class="ml-auto flex gap-2">
+                <button id="btn-edit" class="bg-orange-500 hover:bg-orange-600 px-4 py-1.5 rounded-full font-bold">✏️ แก้ไข</button>
+                <button id="btn-save" class="hidden bg-green-500 hover:bg-green-600 px-4 py-1.5 rounded-full font-bold">💾 บันทึก</button>
+                <button id="btn-cancel" class="hidden bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded-full font-bold">ยกเลิก</button>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <div id="loading" class="text-center text-gray-400 py-16 text-sm">⏳ กำลังโหลด…</div>
+
+        <div id="notfound" class="hidden text-center py-16">
+            <p class="text-4xl mb-3">😔</p>
+            <p class="font-bold text-lg">ไม่พบหน้านี้</p>
+            <a href="/home" class="text-orange-600 text-sm mt-3 inline-block">← กลับหน้าหลัก</a>
+        </div>
+
+        <!-- VIEW MODE -->
+        <article id="view" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div id="view-image-wrap" class="hidden">
+                <img id="view-image" src="" alt="" class="w-full max-h-72 object-cover">
+            </div>
+            <div class="p-6 md:p-8">
+                <h1 id="view-title" class="text-2xl md:text-3xl font-extrabold text-gray-800 mb-4 pb-4 border-b-2 border-orange-100"></h1>
+                <div id="view-content" class="text-gray-700 leading-relaxed text-sm md:text-base"></div>
+            </div>
+        </article>
+
+        <!-- EDIT MODE (เจ้าของ) -->
+        <div id="edit" class="hidden bg-white rounded-2xl shadow-sm border border-orange-200 p-6 md:p-8">
+            <label class="block text-xs font-bold text-gray-600 mb-1">ข้อความบนปุ่ม (ชื่อหน้า)</label>
+            <input id="edit-title" type="text" maxlength="120"
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm mb-4">
+
+            <label class="block text-xs font-bold text-gray-600 mb-1">รูปของปุ่ม/หน้า</label>
+            <div class="flex items-center gap-3 mb-4">
+                <div id="edit-image-prev" class="w-24 h-16 rounded-lg bg-gray-100 border border-gray-200 bg-cover bg-center flex items-center justify-center text-[10px] text-gray-400">ไม่มีรูป</div>
+                <input id="edit-image-input" type="file" accept="image/*" class="text-xs">
+            </div>
+
+            <label class="block text-xs font-bold text-gray-600 mb-1">เนื้อหาในหน้า</label>
+            <textarea id="edit-content" rows="12"
+                class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm leading-relaxed"
+                placeholder="พิมพ์เนื้อหาที่จะแสดงในหน้านี้..."></textarea>
+            <p class="text-[11px] text-gray-400 mt-1">พิมพ์เป็นข้อความล้วน ระบบจะขึ้นบรรทัดใหม่ให้อัตโนมัติ</p>
+        </div>
+    </main>
+
+    <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold opacity-0 pointer-events-none transition-opacity z-50"></div>
+
+    <script>
+        const m = location.pathname.match(/^\/page\/(\d+)/);
+        const pageId = m ? Number(m[1]) : null;
+        let pageData = null;
+        let isOwner = false;
+
+        function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+        function nl2br(s){ return esc(s).replace(/\n/g,'<br>'); }
+        function toast(msg, ok){
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold transition-opacity z-50 ${ok===false?'bg-red-600':'bg-green-600'} opacity-100`;
+            setTimeout(()=>{ t.classList.replace('opacity-100','opacity-0'); }, 2600);
+        }
+
+        function renderView(){
+            document.getElementById('view-title').textContent = pageData.button_text || '';
+            const contentEl = document.getElementById('view-content');
+            contentEl.innerHTML = pageData.content ? nl2br(pageData.content)
+                : '<p class="text-gray-400 italic">ยังไม่มีเนื้อหาในหน้านี้</p>';
+            const imgWrap = document.getElementById('view-image-wrap');
+            if (pageData.button_image) {
+                document.getElementById('view-image').src = pageData.button_image;
+                imgWrap.classList.remove('hidden');
+            } else { imgWrap.classList.add('hidden'); }
+            if (pageData.user_id) document.getElementById('back-link').href = '/agent/' + pageData.user_id;
+        }
+
+        async function load(){
+            if (!pageId) { showNotFound(); return; }
+            try {
+                const res = await fetch('/api/pages/' + pageId, { credentials: 'same-origin' });
+                if (!res.ok) { showNotFound(); return; }
+                const data = await res.json();
+                pageData = data.page;
+                isOwner = !!data.is_owner;
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('view').classList.remove('hidden');
+                renderView();
+                if (isOwner) document.getElementById('toolbar').classList.remove('hidden');
+            } catch (e) { showNotFound(); }
+        }
+        function showNotFound(){
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('notfound').classList.remove('hidden');
+        }
+
+        // ===== Owner edit =====
+        const btnEdit = document.getElementById('btn-edit');
+        const btnSave = document.getElementById('btn-save');
+        const btnCancel = document.getElementById('btn-cancel');
+
+        function enterEdit(){
+            document.getElementById('edit-title').value = pageData.button_text || '';
+            document.getElementById('edit-content').value = pageData.content || '';
+            const prev = document.getElementById('edit-image-prev');
+            if (pageData.button_image){ prev.style.backgroundImage = `url('${pageData.button_image}')`; prev.textContent=''; }
+            else { prev.style.backgroundImage=''; prev.textContent='ไม่มีรูป'; }
+            document.getElementById('view').classList.add('hidden');
+            document.getElementById('edit').classList.remove('hidden');
+            btnEdit.classList.add('hidden'); btnSave.classList.remove('hidden'); btnCancel.classList.remove('hidden');
+        }
+        function exitEdit(){
+            document.getElementById('edit').classList.add('hidden');
+            document.getElementById('view').classList.remove('hidden');
+            btnEdit.classList.remove('hidden'); btnSave.classList.add('hidden'); btnCancel.classList.add('hidden');
+        }
+
+        btnEdit.addEventListener('click', enterEdit);
+        btnCancel.addEventListener('click', exitEdit);
+
+        // อัปโหลดรูปทันทีเมื่อเลือกไฟล์
+        document.getElementById('edit-image-input').addEventListener('change', async (e) => {
+            const f = e.target.files[0];
+            if (!f) return;
+            const fd = new FormData(); fd.append('image', f);
+            try {
+                const res = await fetch(`/api/pages/${pageId}/image`, { method:'POST', credentials:'same-origin', body: fd });
+                const d = await res.json();
+                if (!res.ok) { toast(d.error || 'อัปโหลดไม่สำเร็จ', false); return; }
+                pageData.button_image = d.image;
+                document.getElementById('edit-image-prev').style.backgroundImage = `url('${d.image}')`;
+                document.getElementById('edit-image-prev').textContent = '';
+                toast('อัปโหลดรูปแล้ว');
+            } catch (err) { toast('อัปโหลดไม่สำเร็จ', false); }
+            finally { e.target.value=''; }
+        });
+
+        btnSave.addEventListener('click', async () => {
+            btnSave.disabled = true;
+            try {
+                const body = {
+                    button_text: document.getElementById('edit-title').value,
+                    content: document.getElementById('edit-content').value,
+                };
+                const res = await fetch('/api/pages/' + pageId, {
+                    method:'PUT', headers:{'Content-Type':'application/json'}, credentials:'same-origin',
+                    body: JSON.stringify(body),
+                });
+                const d = await res.json();
+                if (!res.ok) { toast(d.error || 'บันทึกไม่สำเร็จ', false); return; }
+                pageData.button_text = body.button_text.trim() || 'ปุ่มใหม่';
+                pageData.content = body.content;
+                renderView();
+                exitEdit();
+                toast('บันทึกเรียบร้อย');
+            } catch (e) { toast('บันทึกไม่สำเร็จ', false); }
+            finally { btnSave.disabled = false; }
+        });
+
+        load();
+    </script>
+</body>
+</html>

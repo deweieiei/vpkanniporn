@@ -65,7 +65,7 @@
         </div>
 
         <div class="text-center mt-4">
-            <a href="/" class="text-white/80 hover:text-white text-xs underline">← กลับหน้าหลัก</a>
+            <a href="/home" class="text-white/80 hover:text-white text-xs underline">ดูหน้าค้นหาตัวแทน →</a>
         </div>
     </div>
 
@@ -106,8 +106,8 @@
                 });
                 const body = await res.json();
                 if (!res.ok) { showAlert(body.error || 'เกิดข้อผิดพลาด', 'error'); return; }
-                showAlert('สำเร็จ! กำลังพาคุณไปหน้าโปรไฟล์...', 'success');
-                setTimeout(() => { window.location.href = '/profile'; }, 600);
+                showAlert('สำเร็จ! กำลังเข้าสู่ระบบ...', 'success');
+                setTimeout(() => { window.location.href = '/home'; }, 600);
             } catch (err) {
                 showAlert('ไม่สามารถเชื่อมต่อ server ได้', 'error');
             } finally {

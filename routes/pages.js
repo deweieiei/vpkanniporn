@@ -14,13 +14,25 @@ function requireSupportAdmin(req, res, next) {
   return res.redirect('/support-admin');
 }
 
-router.get('/', (_req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
+// หน้าแรก (/) = หน้า login (ถ้าล็อกอินอยู่แล้วไป Home)
+router.get('/', (req, res) => {
+  if (req.session && req.session.userId) return res.redirect('/home');
+  res.sendFile(path.join(PUBLIC_DIR, 'login.html'));
 });
 
 router.get('/login', (req, res) => {
-  if (req.session && req.session.userId) return res.redirect('/profile');
+  if (req.session && req.session.userId) return res.redirect('/home');
   res.sendFile(path.join(PUBLIC_DIR, 'login.html'));
+});
+
+// หน้า Home (ค้นหาตัวแทน) — เดิมคือ index.html
+router.get('/home', (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'home.html'));
+});
+
+// หน้าเนื้อหาของปุ่ม (user_pages) — สาธารณะ; เจ้าของที่ล็อกอินจะเห็น toolbar แก้ไข
+router.get('/page/:id', (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'page.html'));
 });
 
 // profile.html ถูกยุบรวมเข้า dashboard.html แล้ว (2026-07-03)
