@@ -280,6 +280,46 @@
             margin-bottom: 28px;
         }
 
+        /* ===== Hero CTA (3 ปุ่มแนวนอน) ===== */
+        .hero-cta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 6px;
+        }
+        .hero-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 26px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 15px;
+            font-family: inherit;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform .15s, box-shadow .15s, background .15s;
+        }
+        .hero-btn.primary {
+            background: var(--primary-orange);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(255,107,0,0.35);
+        }
+        .hero-btn.primary:hover { background: var(--secondary-orange); transform: translateY(-2px); }
+        .hero-btn.outline {
+            background: rgba(255,255,255,0.85);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+        .hero-btn.outline:hover { background: #fff; transform: translateY(-2px); }
+        .hero-btn.placeholder {
+            background: rgba(255,255,255,0.5);
+            color: #9ca3af;
+            border: 2px dashed #d9b18f;
+            cursor: default;
+        }
+
         /* ===== Section utilities ===== */
         .section-title {
             text-align: center;
@@ -536,6 +576,37 @@
             color: #5c4515;
         }
 
+        /* ===== ติดต่อไลน์ (ใต้ความสำเร็จและรางวัล) ===== */
+        .line-contact {
+            padding: 50px 5% 70px;
+            background-color: var(--light-orange-bg);
+            text-align: center;
+            position: relative;
+        }
+        .line-contact-inner { margin-top: 26px; }
+        .line-add-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--line-green);
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 17px;
+            box-shadow: 0 8px 20px rgba(6,199,85,0.35);
+            transition: transform .15s, box-shadow .15s;
+        }
+        .line-add-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(6,199,85,0.45); }
+        .line-add-btn .line-ic { font-size: 22px; }
+        .line-add-btn .line-id-text {
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(255,255,255,0.22);
+            padding: 2px 10px;
+            border-radius: 999px;
+        }
+
         /* ===== Modal ===== */
         .modal-overlay {
             position: fixed;
@@ -737,6 +808,11 @@
                 <h1 id="hero-heading">วางแผนวันนี้ เพื่ออนาคตที่คุณเลือกได้</h1>
                 <p class="tagline" id="hero-tagline">Plan Today, Live Your Future</p>
                 <p class="sub-tagline" id="hero-sub">เพราะทุกเป้าหมายในชีวิต ควรมีแผนที่มั่นคงรองรับ</p>
+                <div class="hero-cta">
+                    <a href="#line-contact-section" class="hero-btn primary">💬 รับคำปรึกษาฟรี</a>
+                    <a href="#about-agent" class="hero-btn outline">📅 นัดหมายออนไลน์</a>
+                    <span class="hero-btn placeholder">ว่างไว้ก่อน</span>
+                </div>
             </div>
         </section>
 
@@ -804,6 +880,20 @@
                 <div class="year">2023 — Top Unit Manager / Elite Agent</div>
                 <div class="year">2024 — Financial Advisor Award</div>
                 <div class="year">2025 — Leadership Achievement</div>
+            </div>
+        </section>
+
+        <!-- ============= ติดต่อไลน์ ============= -->
+        <section id="line-contact-section" class="line-contact editable">
+            <button class="edit-btn" data-edit="profile">✏️ แก้ไข</button>
+            <h2 class="section-title">ติดต่อผ่านไลน์</h2>
+            <p class="section-subtitle">สอบถามหรือปรึกษาได้โดยตรง เพิ่มเพื่อนแล้วทักได้เลย</p>
+            <div class="line-contact-inner">
+                <a id="line-add-btn" href="#" target="_blank" rel="noopener" class="line-add-btn">
+                    <span class="line-ic">💬</span>
+                    <span>เพิ่มเพื่อนทางไลน์</span>
+                    <span id="line-id-text" class="line-id-text"></span>
+                </a>
             </div>
         </section>
 
@@ -1156,6 +1246,40 @@
 
             // หัวข้อ "คุณกำลังมองหาอะไรอยู่?" (user_pages) — ดึงจาก DB
             loadLookforPages();
+
+            // ติดต่อไลน์ (ใต้ความสำเร็จและรางวัล)
+            renderLineContact();
+        }
+
+        // ===== ติดต่อไลน์ =====
+        // ใช้ line_id จากโปรไฟล์ สร้างลิงก์เพิ่มเพื่อน:
+        //   @xxx (official/บัญชีทางการ) → https://line.me/R/ti/p/@xxx
+        //   xxx  (id ส่วนตัว)           → https://line.me/ti/p/~xxx
+        function renderLineContact() {
+            const section = document.querySelector('.line-contact');
+            const btn = document.getElementById('line-add-btn');
+            const idText = document.getElementById('line-id-text');
+            if (!section || !btn) return;
+
+            const raw = (currentUser.line_id || '').trim();
+            if (raw) {
+                const display = raw.startsWith('@') ? raw : '@' + raw;
+                btn.href = raw.startsWith('@')
+                    ? 'https://line.me/R/ti/p/' + encodeURIComponent(raw)
+                    : 'https://line.me/ti/p/~' + encodeURIComponent(raw);
+                btn.style.pointerEvents = '';
+                idText.textContent = display;
+                section.style.display = '';
+            } else if (isViewingOther) {
+                // ผู้เข้าชม + ตัวแทนยังไม่ตั้ง LINE → ซ่อนทั้ง section
+                section.style.display = 'none';
+            } else {
+                // เจ้าของยังไม่ตั้ง LINE → โชว์ให้กดแก้ไขโปรไฟล์
+                section.style.display = '';
+                btn.removeAttribute('href');
+                btn.style.pointerEvents = 'none';
+                idText.textContent = 'ยังไม่ได้ตั้ง LINE ID (กดแก้ไข)';
+            }
         }
 
         // ===== Modal helpers =====
