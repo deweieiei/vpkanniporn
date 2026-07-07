@@ -447,6 +447,17 @@
         .pp-sum { font-size: 11px; color: var(--text-muted); margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .pp-msg { grid-column: 1 / -1; font-size: 13px; color: var(--text-muted); padding: 24px; background: #fafafa; border-radius: 12px; text-align: center; }
 
+        /* ===== Look-for cards (หัวข้อในส่วน "คุณกำลังมองหาอะไรอยู่?" = user_pages) ===== */
+        .lookfor-grid { max-width: 1100px; margin: 10px auto 0; }
+        .lf-card { position: relative; }
+        .lf-cover { display: flex; align-items: center; justify-content: center; font-size: 40px; }
+        .lf-del { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border: none; border-radius: 50%; background: rgba(255,255,255,0.92); color: #ef4444; font-size: 12px; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; z-index: 2; }
+        .lf-del:hover { background: #fee2e2; }
+        .lf-add { cursor: pointer; border: 2px dashed #f0b787; background: #fff8f2; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 150px; border-radius: 12px; color: var(--primary-orange); font-weight: 700; gap: 6px; transition: background .15s; }
+        .lf-add:hover { background: var(--light-orange-bg); }
+        .lf-add .plus { font-size: 30px; line-height: 1; }
+        .inactive-tag { display:inline-block; margin-left:6px; font-size:10px; font-weight:600; color:#9ca3af; background:#f3f4f6; padding:1px 6px; border-radius:8px; vertical-align:middle; }
+
         /* ===== Reviews ===== */
         .testimonials { padding: 60px 5%; background-color: var(--light-orange-bg); }
         .reviews-container {
@@ -704,38 +715,7 @@
             <button class="edit-btn" data-edit="plans">✏️ จัดการแบบประกัน</button>
             <h2 class="section-title">เลือกแผนที่เหมาะกับคุณ</h2>
             <p class="section-subtitle">คุณกำลังมองหาอะไรอยู่?</p>
-            <!-- <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">🏥</div>
-                    <h3>ประกันสุขภาพ</h3>
-                    <p class="en">Health Insurance</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🛡️</div>
-                    <h3>ประกันชีวิต</h3>
-                    <p class="en">Life Insurance</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">💰</div>
-                    <h3>ประกันสะสมทรัพย์</h3>
-                    <p class="en">Savings Insurance</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">👴</div>
-                    <h3>ประกันบำนาญ</h3>
-                    <p class="en">Retirement Planning</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🏢</div>
-                    <h3>ประกันกลุ่ม</h3>
-                    <p class="en">Group Insurance</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">📜</div>
-                    <h3>วางแผนมรดก</h3>
-                    <p class="en">Legacy Planning</p>
-                </div>
-            </div> -->
+            <div id="lookfor-grid" class="pp-grid lookfor-grid"></div>
         </section>
 
         <!-- ============= Profile (วางแผนการเงิน) ============= -->
@@ -1157,6 +1137,9 @@
 
             // แบบประกัน (แผนยอดนิยม) — ดึงจาก DB
             loadProfilePlans();
+
+            // หัวข้อ "คุณกำลังมองหาอะไรอยู่?" (user_pages) — ดึงจาก DB
+            loadLookforPages();
         }
 
         // ===== Modal helpers =====
@@ -1605,6 +1588,92 @@
             } catch (err) {
                 toast(err.message, 'error');
             }
+        });
+
+        // ===== หัวข้อ "คุณกำลังมองหาอะไรอยู่?" (user_pages / popcard) =====
+        // การ์ด 1 ใบ = 1 หน้าเนื้อหา; กดแล้วไปหน้า /page/:id (แสดงข้อมูลจาก DB)
+        // เจ้าของ (ไม่ใช่โหมดดูคนอื่น) จะเห็นปุ่มลบ 🗑️ และการ์ด "＋ เพิ่มหัวข้อใหม่"
+        function lookforCard(p) {
+            const cover = p.button_image
+                ? `<img src="${escapeHtml(p.button_image)}" alt="${escapeHtml(p.button_text)}">`
+                : '🔎';
+            const inactive = (!isViewingOther && p.is_active === 0)
+                ? '<span class="inactive-tag">ซ่อนอยู่</span>' : '';
+            const del = !isViewingOther
+                ? `<button type="button" class="lf-del" data-del="${p.id}" title="ลบหัวข้อนี้">🗑️</button>` : '';
+            return `
+                <div class="pp-card lf-card" data-page-id="${p.id}">
+                    ${del}
+                    <div class="pp-cover lf-cover">${cover}</div>
+                    <div class="pp-body">
+                        <div class="pp-title">${escapeHtml(p.button_text)}${inactive}</div>
+                    </div>
+                </div>`;
+        }
+
+        async function loadLookforPages() {
+            const container = document.getElementById('lookfor-grid');
+            if (!container) return;
+            const targetId = isViewingOther ? viewingAgentId : (currentUser && currentUser.id);
+            if (!targetId) return;
+            container.innerHTML = '<p class="pp-msg">⏳ กำลังโหลด…</p>';
+            try {
+                // เจ้าของ: /api/pages/mine (เห็นที่ซ่อนด้วย) / คนอื่น: /api/pages?user_id (เฉพาะที่เปิด)
+                const url = isViewingOther ? `/api/pages?user_id=${targetId}` : '/api/pages/mine';
+                const res = await fetch(url, { credentials: 'same-origin' });
+                const data = await res.json();
+                const pages = data.pages || [];
+                let html = pages.map(lookforCard).join('');
+                if (!isViewingOther) {
+                    html += `<div class="lf-add" id="lookfor-add"><span class="plus">＋</span><span>เพิ่มหัวข้อใหม่</span></div>`;
+                } else if (pages.length === 0) {
+                    html = '<p class="pp-msg">ยังไม่มีหัวข้อในส่วนนี้</p>';
+                }
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = '<p class="pp-msg" style="color:#ef4444;">โหลดไม่สำเร็จ</p>';
+            }
+        }
+
+        document.getElementById('lookfor-grid').addEventListener('click', async (e) => {
+            // ปุ่มลบ (เจ้าของ)
+            const delBtn = e.target.closest('.lf-del');
+            if (delBtn) {
+                e.stopPropagation();
+                const id = Number(delBtn.dataset.del);
+                if (!confirm('ลบหัวข้อนี้และหน้าเนื้อหาทั้งหมด? (ย้อนกลับไม่ได้)')) return;
+                try {
+                    const res = await fetch('/api/pages/' + id, { method: 'DELETE', credentials: 'same-origin' });
+                    const d = await res.json();
+                    if (!res.ok) throw new Error(d.error || 'ลบไม่สำเร็จ');
+                    toast('✓ ลบหัวข้อแล้ว');
+                    loadLookforPages();
+                } catch (err) { toast(err.message, 'error'); }
+                return;
+            }
+            // การ์ด "เพิ่มหัวข้อใหม่" (เจ้าของ)
+            if (e.target.closest('#lookfor-add')) {
+                const name = prompt('ชื่อหัวข้อใหม่ (เช่น "ประกันสุขภาพ")');
+                if (name === null) return; // กดยกเลิก
+                const button_text = name.trim() || 'หัวข้อใหม่';
+                try {
+                    const res = await fetch('/api/pages', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ button_text }),
+                    });
+                    const d = await res.json();
+                    if (!res.ok) throw new Error(d.error || 'สร้างไม่สำเร็จ');
+                    // ไปหน้าที่สร้างใหม่ทันที เพื่อใส่เนื้อหา/รูปผ่าน Toolbar เจ้าของ
+                    window.location.href = '/page/' + d.id;
+                } catch (err) { toast(err.message, 'error'); }
+                return;
+            }
+            // การ์ดปกติ → เปิดหน้าเนื้อหา (ทั้งเจ้าของและผู้เข้าชม)
+            const card = e.target.closest('.lf-card');
+            if (!card) return;
+            window.location.href = '/page/' + Number(card.dataset.pageId);
         });
 
         // ===== Section nav scroll spy =====
