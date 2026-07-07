@@ -7,6 +7,7 @@ const PUBLIC_COLUMNS = `
   id, first_name, last_name, avatar_path, position, company, branch,
   phone, email, province, license_number, license_number_2,
   bio, quote, facebook_url, line_id, instagram_url, awards, cover_images,
+  hero_heading, hero_tagline, hero_sub, hero_image,
   created_at
 `;
 

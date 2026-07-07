@@ -67,7 +67,7 @@ function parseJsonArray(v) {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const isCover = file.fieldname === 'cover_images';
+    const isCover = file.fieldname === 'cover_images' || file.fieldname === 'hero_image';
     const baseDir = isCover ? COVERS_DIR : AVATARS_DIR;
     const userId = req.session && req.session.userId;
     if (userId) {
@@ -96,6 +96,7 @@ const upload = multer({
 const profileUpload = upload.fields([
   { name: 'avatar', maxCount: 1 },
   { name: 'cover_images', maxCount: 6 },
+  { name: 'hero_image', maxCount: 1 },
 ]);
 
 function isValidEmail(email) {
@@ -106,7 +107,8 @@ const FULL_USER_COLUMNS = `
   id, email, first_name, last_name, birthdate, gender, province, avatar_path,
   role, is_active, created_at, updated_at,
   phone, position, company, branch, license_number, license_number_2,
-  bio, quote, facebook_url, line_id, instagram_url, awards, cover_images
+  bio, quote, facebook_url, line_id, instagram_url, awards, cover_images,
+  hero_heading, hero_tagline, hero_sub, hero_image
 `;
 
 function requireAuth(req, res, next) {
@@ -228,7 +230,7 @@ router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
 
     // อ่านข้อมูลเก่าเพื่อรู้ว่าไฟล์ใดต้องลบ
     const [currentRows] = await pool.query(
-      'SELECT avatar_path, cover_images FROM users WHERE id = ? LIMIT 1',
+      'SELECT avatar_path, cover_images, hero_image FROM users WHERE id = ? LIMIT 1',
       [userId]
     );
     if (currentRows.length === 0) {
@@ -236,6 +238,7 @@ router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
     }
     const oldAvatar = currentRows[0].avatar_path;
     const oldCovers = parseJsonArray(currentRows[0].cover_images);
+    const oldHeroImage = currentRows[0].hero_image;
 
     const allowed = [
       'first_name', 'last_name', 'birthdate', 'gender', 'province',
@@ -243,6 +246,7 @@ router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
       'license_number', 'license_number_2',
       'bio', 'quote',
       'facebook_url', 'line_id', 'instagram_url',
+      'hero_heading', 'hero_tagline', 'hero_sub',
     ];
     const updates = {};
     for (const k of allowed) {
@@ -274,6 +278,17 @@ router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
       if (oldAvatar && oldAvatar !== updates.avatar_path) {
         filesToDelete.push(oldAvatar);
       }
+    }
+
+    // Hero background image (ภาพพื้นหลัง hero — 1 รูป, override cover slideshow)
+    if (req.files && req.files.hero_image && req.files.hero_image[0]) {
+      const f = req.files.hero_image[0];
+      updates.hero_image = `/uploads/covers/${userId}/${f.filename}`;
+      if (oldHeroImage && oldHeroImage !== updates.hero_image) filesToDelete.push(oldHeroImage);
+    } else if (req.body.hero_image_clear === '1') {
+      // ล้างรูป hero กลับไปใช้พื้นหลัง/ข้อความเดิม
+      updates.hero_image = null;
+      if (oldHeroImage) filesToDelete.push(oldHeroImage);
     }
 
     // Cover images
