@@ -346,6 +346,29 @@
         @media (min-width: 900px) {
             .profile-section { grid-template-columns: 1fr 1fr; gap: 50px; }
         }
+        /* รูปโปรไฟล์แนวตั้งของตัวแทน (ใช้ avatar เดิม) + ข้อมูล วางคู่กัน */
+        .profile-left { display: flex; gap: 26px; align-items: flex-start; }
+        .profile-info { min-width: 0; }
+        .profile-portrait {
+            flex-shrink: 0;
+            width: 190px;
+            aspect-ratio: 3 / 4;
+            border-radius: 16px;
+            background: #f3f4f6 center/cover no-repeat;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            border: 4px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .profile-portrait-ph { font-size: 60px; opacity: 0.35; }
+        @media (max-width: 640px) {
+            .profile-left { flex-direction: column; align-items: center; }
+            .profile-portrait { width: 200px; }
+            .profile-info { text-align: center; width: 100%; }
+            .profile-info blockquote { text-align: left; }
+            .profile-contact p { justify-content: center; }
+        }
         .profile-info h2 { font-size: 24px; margin-bottom: 8px; }
         .profile-info .name {
             font-size: clamp(24px, 4vw, 32px);
@@ -725,7 +748,11 @@
         <!-- ============= Profile (วางแผนการเงิน) ============= -->
         <section id="about-agent" class="profile-section editable">
             <button class="edit-btn" data-edit="profile">✏️ แก้ไข</button>
-            <div class="profile-info">
+            <div class="profile-left">
+                <div class="profile-portrait" id="agent-portrait">
+                    <span class="profile-portrait-ph" id="agent-portrait-ph">👤</span>
+                </div>
+                <div class="profile-info">
                 <h2>รู้จักที่ปรึกษาของคุณ</h2>
                 <p class="name" id="agent-name">กวิสรา จงเจริญ</p>
                 <p class="position" id="agent-position">Unit Manager | Financial Consultant</p>
@@ -741,6 +768,7 @@
                     🛡️ <b>ใบอนุญาตตัวแทน/นายหน้าประกันชีวิต</b><br>
                     เลขที่ <b id="agent-license-1">—</b><span id="agent-license-2-wrap" style="display:none;"> / เลขที่ <b id="agent-license-2">—</b></span>
                 </div>
+            </div>
             </div>
             <div>
                 <h2 style="font-size: 22px; margin-bottom: 14px;">แผนยอดนิยม</h2>
@@ -1136,6 +1164,18 @@
             document.getElementById('user-name').textContent = fullName;
             if (u.avatar_path) {
                 document.getElementById('user-avatar').style.backgroundImage = `url('${u.avatar_path}')`;
+            }
+            // รูปโปรไฟล์แนวตั้งในส่วน "รู้จักที่ปรึกษาของคุณ" (ใช้รูปเดียวกับ avatar)
+            const portrait = document.getElementById('agent-portrait');
+            const portraitPh = document.getElementById('agent-portrait-ph');
+            if (portrait) {
+                if (u.avatar_path) {
+                    portrait.style.backgroundImage = `url('${u.avatar_path}')`;
+                    if (portraitPh) portraitPh.style.display = 'none';
+                } else {
+                    portrait.style.backgroundImage = '';
+                    if (portraitPh) portraitPh.style.display = '';
+                }
             }
             // Hero — ดึงจาก DB (แสดงทั้งโหมดตัวเองและผู้เข้าชม); ถ้าไม่ตั้งค่าใช้ข้อความเดิม
             document.getElementById('hero-heading').textContent = u.hero_heading || HERO_DEFAULTS.heading;
