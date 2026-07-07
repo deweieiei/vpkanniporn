@@ -1,0 +1,91 @@
+════════════════════════════════════════════════════════════════
+  เอกสารส่งมอบ — โปรเจกต์ FWD Agent Office (vpkanniporn)
+  อัปเดต: 6 กรกฎาคม 2026 (โดย Claude Opus 4.8)
+  *** อ่านไฟล์นี้ก่อน แล้วค่อยดู 05_ทำแล้ว.txt / 06_ยังไม่ทำ.txt สำหรับรายละเอียด ***
+════════════════════════════════════════════════════════════════
+
+■ โปรเจกต์นี้คืออะไร
+  เว็บสำนักงานตัวแทนประกัน FWD ของคุณกวิสรา จงเจริญ ("VP Kanniporn")
+  Deploy จริงแล้วที่ https://vpkanniporn.com (หลัง Cloudflare + HostAtom/Plesk)
+  Repo: https://github.com/deweieiei/vpkanniporn (branch main, public)
+
+■ Stack
+  Node.js + Express 4 + MySQL + express-session (เก็บ session ใน MySQL) + multer
+  Frontend เป็น HTML/JS ล้วน (บางหน้าใช้ Tailwind CDN, บางหน้า CSS เอง)
+  รันเครื่อง dev: npm run dev (port 3000) — .claude/launch.json ชื่อ vpkanniporn-dev
+
+■■■ สถาปัตยกรรมปัจจุบัน (หลังรื้อใหญ่รอบ 14-15) ■■■
+
+  แนวคิด: เว็บ = ไดเรกทอรีตัวแทน ให้คนค้นหาตัวแทน + ตัวแทนมีโปรไฟล์/หน้าของตัวเอง
+  SupperAdmin เป็นคนสร้างบัญชีตัวแทน (ไม่มีสมัครเอง)
+
+  หน้าเว็บ (routes ใน routes/pages.js):
+    /                = หน้า login (login.html)   *** ดู "ค้างตัดสินใจ" ข้อ 1 ***
+    /login           = หน้า login (เหมือน /)
+    /home            = หน้าค้นหาตัวแทน (home.html) — เดิมชื่อ index.html
+    /agent/:id       = โปรไฟล์ตัวแทน (dashboard.html โหมด public อ่านอย่างเดียว)
+    /profile /dashboard = โปรไฟล์ตัวเอง (ต้อง login, แก้ไขได้)
+    /page/:id        = หน้าเนื้อหาของ "ปุ่ม" ที่ตัวแทนสร้าง (page.html)
+                       คนทั่วไปเห็นเนื้อหา / เจ้าของที่ login เห็น toolbar แก้ไข
+    /support-admin        = login ของ SupperAdmin (supperadmin-login.html)
+    /support-admin/users  = หน้าจัดการตัวแทน (supperadmin-users.html)
+    /plans /plans/:id     = แบบประกัน Phase 3 (อาจไม่ได้ใช้แล้วในทิศทางใหม่)
+    /search               = หน้าค้นหาเก่า (ซ้ำกับ /home — พิจารณาลบ)
+
+  บทบาท (users.role): admin / agent / user / support_admin
+    - "SupperAdmin" ใช้ role = 'admin' (login ด้วยชื่อผู้ใช้ ไม่ใช่อีเมล)
+    - ตัวแทน = role 'agent' (login ด้วยอีเมล+รหัส ที่ /login)
+
+  Session: "ไม่จำ login" — เป็น session cookie (ปิดเบราว์เซอร์ต้องล็อกอินใหม่)
+    ตั้งใน index.js: rolling=false + ไม่ตั้ง cookie.maxAge
+
+  API:
+    /api/auth/login (อีเมล), /api/auth/supperadmin-login (username), logout, me, PUT profile
+    /api/users (list), /api/users/:id
+    /api/admin/users  GET/POST/PUT/DELETE  (จัดการตัวแทน — เฉพาะ role admin)
+    /api/pages        ปุ่ม/หน้าของตัวแทน:
+        GET /api/pages?user_id=N (public list), GET /api/pages/mine (เจ้าของ),
+        GET /api/pages/:id (public + is_owner), POST, PUT /:id, POST /:id/image, DELETE /:id
+    /api/plans, /api/categories (Phase 3)
+
+■■■ ฐานข้อมูล (ตาราง) ■■■
+    users                 — ผู้ใช้ทั้งหมด (role enum มี support_admin แล้ว)
+    insurance_categories / insurance_plans — Phase 3 แบบประกัน
+    user_pages            — ปุ่ม/หน้าที่ตัวแทนสร้างเอง (ใหม่ รอบ 15)
+    site_content          — *เลิกใช้แล้ว* (CMS ถูกยกเลิกรอบ 14) เหลือค้างใน DB เฉยๆ ลบได้
+    sessions              — express-mysql-session สร้างอัตโนมัติ
+
+  *** SQL ที่ต้องรันบน DB จริง (ลำดับ) — ไฟล์อยู่ใน db/ ***
+    1. db/schema.sql                    (users + insurance tables) — ถ้า DB ใหม่
+    2. db/seed_admin.sql                (บัญชี admin/1234)  ← หรือ migration_supperadmin.sql
+    3. db/migration_insurance_plans.sql (ถ้ายังไม่ได้รัน)
+    4. db/migration_user_pages.sql      (ตาราง user_pages)
+  *** พี่ดิวรัน node script เองไม่ได้ — ให้ทำทุกอย่างผ่าน SQL (phpMyAdmin) เสมอ ***
+
+■■■ บัญชีเข้าระบบ ■■■
+    SupperAdmin: /support-admin  →  user: admin  /  รหัส: 1234  (bcrypt แล้ว, ควรเปลี่ยนหลัง deploy)
+    ตัวแทน: SupperAdmin สร้างให้ที่ /support-admin/users แล้ว login ที่ /login
+
+■■■ ค้างตัดสินใจ / ยังไม่ทำ (ดู 06_ยังไม่ทำ.txt) ■■■
+  1. [รอพี่ดิวเคาะ] หน้าแรก "/" ควรเป็น login หรือ home (ค้นหา)?
+     — 6 ก.ค. พี่ดิวบ่นว่าอยากเห็น home ไม่ใช่ index/login ที่หน้าแรก (ยังไม่สรุป)
+  2. ผูก "ปุ่ม" (user_pages) เข้าไปแสดงในส่วน "เลือกแผนที่เหมาะกับคุณ" บนหน้าโปรไฟล์
+     (dashboard.html) + ปุ่ม "เพิ่มหน้า" สำหรับเจ้าของ — API พร้อมแล้ว เหลือ UI
+  3. แต่งหน้าโปรไฟล์ (dashboard.html, 1583 บรรทัด) ให้เป็นโทน/ดีไซน์แบบ home ใหม่
+  4. ทดสอบ flow เต็มเมื่อมี DB (เครื่อง dev ไม่มี MySQL — ทดสอบได้แค่ static/route)
+  5. site_content + /search + Phase 3 plans อาจไม่จำเป็นในทิศใหม่ — เคลียร์ทีหลัง
+
+■■■ วิธีทำงานกับพี่ดิว (สำคัญ) ■■■
+  - เรียก "พี่ดิว" (ไพโรจน์) ตอบไทยง่ายๆ อธิบายเหตุผล ไม่ใช้คำสำเร็จรูป
+  - พี่ดิวเปราะบาง (ดูโปรไฟล์/สุขภาพใจใน Desktop\Claude\2_หน่วยความจำของAI) — อ่อนโยน
+  - ทุก commit push GitHub ทันที (deweieiei/vpkanniporn)
+  - พี่ดิวรัน node/คำสั่ง terminal เองไม่ได้ → ส่ง SQL / ทำผ่านเครื่องมือให้
+  - เครื่อง dev ไม่มี DB → งานที่ต้องเห็นหน้าโปรไฟล์จริง ต้องรอ DB/deploy
+  - ก่อนเริ่มงานทุกครั้ง เช็ก 05/06 + ไฟล์นี้ให้ทันสมัย และอัปเดตเมื่อทำเสร็จ
+
+■■■ บทเรียน/กับดักที่เจอมา ■■■
+  - เปลี่ยนชื่อไฟล์ HTML ต้องเช็ก reference: routes/pages.js sendFile + 404 fallback ใน index.js
+    (เคยลืมแก้ 404 fallback ที่ชี้ index.html หลังเปลี่ยนเป็น home.html — รอบ 15)
+  - Deploy แล้วเห็นหน้าเก่า มักเป็นแคช Cloudflare/เบราว์เซอร์ → purge / hard refresh (Ctrl+F5)
+  - render เนื้อหาที่ผู้ใช้กรอก ใช้ escape + nl2br เสมอ (กัน XSS) — ทำแบบนี้ใน page.html/plan-detail แล้ว
+════════════════════════════════════════════════════════════════

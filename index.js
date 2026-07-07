@@ -104,8 +104,8 @@ app.use((req, res) => {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'ไม่พบ endpoint นี้' });
   }
-  // path อื่นๆ → ส่งหน้าแรก (SPA-style fallback)
-  res.status(404).sendFile(path.join(__dirname, 'public', 'index.html'));
+  // path อื่นๆ → ส่งหน้า Home (ค้นหาตัวแทน) เป็น fallback
+  res.status(404).sendFile(path.join(__dirname, 'public', 'home.html'));
 });
 
 // ===== Error handler =====
