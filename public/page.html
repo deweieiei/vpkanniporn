@@ -27,6 +27,23 @@
         .rt-btn { min-width:34px; height:32px; padding:0 8px; border:1px solid #e5e7eb; background:#fff; border-radius:8px; font-size:13px; color:#374151; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
         .rt-btn:hover { background:#fff7ed; border-color:#fdba74; color:#ea580c; }
         .rt-sep { width:1px; align-self:stretch; background:#e5e7eb; margin:2px 4px; }
+
+        /* ===== การ์ดบลอคย่อย (เหมือนส่วน "คุณกำลังมองหาอะไรอยู่?" ในโปรไฟล์เป๊ะ) ===== */
+        .lf-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:12px; }
+        .lf-card { position: relative; min-height: 150px; border-radius: 14px; overflow: hidden; cursor: pointer; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 5px rgba(0,0,0,0.10); transition: box-shadow .15s, transform .15s; }
+        .lf-card:hover { box-shadow: 0 8px 22px rgba(0,0,0,0.16); transform: translateY(-2px); }
+        .lf-card.lf-noimg { background: linear-gradient(135deg, #ff9a4d, #ff6b00); }
+        .lf-shade { position: absolute; inset: 0; background: rgba(0,0,0,0.34); }
+        .lf-card.lf-noimg .lf-shade { background: transparent; }
+        .lf-label { position: relative; z-index: 1; padding: 14px 12px; color: #fff; font-weight: 700; font-size: 16px; text-align: center; line-height: 1.35; text-shadow: 0 1px 6px rgba(0,0,0,0.55); }
+        .lf-tools { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; z-index: 2; }
+        .lf-tools button { width: 28px; height: 28px; border: none; border-radius: 50%; background: rgba(255,255,255,0.92); font-size: 13px; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
+        .lf-edit { color: #ea580c; } .lf-edit:hover { background: #ffedd5; }
+        .lf-del { color: #ef4444; } .lf-del:hover { background: #fee2e2; }
+        .lf-add { cursor: pointer; border: 2px dashed #f0b787; background: #fff8f2; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 150px; border-radius: 14px; color: #ea580c; font-weight: 700; gap: 6px; transition: background .15s; }
+        .lf-add:hover { background: #fff2e6; }
+        .lf-add .plus { font-size: 30px; line-height: 1; }
+        .inactive-tag { display:inline-block; margin-left:6px; font-size:10px; font-weight:600; color:#fff; background:rgba(0,0,0,0.45); padding:1px 6px; border-radius:8px; vertical-align:middle; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen">
@@ -55,6 +72,9 @@
     </div>
 
     <main class="max-w-4xl mx-auto px-4 py-8">
+        <!-- BREADCRUMB (เส้นทาง: หน้าโปรไฟล์ › จังหวัด › อำเภอ › …) -->
+        <nav id="breadcrumb" class="hidden text-xs text-gray-500 mb-4 flex-wrap items-center gap-y-1"></nav>
+
         <div id="loading" class="text-center text-gray-400 py-16 text-sm">⏳ กำลังโหลด…</div>
 
         <div id="notfound" class="hidden text-center py-16">
@@ -96,7 +116,51 @@
                  contenteditable="true" data-placeholder="พิมพ์เนื้อหาที่นี่... ใช้ปุ่มด้านบนจัดตัวหนา หัวข้อ ใส่รูปได้"></div>
             <p class="text-[11px] text-gray-400 mt-2">💡 เลือกข้อความก่อนกดปุ่มจัดรูปแบบ • กด 🖼️ เพื่อแทรกรูปในเนื้อหา</p>
         </div>
+
+        <!-- ===== บลอคย่อย (recursive) — grid เหมือนหน้าโปรไฟล์เป๊ะ กดเข้าไปสร้างต่อได้อีกไม่จำกัดชั้น ===== -->
+        <section id="blocks-section" class="hidden mt-8">
+            <div class="flex items-center justify-between mb-1">
+                <h2 class="text-xl font-extrabold text-gray-800">รายการภายใน</h2>
+            </div>
+            <p class="text-sm text-gray-500 mb-4">กดที่การ์ดเพื่อเข้าไปดู/แก้ไขเนื้อหา หรือเพิ่มการ์ดใหม่ได้</p>
+            <div id="blocks-grid" class="lf-grid"></div>
+        </section>
     </main>
+
+    <!-- ===== MODAL: เพิ่ม/แก้ไขบลอคย่อย ===== -->
+    <div id="block-modal" class="fixed inset-0 bg-black/55 z-[5000] hidden items-center justify-center p-5">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h2 id="block-modal-title" class="text-lg font-bold mb-1">➕ เพิ่มรายการใหม่</h2>
+            <p class="text-xs text-gray-500 mb-5">การ์ดนี้จะแสดงในหน้านี้ — กดที่การ์ดเพื่อเข้าไปหน้าเนื้อหา (Rich Text Editor)</p>
+            <form id="block-form">
+                <div class="mb-4">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">ชื่อรายการ *</label>
+                    <input type="text" name="button_text" maxlength="120" required
+                           class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                           placeholder="เช่น กรุงเทพมหานคร">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">รูปการ์ด (ไม่ใส่ก็ได้ — ใช้เป็นพื้นหลังการ์ด)</label>
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-[88px] h-14 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
+                            <img id="block-preview" class="hidden w-full h-full object-cover" src="" alt="">
+                            <span id="block-ph" class="text-[11px] text-gray-400">ไม่มีรูป</span>
+                        </div>
+                        <input type="file" name="image" id="block-image" accept="image/*" class="text-xs">
+                    </div>
+                    <p class="text-[11px] text-gray-400 mt-1.5">แนะนำขนาด <b>800 × 800 px</b> • jpg/png/webp สูงสุด 5MB</p>
+                </div>
+                <label class="flex items-center gap-2 text-sm mb-5 cursor-pointer text-gray-600">
+                    <input type="checkbox" name="is_active" id="block-active" checked>
+                    แสดงการ์ดนี้ให้ผู้เข้าชมเห็น <span class="text-[11px] text-gray-400">(เอาติ๊กออก = ซ่อน)</span>
+                </label>
+                <div class="flex justify-end gap-2.5 pt-4 border-t border-gray-100">
+                    <button type="button" id="block-cancel" class="px-5 py-2.5 rounded-full font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200">ยกเลิก</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-full font-bold text-sm bg-orange-500 text-white hover:bg-orange-600">💾 บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold opacity-0 pointer-events-none transition-opacity z-50"></div>
 
@@ -105,8 +169,14 @@
         const pageId = m ? Number(m[1]) : null;
         let pageData = null;
         let isOwner = false;
+        let breadcrumb = [];
 
         const editor = document.getElementById('rt-editor');
+
+        function escapeHtml(s){
+            return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+                ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
 
         function toast(msg, ok){
             const t = document.getElementById('toast');
@@ -120,7 +190,25 @@
             contentEl.innerHTML = (pageData.content && pageData.content.trim())
                 ? pageData.content
                 : '<p class="text-gray-400 italic">ยังไม่มีเนื้อหาในหน้านี้</p>';
-            if (pageData.user_id) document.getElementById('back-link').href = '/agent/' + pageData.user_id;
+            // back-link: มีหน้าแม่ → ย้อนขึ้นไปหน้าแม่ / ไม่มี → โปรไฟล์(เจ้าของ) หรือหน้าตัวแทน(ผู้ชม)
+            const back = document.getElementById('back-link');
+            if (pageData.parent_id) back.href = '/page/' + pageData.parent_id;
+            else back.href = isOwner ? '/profile' : ('/agent/' + pageData.user_id);
+            if (pageData.button_text) document.title = pageData.button_text + ' — VP Kanniporn FWD';
+        }
+
+        // ===== Breadcrumb: หน้าโปรไฟล์ › จังหวัด › อำเภอ › (หน้าปัจจุบัน) =====
+        function renderBreadcrumb(){
+            const el = document.getElementById('breadcrumb');
+            const rootHref = isOwner ? '/profile' : ('/agent/' + pageData.user_id);
+            const sep = '<span class="text-gray-300 mx-1.5">›</span>';
+            const parts = [`<a href="${rootHref}" class="hover:text-orange-600 whitespace-nowrap">🏠 หน้าโปรไฟล์</a>`];
+            breadcrumb.forEach(b => {
+                parts.push(`<a href="/page/${b.id}" class="hover:text-orange-600 whitespace-nowrap">${escapeHtml(b.button_text)}</a>`);
+            });
+            parts.push(`<span class="text-gray-800 font-semibold whitespace-nowrap">${escapeHtml(pageData.button_text || '')}</span>`);
+            el.innerHTML = parts.join(sep);
+            el.classList.remove('hidden');
         }
 
         async function load(){
@@ -131,10 +219,21 @@
                 const data = await res.json();
                 pageData = data.page;
                 isOwner = !!data.is_owner;
+                breadcrumb = data.breadcrumb || [];
                 document.getElementById('loading').classList.add('hidden');
-                document.getElementById('view').classList.remove('hidden');
-                renderView();
-                if (isOwner) document.getElementById('toolbar').classList.remove('hidden');
+                renderView();        // ตั้ง back-link + title + เตรียมเนื้อหา (ยังไม่โชว์ view)
+                renderBreadcrumb();
+
+                // ความลึก (จำนวนชั้นแม่) กำหนดว่าหน้านี้แสดงอะไร:
+                //   breadcrumb ว่าง = กด popcard มาจากโปรไฟล์  → "หน้า 2" → แสดง/สร้าง popcard ย่อย (การ์ด)
+                //   breadcrumb ≥ 1  = กดมาจากหน้า 2            → "หน้า 3" → แสดง Rich Text Editor
+                const isCardPage = breadcrumb.length === 0;
+                if (isCardPage) {
+                    loadBlocks();    // โชว์ section การ์ด (blocks-section)
+                } else {
+                    document.getElementById('view').classList.remove('hidden');
+                    if (isOwner) document.getElementById('toolbar').classList.remove('hidden');
+                }
             } catch (e) { showNotFound(); }
         }
         function showNotFound(){
@@ -227,6 +326,180 @@
                 toast('บันทึกเรียบร้อย');
             } catch (e) { toast('บันทึกไม่สำเร็จ', false); }
             finally { btnSave.disabled = false; }
+        });
+
+        // ================= บลอคย่อย (recursive) =================
+        // การ์ด 1 ใบ = 1 หน้าย่อย; กดแล้วไป /page/:id (หน้านั้นก็สร้างบลอคย่อยได้อีก → ลึกไม่จำกัด)
+        let blocks = [];
+        let editingBlockId = null; // null = สร้างใหม่
+
+        function blockCard(p){
+            const hasImg = !!p.button_image;
+            const style = hasImg ? ` style="background-image:url('${escapeHtml(p.button_image)}')"` : '';
+            const noimg = hasImg ? '' : ' lf-noimg';
+            const inactive = (isOwner && p.is_active === 0) ? ' <span class="inactive-tag">ซ่อนอยู่</span>' : '';
+            const tools = isOwner
+                ? `<div class="lf-tools">
+                        <button type="button" class="lf-edit" data-edit-id="${p.id}" title="แก้ไข">✏️</button>
+                        <button type="button" class="lf-del" data-del="${p.id}" title="ลบ">🗑️</button>
+                   </div>` : '';
+            return `
+                <div class="lf-card${noimg}" data-page-id="${p.id}"${style}>
+                    ${tools}
+                    <div class="lf-shade"></div>
+                    <div class="lf-label">${escapeHtml(p.button_text)}${inactive}</div>
+                </div>`;
+        }
+
+        async function loadBlocks(){
+            const grid = document.getElementById('blocks-grid');
+            const section = document.getElementById('blocks-section');
+            // เจ้าของ: /api/pages/mine (เห็นที่ซ่อนด้วย) / ผู้ชม: /api/pages (เฉพาะที่เปิด)
+            const url = isOwner ? `/api/pages/mine?parent_id=${pageId}` : `/api/pages?parent_id=${pageId}`;
+            try {
+                const res = await fetch(url, { credentials: 'same-origin' });
+                const data = await res.json();
+                blocks = data.pages || [];
+                let html = blocks.map(blockCard).join('');
+                if (isOwner) {
+                    html += `<div class="lf-add" id="block-add"><span class="plus">＋</span><span>เพิ่มรายการ</span></div>`;
+                }
+                grid.innerHTML = html;
+                // ผู้ชม + ไม่มีการ์ด → ซ่อนทั้ง section (เจ้าของเห็นเสมอเพื่อเพิ่มได้)
+                if (!isOwner && blocks.length === 0) section.classList.add('hidden');
+                else section.classList.remove('hidden');
+            } catch (e) {
+                grid.innerHTML = '<p class="text-sm text-red-500">โหลดไม่สำเร็จ</p>';
+                section.classList.remove('hidden');
+            }
+        }
+
+        // คลิกใน grid: ปุ่มแก้ / ปุ่มลบ / การ์ดเพิ่ม / การ์ดปกติ(เข้าไปหน้าย่อย)
+        document.getElementById('blocks-grid').addEventListener('click', async (e) => {
+            const editBtn = e.target.closest('.lf-edit');
+            if (editBtn) { e.stopPropagation(); openBlockEdit(Number(editBtn.dataset.editId)); return; }
+
+            const delBtn = e.target.closest('.lf-del');
+            if (delBtn) {
+                e.stopPropagation();
+                const id = Number(delBtn.dataset.del);
+                if (!confirm('ลบรายการนี้และรายการย่อยทั้งหมดข้างใน? (ย้อนกลับไม่ได้)')) return;
+                try {
+                    const res = await fetch('/api/pages/' + id, { method: 'DELETE', credentials: 'same-origin' });
+                    const d = await res.json();
+                    if (!res.ok) throw new Error(d.error || 'ลบไม่สำเร็จ');
+                    toast('ลบรายการแล้ว');
+                    loadBlocks();
+                } catch (err) { toast(err.message, false); }
+                return;
+            }
+
+            if (e.target.closest('#block-add')) { openBlockNew(); return; }
+
+            const card = e.target.closest('.lf-card');
+            if (card) window.location.href = '/page/' + Number(card.dataset.pageId);
+        });
+
+        // ===== Modal เพิ่ม/แก้ไขบลอค =====
+        const blockModal = document.getElementById('block-modal');
+        const blockForm = document.getElementById('block-form');
+
+        function resetBlockForm(){
+            blockForm.reset();
+            document.getElementById('block-preview').classList.add('hidden');
+            document.getElementById('block-ph').classList.remove('hidden');
+            document.getElementById('block-active').checked = true;
+        }
+        function openBlockModal(){ blockModal.classList.remove('hidden'); blockModal.classList.add('flex'); }
+        function closeBlockModal(){ blockModal.classList.add('hidden'); blockModal.classList.remove('flex'); }
+
+        function openBlockNew(){
+            editingBlockId = null;
+            resetBlockForm();
+            document.getElementById('block-modal-title').textContent = '➕ เพิ่มรายการใหม่';
+            openBlockModal();
+        }
+        async function openBlockEdit(id){
+            try {
+                const res = await fetch('/api/pages/' + id, { credentials: 'same-origin' });
+                const d = await res.json();
+                if (!res.ok) throw new Error(d.error || 'โหลดข้อมูลไม่สำเร็จ');
+                const p = d.page;
+                editingBlockId = p.id;
+                resetBlockForm();
+                blockForm.elements.button_text.value = p.button_text || '';
+                blockForm.elements.is_active.checked = p.is_active != 0;
+                if (p.button_image) {
+                    const prev = document.getElementById('block-preview');
+                    prev.src = p.button_image; prev.classList.remove('hidden');
+                    document.getElementById('block-ph').classList.add('hidden');
+                }
+                document.getElementById('block-modal-title').textContent = '✏️ แก้ไขรายการ';
+                openBlockModal();
+            } catch (err) { toast(err.message, false); }
+        }
+
+        document.getElementById('block-cancel').addEventListener('click', closeBlockModal);
+        blockModal.addEventListener('click', (e) => { if (e.target === blockModal) closeBlockModal(); });
+
+        // preview รูปตอนเลือกไฟล์
+        document.getElementById('block-image').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const prev = document.getElementById('block-preview');
+            const ph = document.getElementById('block-ph');
+            if (file) { prev.src = URL.createObjectURL(file); prev.classList.remove('hidden'); ph.classList.add('hidden'); }
+            else { prev.classList.add('hidden'); ph.classList.remove('hidden'); }
+        });
+
+        // บันทึก: แก้ไข = PUT / สร้างใหม่ = POST (แนบ parent_id = หน้าปัจจุบัน) แล้วอัปโหลดรูป → รีเฟรช
+        blockForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = blockForm.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            try {
+                const button_text = blockForm.elements.button_text.value.trim() || 'รายการใหม่';
+                const is_active = blockForm.elements.is_active.checked ? 1 : 0;
+                let id = editingBlockId;
+
+                if (id) {
+                    const r = await fetch('/api/pages/' + id, {
+                        method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+                        body: JSON.stringify({ button_text, is_active }),
+                    });
+                    const d = await r.json();
+                    if (!r.ok) throw new Error(d.error || 'บันทึกไม่สำเร็จ');
+                } else {
+                    const r = await fetch('/api/pages', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+                        body: JSON.stringify({ button_text, parent_id: pageId }),
+                    });
+                    const d = await r.json();
+                    if (!r.ok) throw new Error(d.error || 'สร้างไม่สำเร็จ');
+                    id = d.id;
+                    if (is_active === 0) {
+                        await fetch('/api/pages/' + id, {
+                            method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+                            body: JSON.stringify({ is_active }),
+                        });
+                    }
+                }
+
+                const file = blockForm.elements.image.files[0];
+                if (file) {
+                    const fd = new FormData();
+                    fd.append('image', file);
+                    const r2 = await fetch(`/api/pages/${id}/image`, { method: 'POST', credentials: 'same-origin', body: fd });
+                    const d2 = await r2.json();
+                    if (!r2.ok) throw new Error(d2.error || 'อัปโหลดรูปไม่สำเร็จ');
+                }
+                closeBlockModal();
+                toast(editingBlockId ? 'บันทึกแล้ว' : 'สร้างรายการแล้ว');
+                loadBlocks();
+            } catch (err) {
+                toast(err.message, false);
+            } finally {
+                btn.disabled = false;
+            }
         });
 
         load();
