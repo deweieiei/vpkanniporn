@@ -107,7 +107,7 @@
                 const body = await res.json();
                 if (!res.ok) { showAlert(body.error || 'เกิดข้อผิดพลาด', 'error'); return; }
                 showAlert('สำเร็จ! กำลังเข้าสู่ระบบ...', 'success');
-                setTimeout(() => { window.location.href = '/home'; }, 600);
+                setTimeout(() => { window.location.href = '/profile'; }, 600);
             } catch (err) {
                 showAlert('ไม่สามารถเชื่อมต่อ server ได้', 'error');
             } finally {
