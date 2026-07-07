@@ -83,9 +83,6 @@
             <a href="/home" class="text-orange-600 text-sm mt-3 inline-block">← กลับหน้าหลัก</a>
         </div>
 
-        <!-- AGENT CARD (รู้จักที่ปรึกษาของคุณ) — แสดงเฉพาะหน้า Rich Text (หน้า 3) เหมือนหน้าโปรไฟล์ -->
-        <div id="agent-card" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6"></div>
-
         <!-- VIEW MODE -->
         <article id="view" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-6 md:p-8">
@@ -119,6 +116,9 @@
                  contenteditable="true" data-placeholder="พิมพ์เนื้อหาที่นี่... ใช้ปุ่มด้านบนจัดตัวหนา หัวข้อ ใส่รูปได้"></div>
             <p class="text-[11px] text-gray-400 mt-2">💡 เลือกข้อความก่อนกดปุ่มจัดรูปแบบ • กด 🖼️ เพื่อแทรกรูปในเนื้อหา</p>
         </div>
+
+        <!-- AGENT CARD (ตัวแทนผู้ดูแล) — แสดงใต้ Rich Text เฉพาะหน้า 3 -->
+        <div id="agent-card" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mt-6"></div>
 
         <!-- ===== บลอคย่อย (recursive) — grid เหมือนหน้าโปรไฟล์เป๊ะ กดเข้าไปสร้างต่อได้อีกไม่จำกัดชั้น ===== -->
         <section id="blocks-section" class="hidden mt-8">
@@ -214,7 +214,7 @@
             el.classList.remove('hidden');
         }
 
-        // ===== การ์ด "รู้จักที่ปรึกษาของคุณ" (ดึงข้อมูลตัวแทนเจ้าของหน้า) =====
+        // ===== การ์ด "ตัวแทนผู้ดูแล" (ดึงข้อมูลตัวแทนเจ้าของหน้า) =====
         async function loadAgentCard(){
             if (!pageData || !pageData.user_id) return;
             try {
@@ -249,7 +249,7 @@
                 <div class="p-6 md:p-8 flex flex-col sm:flex-row gap-6">
                     ${portrait}
                     <div class="min-w-0 flex-1 text-center sm:text-left">
-                        <h2 class="text-base font-bold text-gray-700 mb-1">รู้จักที่ปรึกษาของคุณ</h2>
+                        <h2 class="text-base font-bold text-gray-700 mb-1">ตัวแทนผู้ดูแล</h2>
                         <p class="text-2xl font-extrabold text-orange-600">${escapeHtml(fullName)}</p>
                         ${pos ? `<p class="text-sm text-gray-500 mb-2">${escapeHtml(pos)}</p>` : ''}
                         ${quote}
@@ -282,7 +282,7 @@
                 } else {
                     document.getElementById('view').classList.remove('hidden');
                     if (isOwner) document.getElementById('toolbar').classList.remove('hidden');
-                    loadAgentCard();   // การ์ด "รู้จักที่ปรึกษาของคุณ" เหนือเนื้อหา
+                    loadAgentCard();   // การ์ด "ตัวแทนผู้ดูแล" ใต้เนื้อหา
                 }
             } catch (e) { showNotFound(); }
         }
