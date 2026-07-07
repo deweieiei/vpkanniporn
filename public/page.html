@@ -6,7 +6,26 @@
     <title>หน้าข้อมูล — VP Kanniporn FWD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style> body { font-family: 'Prompt', sans-serif; } </style>
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+        /* ===== เนื้อหา Rich Text (ใช้ทั้งหน้าดูและช่องแก้ไข) ===== */
+        .rt-content { color:#374151; line-height:1.75; font-size:15px; }
+        .rt-content h2 { font-size:1.5rem; font-weight:800; color:#1f2937; margin:1.1em 0 .5em; }
+        .rt-content h3 { font-size:1.2rem; font-weight:700; color:#374151; margin:.9em 0 .4em; }
+        .rt-content p { margin:0 0 .8em; }
+        .rt-content ul { list-style:disc; padding-left:1.5em; margin:0 0 .8em; }
+        .rt-content ol { list-style:decimal; padding-left:1.5em; margin:0 0 .8em; }
+        .rt-content li { margin:.2em 0; }
+        .rt-content a { color:#ea580c; text-decoration:underline; }
+        .rt-content img { max-width:100%; height:auto; border-radius:12px; margin:.6em 0; }
+        .rt-content b, .rt-content strong { font-weight:700; }
+        .rt-editor { min-height:320px; outline:none; }
+        .rt-editor:empty:before { content: attr(data-placeholder); color:#9ca3af; }
+        /* ปุ่ม toolbar */
+        .rt-btn { min-width:34px; height:32px; padding:0 8px; border:1px solid #e5e7eb; background:#fff; border-radius:8px; font-size:13px; color:#374151; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
+        .rt-btn:hover { background:#fff7ed; border-color:#fdba74; color:#ea580c; }
+        .rt-sep { width:1px; align-self:stretch; background:#e5e7eb; margin:2px 4px; }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen">
 
@@ -24,7 +43,7 @@
     <div id="toolbar" class="hidden bg-slate-900 text-white sticky top-[57px] z-30">
         <div class="max-w-4xl mx-auto px-4 py-2 flex items-center gap-2 text-xs">
             <span class="font-bold text-orange-400">🛠️ โหมดเจ้าของ</span>
-            <span class="text-white/50">— แก้ไขหน้านี้ได้</span>
+            <span class="text-white/50">— แก้ไขเนื้อหาหน้านี้ได้</span>
             <div class="ml-auto flex gap-2">
                 <button id="btn-edit" class="bg-orange-500 hover:bg-orange-600 px-4 py-1.5 rounded-full font-bold">✏️ แก้ไข</button>
                 <button id="btn-save" class="hidden bg-green-500 hover:bg-green-600 px-4 py-1.5 rounded-full font-bold">💾 บันทึก</button>
@@ -44,32 +63,36 @@
 
         <!-- VIEW MODE -->
         <article id="view" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div id="view-image-wrap" class="hidden">
-                <img id="view-image" src="" alt="" class="w-full max-h-72 object-cover">
-            </div>
             <div class="p-6 md:p-8">
-                <h1 id="view-title" class="text-2xl md:text-3xl font-extrabold text-gray-800 mb-4 pb-4 border-b-2 border-orange-100"></h1>
-                <div id="view-content" class="text-gray-700 leading-relaxed text-sm md:text-base"></div>
+                <div id="view-content" class="rt-content"></div>
             </div>
         </article>
 
         <!-- EDIT MODE (เจ้าของ) -->
-        <div id="edit" class="hidden bg-white rounded-2xl shadow-sm border border-orange-200 p-6 md:p-8">
-            <label class="block text-xs font-bold text-gray-600 mb-1">ข้อความบนปุ่ม (ชื่อหน้า)</label>
-            <input id="edit-title" type="text" maxlength="120"
-                class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm mb-4">
-
-            <label class="block text-xs font-bold text-gray-600 mb-1">รูปของปุ่ม/หน้า</label>
-            <div class="flex items-center gap-3 mb-4">
-                <div id="edit-image-prev" class="w-24 h-16 rounded-lg bg-gray-100 border border-gray-200 bg-cover bg-center flex items-center justify-center text-[10px] text-gray-400">ไม่มีรูป</div>
-                <input id="edit-image-input" type="file" accept="image/*" class="text-xs">
+        <div id="edit" class="hidden bg-white rounded-2xl shadow-sm border border-orange-200 p-4 md:p-6">
+            <div id="rt-toolbar" class="flex flex-wrap items-center gap-1 mb-3 pb-3 border-b border-gray-100">
+                <button type="button" class="rt-btn" data-cmd="bold" title="ตัวหนา"><b>B</b></button>
+                <button type="button" class="rt-btn" data-cmd="italic" title="ตัวเอียง"><i>I</i></button>
+                <button type="button" class="rt-btn" data-cmd="underline" title="ขีดเส้นใต้"><u>U</u></button>
+                <span class="rt-sep"></span>
+                <button type="button" class="rt-btn" data-block="h2" title="หัวข้อใหญ่">H2</button>
+                <button type="button" class="rt-btn" data-block="h3" title="หัวข้อรอง">H3</button>
+                <button type="button" class="rt-btn" data-block="p" title="ข้อความปกติ">ข้อความ</button>
+                <span class="rt-sep"></span>
+                <button type="button" class="rt-btn" data-cmd="insertUnorderedList" title="รายการหัวข้อ">• รายการ</button>
+                <button type="button" class="rt-btn" data-cmd="insertOrderedList" title="รายการตัวเลข">1. รายการ</button>
+                <span class="rt-sep"></span>
+                <button type="button" class="rt-btn" data-cmd="justifyLeft" title="ชิดซ้าย">⬅</button>
+                <button type="button" class="rt-btn" data-cmd="justifyCenter" title="กึ่งกลาง">↔</button>
+                <span class="rt-sep"></span>
+                <button type="button" class="rt-btn" id="rt-link" title="ใส่ลิงก์">🔗</button>
+                <button type="button" class="rt-btn" id="rt-image" title="ใส่รูปในเนื้อหา">🖼️ รูป</button>
+                <button type="button" class="rt-btn" data-cmd="removeFormat" title="ล้างรูปแบบ">✖ ล้าง</button>
+                <input type="file" id="rt-image-input" accept="image/*" class="hidden">
             </div>
-
-            <label class="block text-xs font-bold text-gray-600 mb-1">เนื้อหาในหน้า</label>
-            <textarea id="edit-content" rows="12"
-                class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm leading-relaxed"
-                placeholder="พิมพ์เนื้อหาที่จะแสดงในหน้านี้..."></textarea>
-            <p class="text-[11px] text-gray-400 mt-1">พิมพ์เป็นข้อความล้วน ระบบจะขึ้นบรรทัดใหม่ให้อัตโนมัติ</p>
+            <div id="rt-editor" class="rt-editor rt-content border border-gray-200 rounded-lg p-4"
+                 contenteditable="true" data-placeholder="พิมพ์เนื้อหาที่นี่... ใช้ปุ่มด้านบนจัดตัวหนา หัวข้อ ใส่รูปได้"></div>
+            <p class="text-[11px] text-gray-400 mt-2">💡 เลือกข้อความก่อนกดปุ่มจัดรูปแบบ • กด 🖼️ เพื่อแทรกรูปในเนื้อหา</p>
         </div>
     </main>
 
@@ -81,8 +104,8 @@
         let pageData = null;
         let isOwner = false;
 
-        function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-        function nl2br(s){ return esc(s).replace(/\n/g,'<br>'); }
+        const editor = document.getElementById('rt-editor');
+
         function toast(msg, ok){
             const t = document.getElementById('toast');
             t.textContent = msg;
@@ -91,15 +114,10 @@
         }
 
         function renderView(){
-            document.getElementById('view-title').textContent = pageData.button_text || '';
             const contentEl = document.getElementById('view-content');
-            contentEl.innerHTML = pageData.content ? nl2br(pageData.content)
+            contentEl.innerHTML = (pageData.content && pageData.content.trim())
+                ? pageData.content
                 : '<p class="text-gray-400 italic">ยังไม่มีเนื้อหาในหน้านี้</p>';
-            const imgWrap = document.getElementById('view-image-wrap');
-            if (pageData.button_image) {
-                document.getElementById('view-image').src = pageData.button_image;
-                imgWrap.classList.remove('hidden');
-            } else { imgWrap.classList.add('hidden'); }
             if (pageData.user_id) document.getElementById('back-link').href = '/agent/' + pageData.user_id;
         }
 
@@ -128,11 +146,7 @@
         const btnCancel = document.getElementById('btn-cancel');
 
         function enterEdit(){
-            document.getElementById('edit-title').value = pageData.button_text || '';
-            document.getElementById('edit-content').value = pageData.content || '';
-            const prev = document.getElementById('edit-image-prev');
-            if (pageData.button_image){ prev.style.backgroundImage = `url('${pageData.button_image}')`; prev.textContent=''; }
-            else { prev.style.backgroundImage=''; prev.textContent='ไม่มีรูป'; }
+            editor.innerHTML = pageData.content || '';
             document.getElementById('view').classList.add('hidden');
             document.getElementById('edit').classList.remove('hidden');
             btnEdit.classList.add('hidden'); btnSave.classList.remove('hidden'); btnCancel.classList.remove('hidden');
@@ -142,23 +156,55 @@
             document.getElementById('view').classList.remove('hidden');
             btnEdit.classList.remove('hidden'); btnSave.classList.add('hidden'); btnCancel.classList.add('hidden');
         }
-
         btnEdit.addEventListener('click', enterEdit);
         btnCancel.addEventListener('click', exitEdit);
 
-        // อัปโหลดรูปทันทีเมื่อเลือกไฟล์
-        document.getElementById('edit-image-input').addEventListener('change', async (e) => {
+        // ===== Rich text toolbar =====
+        function exec(cmd, val){ document.execCommand(cmd, false, val || null); editor.focus(); }
+
+        // จำตำแหน่ง cursor ไว้ (เผื่อโฟกัสหลุดตอนกดปุ่ม/เลือกไฟล์)
+        let savedRange = null;
+        editor.addEventListener('keyup', saveSel);
+        editor.addEventListener('mouseup', saveSel);
+        function saveSel(){
+            const sel = window.getSelection();
+            if (sel.rangeCount && editor.contains(sel.anchorNode)) savedRange = sel.getRangeAt(0);
+        }
+        function restoreSel(){
+            editor.focus();
+            if (savedRange){ const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(savedRange); }
+        }
+
+        document.getElementById('rt-toolbar').addEventListener('click', (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            if (btn.dataset.cmd) { exec(btn.dataset.cmd); saveSel(); return; }
+            if (btn.dataset.block) { exec('formatBlock', '<' + btn.dataset.block + '>'); saveSel(); return; }
+        });
+
+        document.getElementById('rt-link').addEventListener('click', () => {
+            const url = prompt('ใส่ลิงก์ (เช่น https://...)');
+            if (!url) return;
+            restoreSel();
+            exec('createLink', url);
+        });
+
+        // แทรกรูปในเนื้อหา: อัปโหลดขึ้นเซิร์ฟเวอร์ แล้ววาง <img> ตรงตำแหน่ง cursor
+        document.getElementById('rt-image').addEventListener('click', () => {
+            document.getElementById('rt-image-input').click();
+        });
+        document.getElementById('rt-image-input').addEventListener('change', async (e) => {
             const f = e.target.files[0];
             if (!f) return;
             const fd = new FormData(); fd.append('image', f);
             try {
-                const res = await fetch(`/api/pages/${pageId}/image`, { method:'POST', credentials:'same-origin', body: fd });
+                const res = await fetch(`/api/pages/${pageId}/content-image`, { method:'POST', credentials:'same-origin', body: fd });
                 const d = await res.json();
                 if (!res.ok) { toast(d.error || 'อัปโหลดไม่สำเร็จ', false); return; }
-                pageData.button_image = d.image;
-                document.getElementById('edit-image-prev').style.backgroundImage = `url('${d.image}')`;
-                document.getElementById('edit-image-prev').textContent = '';
-                toast('อัปโหลดรูปแล้ว');
+                restoreSel();
+                document.execCommand('insertHTML', false, `<img src="${d.url}" alt="">`);
+                saveSel();
+                toast('แทรกรูปแล้ว');
             } catch (err) { toast('อัปโหลดไม่สำเร็จ', false); }
             finally { e.target.value=''; }
         });
@@ -166,17 +212,13 @@
         btnSave.addEventListener('click', async () => {
             btnSave.disabled = true;
             try {
-                const body = {
-                    button_text: document.getElementById('edit-title').value,
-                    content: document.getElementById('edit-content').value,
-                };
+                const body = { content: editor.innerHTML };
                 const res = await fetch('/api/pages/' + pageId, {
                     method:'PUT', headers:{'Content-Type':'application/json'}, credentials:'same-origin',
                     body: JSON.stringify(body),
                 });
                 const d = await res.json();
                 if (!res.ok) { toast(d.error || 'บันทึกไม่สำเร็จ', false); return; }
-                pageData.button_text = body.button_text.trim() || 'ปุ่มใหม่';
                 pageData.content = body.content;
                 renderView();
                 exitEdit();

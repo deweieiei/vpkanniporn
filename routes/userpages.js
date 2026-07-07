@@ -28,6 +28,19 @@ function safeUnlink(webPath) {
   fs.unlink(disk, (err) => { if (err && err.code !== 'ENOENT') console.warn('unlink', err.message); });
 }
 
+// Sanitize เนื้อหา HTML จาก Rich Text Editor ก่อนเก็บลง DB (กัน XSS)
+// เจ้าของแก้เฉพาะหน้าตัวเอง แต่เนื้อหาถูกแสดงให้ผู้เข้าชมด้วย → ตัด script/iframe/event handler/javascript:
+function sanitizeHtml(html) {
+  if (typeof html !== 'string') return html;
+  return html
+    .replace(/<\s*(script|iframe|object|embed|style|link|meta)\b[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi, '')
+    .replace(/<\s*(script|iframe|object|embed|style|link|meta)\b[^>]*\/?>/gi, '')
+    .replace(/\son\w+\s*=\s*"[^"]*"/gi, '')
+    .replace(/\son\w+\s*=\s*'[^']*'/gi, '')
+    .replace(/\son\w+\s*=\s*[^\s>]+/gi, '')
+    .replace(/(href|src)\s*=\s*("|')\s*javascript:[^"']*\2/gi, '$1=$2#$2');
+}
+
 const upload = multer({
   storage: multer.diskStorage({
     destination: (_req, _file, cb) => cb(null, UPLOAD_DIR),
@@ -122,7 +135,7 @@ router.put('/pages/:id', requireAuth, express.json(), async (req, res, next) => 
     const b = req.body || {};
     const updates = {};
     if ('button_text' in b) updates.button_text = String(b.button_text).trim().slice(0, 120) || 'ปุ่มใหม่';
-    if ('content' in b) updates.content = b.content == null ? null : String(b.content);
+    if ('content' in b) updates.content = b.content == null ? null : sanitizeHtml(String(b.content));
     if ('is_active' in b) updates.is_active = b.is_active ? 1 : 0;
     if ('sort_order' in b && Number.isInteger(Number(b.sort_order))) updates.sort_order = Number(b.sort_order);
 
@@ -150,6 +163,22 @@ router.post('/pages/:id/image', requireAuth, upload.single('image'), async (req,
     await pool.query('UPDATE user_pages SET button_image = ? WHERE id = ?', [newPath, id]);
     if (rows[0].button_image && rows[0].button_image !== newPath) safeUnlink(rows[0].button_image);
     res.json({ ok: true, image: newPath });
+  } catch (err) { next(err); }
+});
+
+// ===== POST /api/pages/:id/content-image — เจ้าของ: อัปโหลดรูปแทรกในเนื้อหา (Rich Text) =====
+// คืน url ให้ frontend เอาไปวางเป็น <img> ในเนื้อหา (ไม่เก็บ path ใน DB แยก — ฝังใน content HTML)
+router.post('/pages/:id/content-image', requireAuth, upload.single('image'), async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!req.file) return res.status(400).json({ error: 'ไม่พบไฟล์รูป' });
+    const url = `/uploads/userpages/${req.file.filename}`;
+
+    const [rows] = await pool.query('SELECT user_id FROM user_pages WHERE id = ? LIMIT 1', [id]);
+    if (rows.length === 0) { safeUnlink(url); return res.status(404).json({ error: 'ไม่พบหน้านี้' }); }
+    if (rows[0].user_id !== req.session.userId) { safeUnlink(url); return res.status(403).json({ error: 'ไม่ใช่เจ้าของหน้านี้' }); }
+
+    res.json({ ok: true, url });
   } catch (err) { next(err); }
 });
 
