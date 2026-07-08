@@ -1141,7 +1141,7 @@
             // โหมดดูคนอื่น: ซ่อนปุ่มจัดการ (ตั้งค่า/ผู้ใช้/ออกจากระบบ) + ปุ่มแก้ไขทุกจุด, เปลี่ยน label เป็นลิงก์กลับ
             const ownerControls = document.getElementById('owner-controls');
             if (ownerControls) ownerControls.style.display = 'none';
-            document.getElementById('header-mode-label').innerHTML = '<a href="/" style="color:var(--primary-orange); font-weight:600;">← กลับหน้าหลัก</a>';
+            document.getElementById('header-mode-label').innerHTML = '<a href="/home" style="color:var(--primary-orange); font-weight:600;">← กลับหน้าหลัก</a>';
             document.querySelectorAll('.edit-btn').forEach(b => b.style.display = 'none');
         }
 
@@ -1183,7 +1183,7 @@
                             <div style="max-width:500px; margin:60px auto; text-align:center; background:#fff; padding:40px 24px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.05);">
                                 <p style="font-size:40px; margin-bottom:12px;">😔</p>
                                 <p style="font-weight:700; font-size:18px;">ไม่พบตัวแทนรายนี้</p>
-                                <a href="/" style="color:var(--primary-orange); font-size:14px; display:inline-block; margin-top:12px;">← กลับหน้าหลัก</a>
+                                <a href="/home" style="color:var(--primary-orange); font-size:14px; display:inline-block; margin-top:12px;">← กลับหน้าหลัก</a>
                             </div>`;
                         return;
                     }
