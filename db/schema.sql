@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS users (
   line_id          VARCHAR(64)  NULL,
   instagram_url    VARCHAR(255) NULL,
   awards           JSON         NULL,
+  awards_visible   TINYINT(1)   NOT NULL DEFAULT 1,  -- แสดง(1)/ซ่อน(0) ส่วน "ความสำเร็จและรางวัล"
   cover_images     JSON         NULL,
   PRIMARY KEY (id),
   UNIQUE KEY uq_users_email (email),

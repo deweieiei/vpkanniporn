@@ -794,9 +794,6 @@
             <div class="hero-cover-slideshow" id="cover-slideshow"></div>
             <div class="hero-cover-overlay" id="cover-overlay"></div>
             <div class="hero-inner">
-                <h1 id="hero-heading">วางแผนวันนี้ เพื่ออนาคตที่คุณเลือกได้</h1>
-                <p class="tagline" id="hero-tagline">Plan Today, Live Your Future</p>
-                <p class="sub-tagline" id="hero-sub">เพราะทุกเป้าหมายในชีวิต ควรมีแผนที่มั่นคงรองรับ</p>
                 <div class="hero-cta">
                     <a id="hero-consult-btn" href="#line-contact-section" class="hero-btn primary">💬 รับคำปรึกษาฟรี</a>
                     <a href="#about-agent" class="hero-btn outline">📅 นัดหมายออนไลน์</a>
@@ -861,9 +858,11 @@
             </div>
         </section>
 
-        <section class="achievements editable">
+        <section id="achievements-section" class="achievements editable">
             <button class="edit-btn" data-edit="awards">✏️ แก้ไข</button>
-            <h2 class="section-title">ความสำเร็จและรางวัล</h2>
+            <h2 class="section-title">ความสำเร็จและรางวัล
+                <span id="awards-hidden-tag" class="inactive-tag" style="display:none;">ซ่อนอยู่</span>
+            </h2>
             <p class="section-subtitle">ผลงานที่ได้รับการยอมรับจากองค์กรชั้นนำ</p>
             <div class="timeline" id="awards-timeline">
                 <div class="year">2022 — MDRT Qualifier</div>
@@ -893,21 +892,8 @@
     <div class="modal-overlay" data-modal="hero">
         <div class="modal-card">
             <h2>✏️ แก้ไข Hero (หน้าแรก)</h2>
-            <p class="modal-sub">ส่วนหัวของเว็บ — ข้อความหลัก, tagline ภาษาอังกฤษ, และ subtitle</p>
+            <p class="modal-sub">ภาพพื้นหลังส่วนหัวของเว็บ</p>
             <form data-form="hero">
-                <div class="field">
-                    <label>หัวข้อใหญ่ (Heading)</label>
-                    <input type="text" name="hero_heading" placeholder="วางแผนวันนี้ เพื่ออนาคตที่คุณเลือกได้">
-                    <p class="help">เว้นว่าง = ใช้ข้อความเดิม</p>
-                </div>
-                <div class="field">
-                    <label>Tagline (ภาษาอังกฤษ)</label>
-                    <input type="text" name="hero_tagline" placeholder="Plan Today, Live Your Future">
-                </div>
-                <div class="field">
-                    <label>คำบรรยายเสริม (Sub-tagline)</label>
-                    <input type="text" name="hero_sub" placeholder="เพราะทุกเป้าหมายในชีวิต ควรมีแผนที่มั่นคงรองรับ">
-                </div>
                 <div class="field">
                     <label>ภาพพื้นหลัง Hero (สูงสุด 6 ภาพ — เลื่อนเฟดสลับกัน / ไม่ใส่ก็ได้)</label>
                     <div class="cover-previews-grid" id="cover-previews"></div>
@@ -1021,6 +1007,12 @@
 2025 — Leadership Achievement"></textarea>
                     <p class="help">บรรทัดว่างจะถูกข้าม</p>
                 </div>
+                <div class="field">
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:400;">
+                        <input type="checkbox" name="awards_visible" id="awards-visible-check" checked style="width:auto;">
+                        แสดงส่วน "ความสำเร็จและรางวัล" บนหน้าเว็บ <span class="help" style="margin:0;">(เอาติ๊กออก = ซ่อนทั้งบลอค)</span>
+                    </label>
+                </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
                     <button type="submit" class="btn btn-save">💾 บันทึก</button>
@@ -1069,12 +1061,6 @@
 
     <script>
         let currentUser = null;
-        // ค่า default ของ hero (ข้อความเดิมในหน้า) — ใช้เมื่อเจ้าของยังไม่ได้ตั้งค่าเอง
-        const HERO_DEFAULTS = {
-            heading: document.getElementById('hero-heading').textContent,
-            tagline: document.getElementById('hero-tagline').textContent,
-            sub: document.getElementById('hero-sub').textContent,
-        };
 
         function escapeHtml(s) {
             return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
@@ -1190,11 +1176,6 @@
                     if (portraitPh) portraitPh.style.display = '';
                 }
             }
-            // Hero — ดึงจาก DB (แสดงทั้งโหมดตัวเองและผู้เข้าชม); ถ้าไม่ตั้งค่าใช้ข้อความเดิม
-            document.getElementById('hero-heading').textContent = u.hero_heading || HERO_DEFAULTS.heading;
-            document.getElementById('hero-tagline').textContent = u.hero_tagline || HERO_DEFAULTS.tagline;
-            document.getElementById('hero-sub').textContent = u.hero_sub || HERO_DEFAULTS.sub;
-
             // พื้นหลัง hero: ภาพปก (cover_images) สูงสุด 6 ภาพ เลื่อนเฟดสลับกัน
             setupCoverSlideshow(u.cover_images);
 
@@ -1232,6 +1213,23 @@
             const tl = document.getElementById('awards-timeline');
             if (arr.length > 0) {
                 tl.innerHTML = arr.map(a => `<div class="year">${escapeHtml(a)}</div>`).join('');
+            }
+
+            // สถานะเปิด/ปิด ส่วน "ความสำเร็จและรางวัล"
+            // ปิดอยู่: ผู้เข้าชม → ซ่อนทั้งบลอค / เจ้าของ → ยังเห็น (มีป้าย "ซ่อนอยู่") เพื่อกดเปิดคืนได้
+            const awardsVisible = u.awards_visible != 0;
+            const achSection = document.getElementById('achievements-section');
+            const hiddenTag = document.getElementById('awards-hidden-tag');
+            if (achSection) {
+                if (awardsVisible) {
+                    achSection.style.display = '';
+                    if (hiddenTag) hiddenTag.style.display = 'none';
+                } else if (isViewingOther) {
+                    achSection.style.display = 'none';
+                } else {
+                    achSection.style.display = '';
+                    if (hiddenTag) hiddenTag.style.display = 'inline-block';
+                }
             }
 
             // หัวข้อ "คุณกำลังมองหาอะไรอยู่?" (user_pages) — ดึงจาก DB
@@ -1291,10 +1289,6 @@
             // populate form
             const form = m.querySelector(`[data-form="${name}"]`);
             if (name === 'hero') {
-                // โชว์ค่าที่ตั้งไว้ (ถ้ายังไม่ตั้ง = ว่าง, placeholder จะโชว์ข้อความเดิม)
-                form.elements.hero_heading.value = currentUser.hero_heading || '';
-                form.elements.hero_tagline.value = currentUser.hero_tagline || '';
-                form.elements.hero_sub.value = currentUser.hero_sub || '';
                 // Cover state (ภาพพื้นหลัง hero สูงสุด 6 ภาพ): ล้างของเก่า (revoke object URL) แล้วโหลดจาก currentUser
                 coverState.forEach(c => { if (c.type === 'new' && c.url) URL.revokeObjectURL(c.url); });
                 coverState = [];
@@ -1329,6 +1323,7 @@
             } else if (name === 'awards') {
                 const arr = parseJsonArray(currentUser.awards);
                 form.elements.awards.value = arr.join('\n');
+                form.elements.awards_visible.checked = currentUser.awards_visible != 0;
             }
             m.classList.add('open');
         }
@@ -1452,7 +1447,7 @@
         });
 
         // ===== Form submits =====
-        // HERO — บันทึกลง DB: ข้อความ + ภาพพื้นหลัง (cover สูงสุด 6 ภาพ); เว้นว่าง = ใช้ค่าเดิม
+        // HERO — บันทึกลง DB: เฉพาะภาพพื้นหลัง (cover สูงสุด 6 ภาพ)
         document.querySelector('[data-form="hero"]').addEventListener('submit', async e => {
             e.preventDefault();
             const f = e.target;
@@ -1461,11 +1456,7 @@
             try {
                 const keptCovers = coverState.filter(c => c.type === 'existing').map(c => c.path);
                 const newCoverFiles = coverState.filter(c => c.type === 'new').map(c => c.file);
-                await saveProfile({
-                    hero_heading: f.elements.hero_heading.value.trim(),
-                    hero_tagline: f.elements.hero_tagline.value.trim(),
-                    hero_sub: f.elements.hero_sub.value.trim(),
-                }, {
+                await saveProfile({}, {
                     cover_images: newCoverFiles,
                     cover_images_keep: keptCovers,
                 });
@@ -1520,7 +1511,8 @@
             try {
                 const arr = e.target.elements.awards.value
                     .split('\n').map(s => s.trim()).filter(Boolean);
-                await saveProfile({ awards: JSON.stringify(arr) });
+                const awards_visible = e.target.elements.awards_visible.checked ? 1 : 0;
+                await saveProfile({ awards: JSON.stringify(arr), awards_visible });
                 renderAll();
                 closeModals();
                 toast('✓ บันทึกผลงานเรียบร้อย');

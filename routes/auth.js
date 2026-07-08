@@ -107,7 +107,7 @@ const FULL_USER_COLUMNS = `
   id, email, first_name, last_name, birthdate, gender, province, avatar_path,
   role, is_active, created_at, updated_at,
   phone, position, company, branch, license_number, license_number_2,
-  bio, quote, facebook_url, line_id, instagram_url, awards, cover_images,
+  bio, quote, facebook_url, line_id, instagram_url, awards, awards_visible, cover_images,
   hero_heading, hero_tagline, hero_sub, hero_image
 `;
 
@@ -266,6 +266,12 @@ router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
         cleanupUploadedFiles(req);
         return res.status(400).json({ error: 'awards ต้องเป็น JSON array' });
       }
+    }
+
+    // สถานะเปิด/ปิด ส่วน "ความสำเร็จและรางวัล" (checkbox → 0/1)
+    if ('awards_visible' in req.body) {
+      const v = req.body.awards_visible;
+      updates.awards_visible = (v === '1' || v === 1 || v === true || v === 'true') ? 1 : 0;
     }
 
     // ไฟล์ที่ต้องลบหลัง update สำเร็จ
