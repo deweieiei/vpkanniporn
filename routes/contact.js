@@ -17,6 +17,7 @@ const ALLOWED_PURPOSES = [
   'วางแผนเกษียณ',
   'ลดหย่อนภาษี',
   'วางแผนมรดก',
+  'อื่นๆ',
 ];
 
 // ===== POST /api/contact — สาธารณะ: ผู้สนใจกรอกฟอร์มติดต่อถึงตัวแทน =====
@@ -38,6 +39,9 @@ router.post('/contact', express.json(), async (req, res, next) => {
     const purposes = Array.isArray(b.purposes)
       ? b.purposes.filter(p => ALLOWED_PURPOSES.includes(p))
       : [];
+    // ข้อความ "อื่นๆ" — เก็บเฉพาะเมื่อเลือก "อื่นๆ" ไว้จริง
+    const purposeOther = (purposes.includes('อื่นๆ') && b.purpose_other != null && String(b.purpose_other).trim())
+      ? String(b.purpose_other).trim().slice(0, 255) : null;
     const budget = b.budget != null && String(b.budget).trim() ? String(b.budget).trim().slice(0, 100) : null;
     const note = b.note != null && String(b.note).trim() ? String(b.note).trim().slice(0, 2000) : null;
     const consent = b.consent === true || b.consent === 1 || b.consent === '1';
@@ -48,13 +52,14 @@ router.post('/contact', express.json(), async (req, res, next) => {
     if (!/^[0-9+\-\s()]{6,30}$/.test(phone)) return res.status(400).json({ error: 'เบอร์โทรศัพท์ไม่ถูกต้อง' });
     if (!/^\d{4}-\d{2}-\d{2}$/.test(birthdate)) return res.status(400).json({ error: 'กรุณาเลือกวันเดือนปีเกิด' });
     if (purposes.length === 0) return res.status(400).json({ error: 'กรุณาเลือกวัตถุประสงค์อย่างน้อย 1 ข้อ' });
+    if (purposes.includes('อื่นๆ') && !purposeOther) return res.status(400).json({ error: 'กรุณาระบุวัตถุประสงค์ "อื่นๆ"' });
     if (!consent) return res.status(400).json({ error: 'กรุณายินยอมให้ติดต่อกลับก่อนส่งข้อมูล' });
 
     await pool.query(
       `INSERT INTO contact_inquiries
-         (user_id, full_name, phone, birthdate, purposes, budget, note, consent)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [userId, fullName.slice(0, 150), phone.slice(0, 30), birthdate, JSON.stringify(purposes), budget, note, consent ? 1 : 0]
+         (user_id, full_name, phone, birthdate, purposes, purpose_other, budget, note, consent)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [userId, fullName.slice(0, 150), phone.slice(0, 30), birthdate, JSON.stringify(purposes), purposeOther, budget, note, consent ? 1 : 0]
     );
 
     res.json({ ok: true });
@@ -65,7 +70,7 @@ router.post('/contact', express.json(), async (req, res, next) => {
 router.get('/contact/mine', requireAuth, async (req, res, next) => {
   try {
     const [rows] = await pool.query(
-      `SELECT id, full_name, phone, birthdate, purposes, budget, note, consent, contacted_at, created_at
+      `SELECT id, full_name, phone, birthdate, purposes, purpose_other, budget, note, consent, contacted_at, created_at
          FROM contact_inquiries WHERE user_id = ?
         ORDER BY (contacted_at IS NULL) DESC, created_at DESC`,
       [req.session.userId]

@@ -114,7 +114,10 @@
             const badge = isNew
                 ? '<span class="text-[11px] font-bold text-white bg-red-500 px-2 py-0.5 rounded-full">ใหม่</span>'
                 : '<span class="text-[11px] font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">ติดต่อกลับแล้ว</span>';
-            const purposes = purposesArr(q.purposes).slice(0,3).map(p=>`<span class="text-[11px] bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full">${escapeHtml(p)}</span>`).join(' ');
+            const purposes = purposesArr(q.purposes).slice(0,3).map(p=>{
+                const label = (p === 'อื่นๆ' && q.purpose_other) ? ('อื่นๆ: ' + q.purpose_other) : p;
+                return `<span class="text-[11px] bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full">${escapeHtml(label)}</span>`;
+            }).join(' ');
             return `
                 <div class="bg-white rounded-xl border ${isNew?'border-red-200':'border-gray-100'} shadow-sm p-4 flex items-center gap-3 cursor-pointer hover:shadow-md transition" data-id="${q.id}">
                     <div class="w-11 h-11 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center font-bold flex-shrink-0">${escapeHtml((q.full_name||'?').trim().charAt(0)||'?')}</div>
@@ -145,7 +148,10 @@
             const q = inquiries.find(x => x.id === id);
             if (!q) return;
             const isNew = q.contacted_at == null;
-            const purposes = purposesArr(q.purposes).map(p=>`<span class="text-xs bg-orange-50 text-orange-700 px-2.5 py-1 rounded-full">${escapeHtml(p)}</span>`).join(' ') || '<span class="text-sm text-gray-400">-</span>';
+            const purposes = purposesArr(q.purposes).map(p=>{
+                const label = (p === 'อื่นๆ' && q.purpose_other) ? ('อื่นๆ: ' + q.purpose_other) : p;
+                return `<span class="text-xs bg-orange-50 text-orange-700 px-2.5 py-1 rounded-full">${escapeHtml(label)}</span>`;
+            }).join(' ') || '<span class="text-sm text-gray-400">-</span>';
             const contactedLine = q.contacted_at
                 ? `<p class="text-xs text-green-700 mt-1">✔ ติดต่อกลับแล้วเมื่อ ${fmtDateTime(q.contacted_at)}</p>` : '';
             document.getElementById('detail-body').innerHTML = `

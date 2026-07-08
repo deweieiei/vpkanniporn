@@ -17,8 +17,9 @@ CREATE TABLE IF NOT EXISTS contact_inquiries (
   full_name   VARCHAR(150) NOT NULL,                 -- 1. ชื่อ-นามสกุล
   phone       VARCHAR(30)  NOT NULL,                 -- 2. เบอร์โทรศัพท์
   birthdate   DATE         NOT NULL,                 -- 3. วันเดือนปีเกิด
-  purposes    JSON         NULL,                     -- 4. วัตถุประสงค์ (เลือกได้หลายข้อ)
-  budget      VARCHAR(100) NULL,                     -- 5. งบประมาณเบี้ยประกัน (ไม่บังคับ)
+  purposes      JSON         NULL,                   -- 4. วัตถุประสงค์ (เลือกได้หลายข้อ)
+  purpose_other VARCHAR(255) NULL,                   -- 4.1 ข้อความเมื่อเลือก "อื่นๆ"
+  budget        VARCHAR(100) NULL,                   -- 5. งบประมาณเบี้ยประกัน (ไม่บังคับ)
   note        TEXT         NULL,                     -- 6. รายละเอียดเพิ่มเติม (ไม่บังคับ)
   consent      TINYINT(1)   NOT NULL DEFAULT 0,      -- ยินยอมให้ติดต่อกลับ/เก็บข้อมูล
   is_read      TINYINT(1)   NOT NULL DEFAULT 0,      -- เจ้าของอ่านแล้วหรือยัง

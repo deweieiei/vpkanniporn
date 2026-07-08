@@ -72,6 +72,8 @@
                     <div id="purposes" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <!-- chips ถูกสร้างด้วย JS -->
                     </div>
+                    <input type="text" id="purpose-other-input" maxlength="255"
+                           class="field-input mt-2 hidden" placeholder="ระบุวัตถุประสงค์อื่นๆ ที่ต้องการ">
                 </div>
 
                 <!-- 5. งบประมาณ -->
@@ -131,10 +133,21 @@
             <label class="purpose-chip">
                 <input type="checkbox" name="purpose" value="${p}">
                 <span>${p}</span>
-            </label>`).join('');
+            </label>`).join('') + `
+            <label class="purpose-chip" id="other-chip">
+                <input type="checkbox" name="purpose" value="อื่นๆ" id="purpose-other-cb">
+                <span>อื่นๆ (ระบุ)</span>
+            </label>`;
         purposesEl.querySelectorAll('.purpose-chip').forEach(chip => {
             const cb = chip.querySelector('input');
             cb.addEventListener('change', () => chip.classList.toggle('checked', cb.checked));
+        });
+        // "อื่นๆ" → โชว์ช่องกรอกข้อความ
+        const otherCb = document.getElementById('purpose-other-cb');
+        const otherInput = document.getElementById('purpose-other-input');
+        otherCb.addEventListener('change', () => {
+            otherInput.classList.toggle('hidden', !otherCb.checked);
+            if (otherCb.checked) otherInput.focus(); else otherInput.value = '';
         });
 
         // โหลดชื่อตัวแทน + ตั้งลิงก์กลับไปหน้าตัวแทน
@@ -166,6 +179,7 @@
             const phone = f.phone.value.trim();
             const birthdate = f.birthdate.value;
             const purposes = Array.from(f.querySelectorAll('input[name="purpose"]:checked')).map(c => c.value);
+            const purpose_other = otherCb.checked ? otherInput.value.trim() : '';
             const budget = f.budget.value.trim();
             const note = f.note.value.trim();
             const consent = f.consent.checked;
@@ -174,6 +188,7 @@
             if (!phone) return toast('กรุณากรอกเบอร์โทรศัพท์', false);
             if (!birthdate) return toast('กรุณาเลือกวันเดือนปีเกิด', false);
             if (purposes.length === 0) return toast('กรุณาเลือกวัตถุประสงค์อย่างน้อย 1 ข้อ', false);
+            if (purposes.includes('อื่นๆ') && !purpose_other) return toast('กรุณาระบุวัตถุประสงค์ "อื่นๆ"', false);
             if (!consent) return toast('กรุณายินยอมให้ติดต่อกลับก่อนส่ง', false);
 
             btn.disabled = true;
@@ -182,7 +197,7 @@
                 const res = await fetch('/api/contact', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: agentId, full_name, phone, birthdate, purposes, budget, note, consent }),
+                    body: JSON.stringify({ user_id: agentId, full_name, phone, birthdate, purposes, purpose_other, budget, note, consent }),
                 });
                 const d = await res.json();
                 if (!res.ok) throw new Error(d.error || 'ส่งข้อมูลไม่สำเร็จ');
