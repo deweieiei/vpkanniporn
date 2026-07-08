@@ -762,8 +762,6 @@
             <span style="color: rgba(255,255,255,0.6); font-size: 11px;">— สิ่งที่คุณแก้จะแสดงในหน้าเว็บทันที</span>
         </div>
         <div class="admin-bar-right">
-            <a href="/" target="_blank" class="admin-btn">👁 ดูหน้าเว็บ</a>
-            <a href="#" target="_blank" id="view-as-prospect-btn" class="admin-btn" style="display:none;">👁️ มุมมองผู้มุ่งหวัง</a>
             <div class="admin-user">
                 <div class="avatar" id="user-avatar"></div>
                 <span id="user-name" style="font-weight: 600;">…</span>
@@ -787,15 +785,6 @@
         <div id="header-mode-label" style="font-size: 11px; color: #6b7280;">หน้าจัดการ</div>
     </header>
 
-    <!-- ===== Section Nav (4 อัน) ===== -->
-    <nav class="section-nav">
-        <div class="section-nav-inner">
-            <a href="#about-agent" data-anchor="about-agent" class="nav-link">💼 วางแผนการเงิน</a>
-            <a href="#services" data-anchor="services" class="nav-link">🏥 ประกันสุขภาพ</a>
-            <a href="#services" data-anchor="services" class="nav-link">💰 ออมเงินและมรดก</a>
-            <a href="#reviews" data-anchor="reviews" class="nav-link">🏆 ผลงานและรีวิว</a>
-        </div>
-    </nav>
 
     <main>
 
@@ -809,9 +798,10 @@
                 <p class="tagline" id="hero-tagline">Plan Today, Live Your Future</p>
                 <p class="sub-tagline" id="hero-sub">เพราะทุกเป้าหมายในชีวิต ควรมีแผนที่มั่นคงรองรับ</p>
                 <div class="hero-cta">
-                    <a href="#line-contact-section" class="hero-btn primary">💬 รับคำปรึกษาฟรี</a>
+                    <a id="hero-consult-btn" href="#line-contact-section" class="hero-btn primary">💬 รับคำปรึกษาฟรี</a>
                     <a href="#about-agent" class="hero-btn outline">📅 นัดหมายออนไลน์</a>
-                    <span class="hero-btn placeholder">ว่างไว้ก่อน</span>
+                    <a href="#about-agent" class="hero-btn outline">ปรึกษาเคลม</a>
+                  
                 </div>
             </div>
         </section>
@@ -1259,16 +1249,28 @@
             const section = document.querySelector('.line-contact');
             const btn = document.getElementById('line-add-btn');
             const idText = document.getElementById('line-id-text');
-            if (!section || !btn) return;
+            const heroBtn = document.getElementById('hero-consult-btn');
 
             const raw = (currentUser.line_id || '').trim();
-            if (raw) {
-                const display = raw.startsWith('@') ? raw : '@' + raw;
-                btn.href = raw.startsWith('@')
+            // ลิงก์เปิดแอป LINE ด้วยไอดี (add friend by id):
+            //   @xxx (บัญชีทางการ) → line.me/R/ti/p/@xxx  •  xxx (id ส่วนตัว) → line.me/ti/p/~xxx
+            const lineHref = raw
+                ? (raw.startsWith('@')
                     ? 'https://line.me/R/ti/p/' + encodeURIComponent(raw)
-                    : 'https://line.me/ti/p/~' + encodeURIComponent(raw);
+                    : 'https://line.me/ti/p/~' + encodeURIComponent(raw))
+                : null;
+
+            // ปุ่ม Hero "รับคำปรึกษาฟรี" → เด้งเข้าแอป LINE เช่นกัน (ถ้ายังไม่ตั้งไอดี → เลื่อนไปส่วนติดต่อ)
+            if (heroBtn) {
+                if (lineHref) { heroBtn.href = lineHref; heroBtn.target = '_blank'; heroBtn.rel = 'noopener'; }
+                else { heroBtn.href = '#line-contact-section'; heroBtn.removeAttribute('target'); }
+            }
+
+            if (!section || !btn) return;
+            if (lineHref) {
+                btn.href = lineHref;
                 btn.style.pointerEvents = '';
-                idText.textContent = display;
+                idText.textContent = raw.startsWith('@') ? raw : '@' + raw;
                 section.style.display = '';
             } else if (isViewingOther) {
                 // ผู้เข้าชม + ตัวแทนยังไม่ตั้ง LINE → ซ่อนทั้ง section
