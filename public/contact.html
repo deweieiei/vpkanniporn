@@ -48,12 +48,6 @@
             </div>
 
             <form id="contact-form" class="space-y-5" novalidate>
-                <!-- วันเวลานัดหมาย (เฉพาะโหมดนัดหมาย) -->
-                <div id="appointment-field" class="hidden bg-orange-50 border border-orange-200 rounded-xl p-4">
-                    <label class="block text-sm font-bold text-orange-800 mb-1.5 req">📅 วันและเวลาที่สะดวกให้ติดต่อกลับ</label>
-                    <input type="datetime-local" name="appointment_at" id="appointment-input" class="field-input">
-                    <p class="text-[11px] text-orange-600/80 mt-1.5">เลือกวัน-เวลาที่ต้องการนัดหมาย (แนะนำเป็นวันถัดไป ไม่ใช่วันนี้)</p>
-                </div>
                 <!-- 1. ชื่อ-นามสกุล -->
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1.5 req">ชื่อ-นามสกุล</label>
@@ -123,20 +117,8 @@
     <script>
         const m = location.pathname.match(/^\/contact\/(\d+)/);
         const agentId = m ? Number(m[1]) : null;
-        const isAppointment = new URLSearchParams(location.search).get('type') === 'appointment';
 
         const PURPOSES = ['คุ้มครองชีวิต', 'ค่ารักษาพยาบาล', 'โรคร้ายแรง', 'สะสมทรัพย์', 'วางแผนเกษียณ', 'ลดหย่อนภาษี', 'วางแผนมรดก'];
-
-        // โหมดนัดหมาย: โชว์ช่องวันเวลา + เปลี่ยนหัวข้อ
-        if (isAppointment) {
-            document.getElementById('form-icon').textContent = '📅';
-            document.getElementById('form-title').textContent = 'นัดหมายออนไลน์ — จองเวลาปรึกษา';
-            document.getElementById('appointment-field').classList.remove('hidden');
-            document.getElementById('submit-btn').textContent = 'ยืนยันนัดหมาย';
-            // ตั้งค่าต่ำสุด = เวลาปัจจุบัน (กันเลือกอดีต)
-            const now = new Date(Date.now() - new Date().getTimezoneOffset() * 60000);
-            document.getElementById('appointment-input').min = now.toISOString().slice(0, 16);
-        }
 
         function toast(msg, ok) {
             const t = document.getElementById('toast');
@@ -201,9 +183,7 @@
             const budget = f.budget.value.trim();
             const note = f.note.value.trim();
             const consent = f.consent.checked;
-            const appointment_at = isAppointment ? f.appointment_at.value : '';
 
-            if (isAppointment && !appointment_at) return toast('กรุณาเลือกวันและเวลานัดหมาย', false);
             if (!full_name) return toast('กรุณากรอกชื่อ-นามสกุล', false);
             if (!phone) return toast('กรุณากรอกเบอร์โทรศัพท์', false);
             if (!birthdate) return toast('กรุณาเลือกวันเดือนปีเกิด', false);
@@ -217,7 +197,7 @@
                 const res = await fetch('/api/contact', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: agentId, full_name, phone, birthdate, purposes, purpose_other, budget, note, consent, kind: isAppointment ? 'appointment' : 'contact', appointment_at }),
+                    body: JSON.stringify({ user_id: agentId, full_name, phone, birthdate, purposes, purpose_other, budget, note, consent }),
                 });
                 const d = await res.json();
                 if (!res.ok) throw new Error(d.error || 'ส่งข้อมูลไม่สำเร็จ');
@@ -227,7 +207,7 @@
             } catch (err) {
                 toast(err.message, false);
                 btn.disabled = false;
-                btn.textContent = isAppointment ? 'ยืนยันนัดหมาย' : 'ส่งข้อมูลติดต่อ';
+                btn.textContent = 'ส่งข้อมูลติดต่อ';
             }
         });
 

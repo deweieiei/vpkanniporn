@@ -166,20 +166,27 @@
             }).join(' ') || '<span class="text-sm text-gray-400">-</span>';
             const contactedLine = q.contacted_at
                 ? `<p class="text-xs text-green-700 mt-1">✔ ติดต่อกลับแล้วเมื่อ ${fmtDateTime(q.contacted_at)}</p>` : '';
-            const apptBox = (q.kind === 'appointment' && q.appointment_at)
+            const isAppt = q.kind === 'appointment';
+            const apptBox = (isAppt && q.appointment_at)
                 ? `<div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-center">
-                       <p class="text-xs font-bold text-indigo-500">📅 นัดหมายให้ติดต่อกลับ</p>
+                       <p class="text-xs font-bold text-indigo-500">📅 นัดหมาย (${escapeHtml(q.channel || '')})</p>
                        <p class="text-lg font-extrabold text-indigo-800 mt-0.5">${fmtAppt(q.appointment_at)}</p>
                    </div>` : '';
+            // ฟิลด์กลาง: โหมดนัดหมาย vs โหมดติดต่อ
+            const midFields = isAppt
+                ? `${q.line_id ? detailRow('LINE ID', escapeHtml(q.line_id)) : ''}
+                   ${detailRow('ช่วงเวลาที่เลือก', escapeHtml(q.time_slot) || '-')}
+                   ${detailRow('ช่องทางการนัดหมาย', escapeHtml(q.channel) || '-')}`
+                : `${detailRow('วันเดือนปีเกิด', fmtDate(q.birthdate))}
+                   <div><p class="text-xs font-bold text-gray-400 mb-1.5">วัตถุประสงค์ในการทำประกัน</p><div class="flex flex-wrap gap-1.5">${purposes}</div></div>
+                   ${detailRow('งบประมาณเบี้ยประกัน', escapeHtml(q.budget) || '<span class="text-gray-400">ไม่ได้ระบุ</span>')}
+                   ${detailRow('รายละเอียดเพิ่มเติม', q.note ? escapeHtml(q.note) : '<span class="text-gray-400">ไม่มี</span>')}`;
             document.getElementById('detail-body').innerHTML = `
                 ${apptBox}
                 ${detailRow('ชื่อ-นามสกุล', escapeHtml(q.full_name))}
                 ${detailRow('เบอร์โทรศัพท์', `<a href="${telHref(q.phone)}" class="text-orange-600 font-semibold">${escapeHtml(q.phone)}</a>`)}
-                ${detailRow('วันเดือนปีเกิด', fmtDate(q.birthdate))}
-                <div><p class="text-xs font-bold text-gray-400 mb-1.5">วัตถุประสงค์ในการทำประกัน</p><div class="flex flex-wrap gap-1.5">${purposes}</div></div>
-                ${detailRow('งบประมาณเบี้ยประกัน', escapeHtml(q.budget) || '<span class="text-gray-400">ไม่ได้ระบุ</span>')}
-                ${detailRow('รายละเอียดเพิ่มเติม', q.note ? escapeHtml(q.note) : '<span class="text-gray-400">ไม่มี</span>')}
-                ${detailRow('เวลาที่ติดต่อเข้ามา', fmtDateTime(q.created_at))}
+                ${midFields}
+                ${detailRow(isAppt ? 'เวลาที่ขอนัด' : 'เวลาที่ติดต่อเข้ามา', fmtDateTime(q.created_at))}
                 ${detailRow('ความยินยอม', q.consent ? '<span class="text-green-700">✔ ยินยอมให้ติดต่อกลับและเก็บข้อมูล</span>' : '<span class="text-gray-400">-</span>')}
                 <div class="pt-3 border-t border-gray-100">
                     ${contactedLine}

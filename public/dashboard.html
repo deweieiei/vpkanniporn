@@ -875,7 +875,7 @@
                         <button type="button" id="hero-consult-btn" class="hero-btn primary">💬 รับคำปรึกษาฟรี</button>
                         <div id="hero-consult-menu" class="hero-consult-menu">
                             <a id="hc-call" href="#">📞 โทร</a>
-                            <a id="hc-appt" href="#">📅 สร้างตารางนัด</a>
+                            <a id="hc-contact" href="#">📝 สร้างรายการติดต่อ</a>
                             <a id="hc-line" href="#" target="_blank" rel="noopener">💬 LINE</a>
                         </div>
                     </div>
@@ -1333,15 +1333,16 @@
             const agentId = currentUser && currentUser.id;
             const phone = (currentUser.phone || '').replace(/[^0-9+]/g, '');
             const lineHref = lineHrefFrom(currentUser.line_id);
-            const apptUrl = agentId ? ('/contact/' + agentId + '?type=appointment') : '#';
+            const contactUrl = agentId ? ('/contact/' + agentId) : '#';        // ฟอร์มติดต่อทั่วไป (ไม่มีวันนัด)
+            const apptUrl = agentId ? ('/appointment/' + agentId) : '#';       // ฟอร์มนัดปรึกษาออนไลน์ (วัน/เวลา/ช่องทาง)
 
             const call = document.getElementById('hc-call');
-            const appt = document.getElementById('hc-appt');
+            const contactLink = document.getElementById('hc-contact');
             const lineA = document.getElementById('hc-line');
             const apptBtn = document.getElementById('hero-appt-btn');
 
-            if (apptBtn) apptBtn.href = apptUrl;
-            if (appt) appt.href = apptUrl;
+            if (contactLink) contactLink.href = contactUrl;   // "รับคำปรึกษาฟรี" → สร้างรายการติดต่อ (ไม่มีวันนัด)
+            if (apptBtn) apptBtn.href = apptUrl;              // "นัดหมายออนไลน์" → ฟอร์มมีวันเวลานัด
             if (call) { if (phone) { call.href = 'tel:' + phone; call.style.display = 'flex'; } else call.style.display = 'none'; }
             if (lineA) { if (lineHref) { lineA.href = lineHref; lineA.style.display = 'flex'; } else lineA.style.display = 'none'; }
         }

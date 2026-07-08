@@ -8,7 +8,7 @@ function requireAuth(req, res, next) {
   return res.status(401).json({ error: 'กรุณาเข้าสู่ระบบ' });
 }
 
-// วัตถุประสงค์ที่อนุญาต (ตรงกับ checkbox ในฟอร์ม) — กันค่าแปลกปลอมหลุดเข้า DB
+// วัตถุประสงค์ที่อนุญาต (โหมดติดต่อ) — กันค่าแปลกปลอมหลุดเข้า DB
 const ALLOWED_PURPOSES = [
   'คุ้มครองชีวิต',
   'ค่ารักษาพยาบาล',
@@ -20,57 +20,77 @@ const ALLOWED_PURPOSES = [
   'อื่นๆ',
 ];
 
-// ===== POST /api/contact — สาธารณะ: ผู้สนใจกรอกฟอร์มติดต่อถึงตัวแทน =====
+// ช่วงเวลานัด (โหมดนัดหมาย): ค่าที่ส่งมา (เวลาเริ่ม) → ป้ายข้อความที่เก็บ/แสดง
+const SLOT_LABELS = {
+  '09:00': '09:00–10:00 น.',
+  '10:00': '10:00–11:00 น.',
+  '13:00': '13:00–14:00 น.',
+  '14:00': '14:00–15:00 น.',
+  '16:00': '16:00–17:00 น.',
+  '19:00': '19:00–20:00 น.',
+};
+// ช่องทางนัด: ค่าที่ส่งมา → ป้ายข้อความ
+const CHANNELS = {
+  phone: '📞 โทรศัพท์',
+  linecall: '💬 LINE Call',
+  meet: '🎥 Google Meet',
+  zoom: '💻 Zoom',
+};
+
+// ===== POST /api/contact — สาธารณะ: ฟอร์มติดต่อ (kind='contact') หรือ นัดหมาย (kind='appointment') =====
 router.post('/contact', express.json(), async (req, res, next) => {
   try {
     const b = req.body || {};
 
     const userId = Number(b.user_id);
-    if (!Number.isInteger(userId) || userId <= 0) {
-      return res.status(400).json({ error: 'ไม่พบตัวแทนปลายทาง' });
-    }
-    // ตรวจว่าตัวแทนมีจริงและเปิดใช้งาน
+    if (!Number.isInteger(userId) || userId <= 0) return res.status(400).json({ error: 'ไม่พบตัวแทนปลายทาง' });
     const [u] = await pool.query('SELECT id FROM users WHERE id = ? AND is_active = 1 LIMIT 1', [userId]);
     if (u.length === 0) return res.status(404).json({ error: 'ไม่พบตัวแทนรายนี้' });
 
+    const kind = b.kind === 'appointment' ? 'appointment' : 'contact';
     const fullName = String(b.full_name || '').trim();
     const phone = String(b.phone || '').trim();
-    const birthdate = String(b.birthdate || '').trim();
-    const purposes = Array.isArray(b.purposes)
-      ? b.purposes.filter(p => ALLOWED_PURPOSES.includes(p))
-      : [];
-    // ข้อความ "อื่นๆ" — เก็บเฉพาะเมื่อเลือก "อื่นๆ" ไว้จริง
-    const purposeOther = (purposes.includes('อื่นๆ') && b.purpose_other != null && String(b.purpose_other).trim())
-      ? String(b.purpose_other).trim().slice(0, 255) : null;
-    const budget = b.budget != null && String(b.budget).trim() ? String(b.budget).trim().slice(0, 100) : null;
-    const note = b.note != null && String(b.note).trim() ? String(b.note).trim().slice(0, 2000) : null;
     const consent = b.consent === true || b.consent === 1 || b.consent === '1';
+    const note = b.note != null && String(b.note).trim() ? String(b.note).trim().slice(0, 2000) : null;
 
-    // ประเภท: 'appointment' (นัดหมาย มีวันเวลา) หรือ 'contact' (ติดต่อสอบถามทั่วไป)
-    const kind = b.kind === 'appointment' ? 'appointment' : 'contact';
-    // วันเวลานัด: รับ 'YYYY-MM-DDTHH:MM' (จาก <input type=datetime-local>) แปลงเป็น 'YYYY-MM-DD HH:MM:00'
-    let appointmentAt = null;
-    if (kind === 'appointment') {
-      const raw = String(b.appointment_at || '').trim();
-      const mDt = raw.match(/^(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2})/);
-      if (!mDt) return res.status(400).json({ error: 'กรุณาเลือกวันและเวลานัดหมาย' });
-      appointmentAt = `${mDt[1]} ${mDt[2]}:00`;
-    }
-
-    // ตรวจข้อมูลบังคับ
+    // ตรวจร่วมทั้งสองโหมด
     if (!fullName) return res.status(400).json({ error: 'กรุณากรอกชื่อ-นามสกุล' });
     if (!phone) return res.status(400).json({ error: 'กรุณากรอกเบอร์โทรศัพท์' });
     if (!/^[0-9+\-\s()]{6,30}$/.test(phone)) return res.status(400).json({ error: 'เบอร์โทรศัพท์ไม่ถูกต้อง' });
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(birthdate)) return res.status(400).json({ error: 'กรุณาเลือกวันเดือนปีเกิด' });
-    if (purposes.length === 0) return res.status(400).json({ error: 'กรุณาเลือกวัตถุประสงค์อย่างน้อย 1 ข้อ' });
-    if (purposes.includes('อื่นๆ') && !purposeOther) return res.status(400).json({ error: 'กรุณาระบุวัตถุประสงค์ "อื่นๆ"' });
-    if (!consent) return res.status(400).json({ error: 'กรุณายินยอมให้ติดต่อกลับก่อนส่งข้อมูล' });
+    if (!consent) return res.status(400).json({ error: 'กรุณายินยอมก่อนส่งข้อมูล' });
+
+    // ค่าที่จะบันทึก (ต่างกันตามโหมด)
+    let lineId = null, birthdate = null, purposesJson = null, purposeOther = null,
+        budget = null, appointmentAt = null, timeSlot = null, channel = null;
+
+    if (kind === 'appointment') {
+      lineId = b.line_id != null && String(b.line_id).trim() ? String(b.line_id).trim().slice(0, 64) : null;
+      const date = String(b.appointment_date || '').trim();
+      const slot = String(b.time_slot || '').trim();
+      const ch = String(b.channel || '').trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return res.status(400).json({ error: 'กรุณาเลือกวันนัดหมาย' });
+      if (!SLOT_LABELS[slot]) return res.status(400).json({ error: 'กรุณาเลือกเวลาที่สะดวก' });
+      if (!CHANNELS[ch]) return res.status(400).json({ error: 'กรุณาเลือกช่องทางการนัดหมาย' });
+      appointmentAt = `${date} ${slot}:00`;
+      timeSlot = SLOT_LABELS[slot];
+      channel = CHANNELS[ch];
+    } else {
+      birthdate = String(b.birthdate || '').trim();
+      const purposes = Array.isArray(b.purposes) ? b.purposes.filter(p => ALLOWED_PURPOSES.includes(p)) : [];
+      purposeOther = (purposes.includes('อื่นๆ') && b.purpose_other != null && String(b.purpose_other).trim())
+        ? String(b.purpose_other).trim().slice(0, 255) : null;
+      budget = b.budget != null && String(b.budget).trim() ? String(b.budget).trim().slice(0, 100) : null;
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(birthdate)) return res.status(400).json({ error: 'กรุณาเลือกวันเดือนปีเกิด' });
+      if (purposes.length === 0) return res.status(400).json({ error: 'กรุณาเลือกวัตถุประสงค์อย่างน้อย 1 ข้อ' });
+      if (purposes.includes('อื่นๆ') && !purposeOther) return res.status(400).json({ error: 'กรุณาระบุวัตถุประสงค์ "อื่นๆ"' });
+      purposesJson = JSON.stringify(purposes);
+    }
 
     await pool.query(
       `INSERT INTO contact_inquiries
-         (user_id, full_name, phone, birthdate, purposes, purpose_other, budget, note, kind, appointment_at, consent)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [userId, fullName.slice(0, 150), phone.slice(0, 30), birthdate, JSON.stringify(purposes), purposeOther, budget, note, kind, appointmentAt, consent ? 1 : 0]
+         (user_id, full_name, phone, line_id, birthdate, purposes, purpose_other, budget, note, kind, appointment_at, time_slot, channel, consent)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [userId, fullName.slice(0, 150), phone.slice(0, 30), lineId, birthdate || null, purposesJson, purposeOther, budget, note, kind, appointmentAt, timeSlot, channel, consent ? 1 : 0]
     );
 
     res.json({ ok: true });
@@ -81,7 +101,7 @@ router.post('/contact', express.json(), async (req, res, next) => {
 router.get('/contact/mine', requireAuth, async (req, res, next) => {
   try {
     const [rows] = await pool.query(
-      `SELECT id, full_name, phone, birthdate, purposes, purpose_other, budget, note, kind, appointment_at, consent, contacted_at, created_at
+      `SELECT id, full_name, phone, line_id, birthdate, purposes, purpose_other, budget, note, kind, appointment_at, time_slot, channel, consent, contacted_at, created_at
          FROM contact_inquiries WHERE user_id = ?
         ORDER BY (contacted_at IS NULL) DESC, created_at DESC`,
       [req.session.userId]

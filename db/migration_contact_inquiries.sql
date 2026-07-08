@@ -16,13 +16,16 @@ CREATE TABLE IF NOT EXISTS contact_inquiries (
   user_id     INT UNSIGNED NOT NULL,                 -- ตัวแทนที่ถูกติดต่อ
   full_name   VARCHAR(150) NOT NULL,                 -- 1. ชื่อ-นามสกุล
   phone       VARCHAR(30)  NOT NULL,                 -- 2. เบอร์โทรศัพท์
-  birthdate   DATE         NOT NULL,                 -- 3. วันเดือนปีเกิด
-  purposes      JSON         NULL,                   -- 4. วัตถุประสงค์ (เลือกได้หลายข้อ)
-  purpose_other VARCHAR(255) NULL,                   -- 4.1 ข้อความเมื่อเลือก "อื่นๆ"
-  budget        VARCHAR(100) NULL,                   -- 5. งบประมาณเบี้ยประกัน (ไม่บังคับ)
-  note        TEXT         NULL,                     -- 6. รายละเอียดเพิ่มเติม (ไม่บังคับ)
+  line_id     VARCHAR(64)  NULL,                     -- LINE ID (เฉพาะโหมดนัดหมาย)
+  birthdate   DATE         NULL,                     -- วันเดือนปีเกิด (เฉพาะโหมดติดต่อ)
+  purposes      JSON         NULL,                   -- วัตถุประสงค์ (เฉพาะโหมดติดต่อ)
+  purpose_other VARCHAR(255) NULL,                   -- ข้อความเมื่อเลือก "อื่นๆ"
+  budget        VARCHAR(100) NULL,                   -- งบประมาณเบี้ยประกัน (โหมดติดต่อ)
+  note        TEXT         NULL,                     -- รายละเอียดเพิ่มเติม
   kind          VARCHAR(20)  NOT NULL DEFAULT 'contact', -- 'contact' = ติดต่อสอบถาม / 'appointment' = นัดหมาย
-  appointment_at DATETIME    NULL,                    -- วันเวลานัดหมายที่ลูกค้าเลือก (เฉพาะ kind='appointment')
+  appointment_at DATETIME    NULL,                    -- วันเวลานัดหมาย (เฉพาะโหมดนัดหมาย)
+  time_slot     VARCHAR(30)  NULL,                    -- ช่วงเวลาที่เลือก เช่น "09:00–10:00 น."
+  channel       VARCHAR(40)  NULL,                    -- ช่องทางนัด (โทรศัพท์/LINE Call/Google Meet/Zoom)
   consent      TINYINT(1)   NOT NULL DEFAULT 0,      -- ยินยอมให้ติดต่อกลับ/เก็บข้อมูล
   is_read      TINYINT(1)   NOT NULL DEFAULT 0,      -- เจ้าของอ่านแล้วหรือยัง
   contacted_at DATETIME     NULL,                    -- เวลาที่ตัวแทนกด "ติดต่อกลับแล้ว" (NULL = ยังไม่ติดต่อ = รายการใหม่)
