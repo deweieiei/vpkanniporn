@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS contact_inquiries (
   purpose_other VARCHAR(255) NULL,                   -- 4.1 ข้อความเมื่อเลือก "อื่นๆ"
   budget        VARCHAR(100) NULL,                   -- 5. งบประมาณเบี้ยประกัน (ไม่บังคับ)
   note        TEXT         NULL,                     -- 6. รายละเอียดเพิ่มเติม (ไม่บังคับ)
+  kind          VARCHAR(20)  NOT NULL DEFAULT 'contact', -- 'contact' = ติดต่อสอบถาม / 'appointment' = นัดหมาย
+  appointment_at DATETIME    NULL,                    -- วันเวลานัดหมายที่ลูกค้าเลือก (เฉพาะ kind='appointment')
   consent      TINYINT(1)   NOT NULL DEFAULT 0,      -- ยินยอมให้ติดต่อกลับ/เก็บข้อมูล
   is_read      TINYINT(1)   NOT NULL DEFAULT 0,      -- เจ้าของอ่านแล้วหรือยัง
   contacted_at DATETIME     NULL,                    -- เวลาที่ตัวแทนกด "ติดต่อกลับแล้ว" (NULL = ยังไม่ติดต่อ = รายการใหม่)

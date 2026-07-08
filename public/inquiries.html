@@ -79,6 +79,13 @@
             if (isNaN(d)) return String(v);
             return d.toLocaleDateString('th-TH', { day:'2-digit', month:'long', year:'numeric' });
         }
+        // วันเวลานัดหมาย — โชว์วัน (มีชื่อวัน) ให้เด่น
+        function fmtAppt(v){
+            if (!v) return '-';
+            const d = new Date(v);
+            if (isNaN(d)) return '-';
+            return d.toLocaleString('th-TH', { weekday:'long', day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' }) + ' น.';
+        }
         function purposesArr(p){
             if (Array.isArray(p)) return p;
             if (typeof p === 'string') { try { const a = JSON.parse(p); return Array.isArray(a)?a:[]; } catch { return []; } }
@@ -111,22 +118,27 @@
 
         function rowHtml(q){
             const isNew = q.contacted_at == null;
+            const isAppt = q.kind === 'appointment' && q.appointment_at;
             const badge = isNew
                 ? '<span class="text-[11px] font-bold text-white bg-red-500 px-2 py-0.5 rounded-full">ใหม่</span>'
                 : '<span class="text-[11px] font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">ติดต่อกลับแล้ว</span>';
+            const apptBadge = isAppt ? '<span class="text-[11px] font-bold text-white bg-indigo-500 px-2 py-0.5 rounded-full">📅 นัดหมาย</span>' : '';
+            const apptLine = isAppt
+                ? `<p class="text-sm font-extrabold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg px-3 py-1.5 mt-1.5">📅 ให้ติดต่อกลับ: ${fmtAppt(q.appointment_at)}</p>` : '';
             const purposes = purposesArr(q.purposes).slice(0,3).map(p=>{
                 const label = (p === 'อื่นๆ' && q.purpose_other) ? ('อื่นๆ: ' + q.purpose_other) : p;
                 return `<span class="text-[11px] bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full">${escapeHtml(label)}</span>`;
             }).join(' ');
             return `
-                <div class="bg-white rounded-xl border ${isNew?'border-red-200':'border-gray-100'} shadow-sm p-4 flex items-center gap-3 cursor-pointer hover:shadow-md transition" data-id="${q.id}">
-                    <div class="w-11 h-11 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center font-bold flex-shrink-0">${escapeHtml((q.full_name||'?').trim().charAt(0)||'?')}</div>
+                <div class="bg-white rounded-xl border ${isAppt?'border-indigo-300':(isNew?'border-red-200':'border-gray-100')} shadow-sm p-4 flex items-center gap-3 cursor-pointer hover:shadow-md transition" data-id="${q.id}">
+                    <div class="w-11 h-11 rounded-full ${isAppt?'bg-indigo-50 text-indigo-500':'bg-orange-50 text-orange-500'} flex items-center justify-center font-bold flex-shrink-0">${escapeHtml((q.full_name||'?').trim().charAt(0)||'?')}</div>
                     <div class="min-w-0 flex-1">
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 flex-wrap">
                             <p class="font-bold text-gray-800 truncate">${escapeHtml(q.full_name)}</p>
-                            ${badge}
+                            ${apptBadge}${badge}
                         </div>
-                        <p class="text-xs text-gray-500 mt-0.5">📞 ${escapeHtml(q.phone)} • ${fmtDateTime(q.created_at)}</p>
+                        <p class="text-xs text-gray-500 mt-0.5">📞 ${escapeHtml(q.phone)} • ส่งเมื่อ ${fmtDateTime(q.created_at)}</p>
+                        ${apptLine}
                         <div class="flex flex-wrap gap-1 mt-1.5">${purposes}</div>
                     </div>
                     <span class="text-gray-300 text-xl flex-shrink-0">›</span>
@@ -154,7 +166,13 @@
             }).join(' ') || '<span class="text-sm text-gray-400">-</span>';
             const contactedLine = q.contacted_at
                 ? `<p class="text-xs text-green-700 mt-1">✔ ติดต่อกลับแล้วเมื่อ ${fmtDateTime(q.contacted_at)}</p>` : '';
+            const apptBox = (q.kind === 'appointment' && q.appointment_at)
+                ? `<div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-center">
+                       <p class="text-xs font-bold text-indigo-500">📅 นัดหมายให้ติดต่อกลับ</p>
+                       <p class="text-lg font-extrabold text-indigo-800 mt-0.5">${fmtAppt(q.appointment_at)}</p>
+                   </div>` : '';
             document.getElementById('detail-body').innerHTML = `
+                ${apptBox}
                 ${detailRow('ชื่อ-นามสกุล', escapeHtml(q.full_name))}
                 ${detailRow('เบอร์โทรศัพท์', `<a href="${telHref(q.phone)}" class="text-orange-600 font-semibold">${escapeHtml(q.phone)}</a>`)}
                 ${detailRow('วันเดือนปีเกิด', fmtDate(q.birthdate))}

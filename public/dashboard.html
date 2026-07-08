@@ -319,6 +319,36 @@
             gap: 12px;
             margin-top: 6px;
         }
+        /* เมนู popup ของปุ่ม "รับคำปรึกษาฟรี" (โทร/นัด/LINE) */
+        .hero-consult-wrap { position: relative; }
+        .hero-consult-menu {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.22);
+            padding: 8px;
+            min-width: 210px;
+            z-index: 50;
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .hero-consult-menu.open { display: flex; }
+        .hero-consult-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-main);
+            text-align: left;
+        }
+        .hero-consult-menu a:hover { background: var(--light-orange-bg); color: var(--primary-orange); }
         .hero-btn {
             display: inline-flex;
             align-items: center;
@@ -841,10 +871,16 @@
             <div class="hero-cover-overlay" id="cover-overlay"></div>
             <div class="hero-inner">
                 <div class="hero-cta">
-                    <a id="hero-consult-btn" href="#line-contact-section" class="hero-btn primary">💬 รับคำปรึกษาฟรี</a>
-                    <a href="#about-agent" class="hero-btn outline">📅 นัดหมายออนไลน์</a>
+                    <div class="hero-consult-wrap">
+                        <button type="button" id="hero-consult-btn" class="hero-btn primary">💬 รับคำปรึกษาฟรี</button>
+                        <div id="hero-consult-menu" class="hero-consult-menu">
+                            <a id="hc-call" href="#">📞 โทร</a>
+                            <a id="hc-appt" href="#">📅 สร้างตารางนัด</a>
+                            <a id="hc-line" href="#" target="_blank" rel="noopener">💬 LINE</a>
+                        </div>
+                    </div>
+                    <a id="hero-appt-btn" href="#" class="hero-btn outline">📅 นัดหมายออนไลน์</a>
                     <a href="#about-agent" class="hero-btn outline">ปรึกษาเคลม</a>
-                  
                 </div>
             </div>
         </section>
@@ -1285,34 +1321,52 @@
             // ติดต่อไลน์ (ใต้ความสำเร็จและรางวัล)
             renderLineContact();
 
+            // ปุ่ม Hero "รับคำปรึกษาฟรี" (โทร/นัด/LINE) + "นัดหมายออนไลน์"
+            setHeroConsult();
+
             // จำนวนผู้ติดต่อ (โชว์ที่ปุ่มฟันเฟือง — เฉพาะโหมดตัวเอง)
             loadInquiryCount();
+        }
+
+        // ตั้งลิงก์ปุ่ม Hero: "รับคำปรึกษาฟรี" (เมนู โทร/นัด/LINE) + "นัดหมายออนไลน์"
+        function setHeroConsult() {
+            const agentId = currentUser && currentUser.id;
+            const phone = (currentUser.phone || '').replace(/[^0-9+]/g, '');
+            const lineHref = lineHrefFrom(currentUser.line_id);
+            const apptUrl = agentId ? ('/contact/' + agentId + '?type=appointment') : '#';
+
+            const call = document.getElementById('hc-call');
+            const appt = document.getElementById('hc-appt');
+            const lineA = document.getElementById('hc-line');
+            const apptBtn = document.getElementById('hero-appt-btn');
+
+            if (apptBtn) apptBtn.href = apptUrl;
+            if (appt) appt.href = apptUrl;
+            if (call) { if (phone) { call.href = 'tel:' + phone; call.style.display = 'flex'; } else call.style.display = 'none'; }
+            if (lineA) { if (lineHref) { lineA.href = lineHref; lineA.style.display = 'flex'; } else lineA.style.display = 'none'; }
         }
 
         // ===== ติดต่อไลน์ =====
         // ใช้ line_id จากโปรไฟล์ สร้างลิงก์เพิ่มเพื่อน:
         //   @xxx (official/บัญชีทางการ) → https://line.me/R/ti/p/@xxx
         //   xxx  (id ส่วนตัว)           → https://line.me/ti/p/~xxx
+        // แปลง line_id → ลิงก์เปิดแอป LINE (add friend by id)
+        //   @xxx (บัญชีทางการ) → line.me/R/ti/p/@xxx  •  xxx (id ส่วนตัว) → line.me/ti/p/~xxx
+        function lineHrefFrom(raw) {
+            raw = (raw || '').trim();
+            if (!raw) return null;
+            return raw.startsWith('@')
+                ? 'https://line.me/R/ti/p/' + encodeURIComponent(raw)
+                : 'https://line.me/ti/p/~' + encodeURIComponent(raw);
+        }
+
         function renderLineContact() {
             const section = document.querySelector('.line-contact');
             const btn = document.getElementById('line-add-btn');
             const idText = document.getElementById('line-id-text');
-            const heroBtn = document.getElementById('hero-consult-btn');
 
             const raw = (currentUser.line_id || '').trim();
-            // ลิงก์เปิดแอป LINE ด้วยไอดี (add friend by id):
-            //   @xxx (บัญชีทางการ) → line.me/R/ti/p/@xxx  •  xxx (id ส่วนตัว) → line.me/ti/p/~xxx
-            const lineHref = raw
-                ? (raw.startsWith('@')
-                    ? 'https://line.me/R/ti/p/' + encodeURIComponent(raw)
-                    : 'https://line.me/ti/p/~' + encodeURIComponent(raw))
-                : null;
-
-            // ปุ่ม Hero "รับคำปรึกษาฟรี" → เด้งเข้าแอป LINE เช่นกัน (ถ้ายังไม่ตั้งไอดี → เลื่อนไปส่วนติดต่อ)
-            if (heroBtn) {
-                if (lineHref) { heroBtn.href = lineHref; heroBtn.target = '_blank'; heroBtn.rel = 'noopener'; }
-                else { heroBtn.href = '#line-contact-section'; heroBtn.removeAttribute('target'); }
-            }
+            const lineHref = lineHrefFrom(raw);
 
             if (!section || !btn) return;
             if (lineHref) {
@@ -1812,6 +1866,16 @@
                 }
             } catch (e) { /* เงียบไว้ */ }
         }
+
+        // ===== เมนู popup ปุ่ม "รับคำปรึกษาฟรี" (โทร/นัด/LINE) =====
+        (function initHeroConsult() {
+            const btn = document.getElementById('hero-consult-btn');
+            const menu = document.getElementById('hero-consult-menu');
+            if (!btn || !menu) return;
+            btn.addEventListener('click', (e) => { e.stopPropagation(); menu.classList.toggle('open'); });
+            document.addEventListener('click', (e) => { if (!e.target.closest('.hero-consult-wrap')) menu.classList.remove('open'); });
+            menu.addEventListener('click', () => menu.classList.remove('open'));
+        })();
 
         document.getElementById('logout-btn').addEventListener('click', async () => {
             if (!confirm('ออกจากระบบ?')) return;

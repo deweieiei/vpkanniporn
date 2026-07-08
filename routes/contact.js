@@ -46,6 +46,17 @@ router.post('/contact', express.json(), async (req, res, next) => {
     const note = b.note != null && String(b.note).trim() ? String(b.note).trim().slice(0, 2000) : null;
     const consent = b.consent === true || b.consent === 1 || b.consent === '1';
 
+    // ประเภท: 'appointment' (นัดหมาย มีวันเวลา) หรือ 'contact' (ติดต่อสอบถามทั่วไป)
+    const kind = b.kind === 'appointment' ? 'appointment' : 'contact';
+    // วันเวลานัด: รับ 'YYYY-MM-DDTHH:MM' (จาก <input type=datetime-local>) แปลงเป็น 'YYYY-MM-DD HH:MM:00'
+    let appointmentAt = null;
+    if (kind === 'appointment') {
+      const raw = String(b.appointment_at || '').trim();
+      const mDt = raw.match(/^(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2})/);
+      if (!mDt) return res.status(400).json({ error: 'กรุณาเลือกวันและเวลานัดหมาย' });
+      appointmentAt = `${mDt[1]} ${mDt[2]}:00`;
+    }
+
     // ตรวจข้อมูลบังคับ
     if (!fullName) return res.status(400).json({ error: 'กรุณากรอกชื่อ-นามสกุล' });
     if (!phone) return res.status(400).json({ error: 'กรุณากรอกเบอร์โทรศัพท์' });
@@ -57,9 +68,9 @@ router.post('/contact', express.json(), async (req, res, next) => {
 
     await pool.query(
       `INSERT INTO contact_inquiries
-         (user_id, full_name, phone, birthdate, purposes, purpose_other, budget, note, consent)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [userId, fullName.slice(0, 150), phone.slice(0, 30), birthdate, JSON.stringify(purposes), purposeOther, budget, note, consent ? 1 : 0]
+         (user_id, full_name, phone, birthdate, purposes, purpose_other, budget, note, kind, appointment_at, consent)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [userId, fullName.slice(0, 150), phone.slice(0, 30), birthdate, JSON.stringify(purposes), purposeOther, budget, note, kind, appointmentAt, consent ? 1 : 0]
     );
 
     res.json({ ok: true });
@@ -70,7 +81,7 @@ router.post('/contact', express.json(), async (req, res, next) => {
 router.get('/contact/mine', requireAuth, async (req, res, next) => {
   try {
     const [rows] = await pool.query(
-      `SELECT id, full_name, phone, birthdate, purposes, purpose_other, budget, note, consent, contacted_at, created_at
+      `SELECT id, full_name, phone, birthdate, purposes, purpose_other, budget, note, kind, appointment_at, consent, contacted_at, created_at
          FROM contact_inquiries WHERE user_id = ?
         ORDER BY (contacted_at IS NULL) DESC, created_at DESC`,
       [req.session.userId]
