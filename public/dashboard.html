@@ -32,46 +32,15 @@
         a { text-decoration: none; color: inherit; }
         img { display: block; max-width: 100%; height: auto; }
 
-        /* ===== Admin Top Bar (อยู่บนสุด) ===== */
-        .admin-bar {
-            background: linear-gradient(90deg, #1f2937, #111827);
-            color: #fff;
-            padding: 8px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            position: sticky;
-            top: 0;
-            z-index: 1100;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .admin-bar-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .admin-badge {
-            background: var(--primary-orange);
-            padding: 4px 12px;
-            border-radius: 999px;
-            font-weight: 700;
-            font-size: 11px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .admin-bar-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        /* ===== ฝั่งขวาของ header (ย้ายจาก admin-bar เดิมลงมารวมใน header) ===== */
+        .header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+        .owner-controls { display: flex; align-items: center; gap: 8px; }
         .admin-user {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255,255,255,0.08);
+            background: #f3f4f6;
+            color: #374151;
             padding: 4px 12px 4px 4px;
             border-radius: 999px;
         }
@@ -79,25 +48,26 @@
             width: 26px;
             height: 26px;
             border-radius: 50%;
-            background-color: #475569;
+            background-color: #cbd5e1;
             background-size: cover;
             background-position: center;
             border: 2px solid var(--primary-orange);
         }
         .admin-btn {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            padding: 5px 12px;
+            background: #f3f4f6;
+            color: #374151;
+            padding: 6px 14px;
             border-radius: 999px;
             font-weight: 600;
-            border: 1px solid rgba(255,255,255,0.15);
-            font-size: 11px;
+            border: 1px solid #e5e7eb;
+            font-size: 12px;
             cursor: pointer;
             font-family: inherit;
-            transition: background 0.2s;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
         }
-        .admin-btn:hover { background: rgba(255,255,255,0.18); }
-        .admin-btn.danger:hover { background: #dc2626; border-color: #dc2626; }
+        .admin-btn:hover { background: #e5e7eb; }
+        .admin-btn.danger { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+        .admin-btn.danger:hover { background: #dc2626; color: #fff; border-color: #dc2626; }
 
         /* ===== ปุ่มตั้งค่า (ฟันเฟือง) + เมนู ===== */
         .settings-wrap { position: relative; display: inline-block; }
@@ -166,7 +136,7 @@
             background-color: var(--white);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             position: sticky;
-            top: 38px;
+            top: 0;
             z-index: 1000;
             gap: 12px;
         }
@@ -818,45 +788,7 @@
     </div>
     <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 
-    <!-- ===== Admin Top Bar (ซ่อนถ้าดูโปรไฟล์คนอื่น — ดู isViewingOther ใน script) ===== -->
-    <div class="admin-bar" id="admin-bar">
-        <div class="admin-bar-left">
-            <span class="admin-badge">⚙ โหมดจัดการข้อมูล</span>
-            <span style="color: rgba(255,255,255,0.6); font-size: 11px;">— สิ่งที่คุณแก้จะแสดงในหน้าเว็บทันที</span>
-        </div>
-        <div class="admin-bar-right">
-            <div class="settings-wrap" id="settings-wrap">
-                <button class="admin-btn" id="settings-btn" title="ตั้งค่า">⚙ ตั้งค่า</button>
-                <div class="settings-menu" id="settings-menu">
-                    <div class="settings-menu-header">รายการผู้ติดต่อ</div>
-                    <button type="button" class="settings-item" data-action="inquiry">
-                        <span>📩 ติดต่อสอบถาม</span><span class="settings-count" id="count-inquiry">0</span>
-                    </button>
-                    <button type="button" class="settings-item" data-action="agent">
-                        <span>🤝 สนใจเป็นตัวแทนประกัน</span><span class="settings-count" id="count-agent">0</span>
-                    </button>
-                    <button type="button" class="settings-item" data-action="life">
-                        <span>🛡️ สนใจทำประกันชีวิต</span><span class="settings-count" id="count-life">0</span>
-                    </button>
-                    <div class="settings-divider"></div>
-                    <button type="button" class="settings-item" data-action="edit-article">
-                        <span>✏️ แก้ไขบทความ</span>
-                    </button>
-                    <div class="settings-divider"></div>
-                    <div class="settings-total">
-                        <span>รวม จำนวนผู้ติดต่อ</span><span class="settings-count total" id="count-total">0</span>
-                    </div>
-                </div>
-            </div>
-            <div class="admin-user">
-                <div class="avatar" id="user-avatar"></div>
-                <span id="user-name" style="font-weight: 600;">…</span>
-            </div>
-            <button class="admin-btn danger" id="logout-btn">ออกจากระบบ</button>
-        </div>
-    </div>
-
-    <!-- ===== Header (เหมือน landing) ===== -->
+    <!-- ===== Header (รวมแถบจัดการเข้ามาไว้ในนี้แล้ว) ===== -->
     <header class="site-header">
         <a href="/" class="brand">
             <div class="brand-logo">FWD<span class="dot">.</span></div>
@@ -868,7 +800,39 @@
                 </p>
             </div>
         </a>
-        <div id="header-mode-label" style="font-size: 11px; color: #6b7280;">หน้าจัดการ</div>
+        <div class="header-right">
+            <div id="header-mode-label" style="font-size: 11px; color: #6b7280;">หน้าจัดการ</div>
+            <div class="owner-controls" id="owner-controls">
+                <div class="settings-wrap" id="settings-wrap">
+                    <button class="admin-btn" id="settings-btn" title="ตั้งค่า">⚙ ตั้งค่า</button>
+                    <div class="settings-menu" id="settings-menu">
+                        <div class="settings-menu-header">รายการผู้ติดต่อ</div>
+                        <button type="button" class="settings-item" data-action="inquiry">
+                            <span>📩 ติดต่อสอบถาม</span><span class="settings-count" id="count-inquiry">0</span>
+                        </button>
+                        <button type="button" class="settings-item" data-action="agent">
+                            <span>🤝 สนใจเป็นตัวแทนประกัน</span><span class="settings-count" id="count-agent">0</span>
+                        </button>
+                        <button type="button" class="settings-item" data-action="life">
+                            <span>🛡️ สนใจทำประกันชีวิต</span><span class="settings-count" id="count-life">0</span>
+                        </button>
+                        <div class="settings-divider"></div>
+                        <button type="button" class="settings-item" data-action="edit-article">
+                            <span>✏️ แก้ไขบทความ</span>
+                        </button>
+                        <div class="settings-divider"></div>
+                        <div class="settings-total">
+                            <span>รวม จำนวนผู้ติดต่อ</span><span class="settings-count total" id="count-total">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-user">
+                    <div class="avatar" id="user-avatar"></div>
+                    <span id="user-name" style="font-weight: 600;">…</span>
+                </div>
+                <button class="admin-btn danger" id="logout-btn">ออกจากระบบ</button>
+            </div>
+        </div>
     </header>
 
 
@@ -1174,8 +1138,9 @@
         if (isViewingOther) {
             document.title = 'โปรไฟล์ตัวแทน — VP Kanniporn';
             document.getElementById('loading-text').textContent = 'กำลังโหลดโปรไฟล์...';
-            // โหมดดูคนอื่น: ซ่อนแถบจัดการทั้งหมด + ปุ่มแก้ไขทุกจุด + label "หน้าจัดการ"
-            document.getElementById('admin-bar').style.display = 'none';
+            // โหมดดูคนอื่น: ซ่อนปุ่มจัดการ (ตั้งค่า/ผู้ใช้/ออกจากระบบ) + ปุ่มแก้ไขทุกจุด, เปลี่ยน label เป็นลิงก์กลับ
+            const ownerControls = document.getElementById('owner-controls');
+            if (ownerControls) ownerControls.style.display = 'none';
             document.getElementById('header-mode-label').innerHTML = '<a href="/" style="color:var(--primary-orange); font-weight:600;">← กลับหน้าหลัก</a>';
             document.querySelectorAll('.edit-btn').forEach(b => b.style.display = 'none');
         }
