@@ -237,10 +237,14 @@
         /* ===== Hero ===== */
         .hero {
             background: linear-gradient(135deg, #FFF0E6 0%, #FFE0CC 50%, #FFD0B0 100%);
-            padding: 60px 5% 70px;
+            min-height: 80vh;
+            padding: 60px 5% 48px;
             text-align: center;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;   /* ดันเนื้อหา (ปุ่ม) ลงล่างสุดของ Hero */
         }
         .hero::before {
             content: "";
@@ -259,7 +263,8 @@
             position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
             opacity: 0; transition: opacity 1.5s ease-in-out;
         }
-        .hero-cover-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.35); z-index: 1; display: none; }
+        /* เอาเงาดำคลุมภาพออก — โชว์ภาพพื้นหลัง Hero แบบชัดๆ ไม่มีความโปร่งใส */
+        .hero-cover-overlay { position: absolute; inset: 0; background: transparent; z-index: 1; display: none; }
         .hero-cover-overlay.show { display: block; }
         .hero h1 {
             font-size: clamp(28px, 5vw, 44px);
