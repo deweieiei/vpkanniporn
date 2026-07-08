@@ -1284,6 +1284,9 @@
 
             // ติดต่อไลน์ (ใต้ความสำเร็จและรางวัล)
             renderLineContact();
+
+            // จำนวนผู้ติดต่อ (โชว์ที่ปุ่มฟันเฟือง — เฉพาะโหมดตัวเอง)
+            loadInquiryCount();
         }
 
         // ===== ติดต่อไลน์ =====
@@ -1762,7 +1765,7 @@
 
         // ===== Logout =====
         // ===== ปุ่มตั้งค่า (ฟันเฟือง) =====
-        // ตอนนี้เป็น UI ล้วน ยังไม่เก็บข้อมูลจริง — จำนวนขึ้น 0 ไว้ก่อน กดแล้วแจ้งว่ากำลังพัฒนา
+        // "ติดต่อสอบถาม" = ของจริง (ไปหน้า /inquiries + โชว์จำนวนรายการใหม่) / ที่เหลือยังเป็น UI
         (function initSettingsMenu() {
             const wrap = document.getElementById('settings-wrap');
             const btn = document.getElementById('settings-btn');
@@ -1779,10 +1782,36 @@
             menu.querySelectorAll('.settings-item').forEach(item => {
                 item.addEventListener('click', () => {
                     menu.classList.remove('open');
+                    if (item.dataset.action === 'inquiry') { window.location.href = '/inquiries'; return; }
                     toast('เมนูนี้กำลังพัฒนา — ยังไม่เก็บข้อมูลจริง');
                 });
             });
         })();
+
+        // โหลดจำนวนผู้ติดต่อของตัวแทน (เฉพาะโหมดตัวเอง) → โชว์ที่ปุ่มฟันเฟือง + จุดแดงถ้ามีรายการใหม่
+        async function loadInquiryCount() {
+            if (isViewingOther) return;
+            try {
+                const res = await fetch('/api/contact/mine', { credentials: 'same-origin' });
+                if (!res.ok) return;
+                const d = await res.json();
+                const total = d.total || 0;
+                const newCount = d.new_count || 0;
+                const ci = document.getElementById('count-inquiry');
+                const ct = document.getElementById('count-total');
+                if (ci) ci.textContent = newCount;
+                if (ct) ct.textContent = total;
+                // จุดแดงบนปุ่มฟันเฟือง เมื่อมีรายการใหม่
+                const btn = document.getElementById('settings-btn');
+                if (btn && newCount > 0 && !btn.querySelector('.settings-dot')) {
+                    const dot = document.createElement('span');
+                    dot.className = 'settings-dot';
+                    dot.style.cssText = 'position:absolute; top:-3px; right:-3px; width:9px; height:9px; background:#ef4444; border-radius:50%; border:2px solid #fff;';
+                    btn.style.position = 'relative';
+                    btn.appendChild(dot);
+                }
+            } catch (e) { /* เงียบไว้ */ }
+        }
 
         document.getElementById('logout-btn').addEventListener('click', async () => {
             if (!confirm('ออกจากระบบ?')) return;

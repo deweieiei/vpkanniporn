@@ -61,15 +61,38 @@ router.post('/contact', express.json(), async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-// ===== GET /api/contact/mine — เจ้าของ: รายการผู้ติดต่อของตัวเอง (ไว้ต่อหน้าจัดการทีหลัง) =====
+// ===== GET /api/contact/mine — เจ้าของ: รายการผู้ติดต่อของตัวเอง (รายการใหม่ = ยังไม่ติดต่อกลับ) =====
 router.get('/contact/mine', requireAuth, async (req, res, next) => {
   try {
     const [rows] = await pool.query(
-      `SELECT id, full_name, phone, birthdate, purposes, budget, note, consent, is_read, created_at
-         FROM contact_inquiries WHERE user_id = ? ORDER BY created_at DESC`,
+      `SELECT id, full_name, phone, birthdate, purposes, budget, note, consent, contacted_at, created_at
+         FROM contact_inquiries WHERE user_id = ?
+        ORDER BY (contacted_at IS NULL) DESC, created_at DESC`,
       [req.session.userId]
     );
-    res.json({ ok: true, inquiries: rows });
+    const newCount = rows.filter(r => r.contacted_at == null).length;
+    res.json({ ok: true, inquiries: rows, total: rows.length, new_count: newCount });
+  } catch (err) { next(err); }
+});
+
+// ===== POST /api/contact/:id/contacted — เจ้าของ: บันทึกว่า "ติดต่อกลับแล้ว" (หรือยกเลิกด้วย undo) =====
+router.post('/contact/:id/contacted', requireAuth, express.json(), async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ error: 'id ไม่ถูกต้อง' });
+
+    const [rows] = await pool.query('SELECT user_id FROM contact_inquiries WHERE id = ? LIMIT 1', [id]);
+    if (rows.length === 0) return res.status(404).json({ error: 'ไม่พบรายการนี้' });
+    if (rows[0].user_id !== req.session.userId) return res.status(403).json({ error: 'ไม่ใช่เจ้าของรายการนี้' });
+
+    const undo = req.body && (req.body.undo === true || req.body.undo === 1 || req.body.undo === '1');
+    if (undo) {
+      await pool.query('UPDATE contact_inquiries SET contacted_at = NULL WHERE id = ?', [id]);
+      return res.json({ ok: true, contacted_at: null });
+    }
+    await pool.query('UPDATE contact_inquiries SET contacted_at = NOW() WHERE id = ?', [id]);
+    const [after] = await pool.query('SELECT contacted_at FROM contact_inquiries WHERE id = ? LIMIT 1', [id]);
+    res.json({ ok: true, contacted_at: after[0].contacted_at });
   } catch (err) { next(err); }
 });
 

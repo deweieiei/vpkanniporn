@@ -40,6 +40,11 @@ router.get('/contact/:id', (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'contact.html'));
 });
 
+// หน้ารายการผู้ติดต่อเข้ามา (เฉพาะเจ้าของที่ล็อกอิน)
+router.get('/inquiries', requireAuth, (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'inquiries.html'));
+});
+
 // profile.html ถูกยุบรวมเข้า dashboard.html แล้ว (2026-07-03)
 // dashboard.html เดี๋ยวนี้ทำหน้าที่ 2 โหมดในไฟล์เดียว ผ่าน URL:
 //   /profile, /dashboard  → โหมดตัวเอง (ต้อง login, มีปุ่มแก้ไข)

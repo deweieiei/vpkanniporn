@@ -20,9 +20,10 @@ CREATE TABLE IF NOT EXISTS contact_inquiries (
   purposes    JSON         NULL,                     -- 4. วัตถุประสงค์ (เลือกได้หลายข้อ)
   budget      VARCHAR(100) NULL,                     -- 5. งบประมาณเบี้ยประกัน (ไม่บังคับ)
   note        TEXT         NULL,                     -- 6. รายละเอียดเพิ่มเติม (ไม่บังคับ)
-  consent     TINYINT(1)   NOT NULL DEFAULT 0,       -- ยินยอมให้ติดต่อกลับ/เก็บข้อมูล
-  is_read     TINYINT(1)   NOT NULL DEFAULT 0,       -- เจ้าของอ่านแล้วหรือยัง
-  created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  consent      TINYINT(1)   NOT NULL DEFAULT 0,      -- ยินยอมให้ติดต่อกลับ/เก็บข้อมูล
+  is_read      TINYINT(1)   NOT NULL DEFAULT 0,      -- เจ้าของอ่านแล้วหรือยัง
+  contacted_at DATETIME     NULL,                    -- เวลาที่ตัวแทนกด "ติดต่อกลับแล้ว" (NULL = ยังไม่ติดต่อ = รายการใหม่)
+  created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- เวลาที่ลูกค้าส่งฟอร์มเข้ามา
   PRIMARY KEY (id),
   KEY idx_contact_user (user_id, created_at),
   CONSTRAINT fk_contact_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
