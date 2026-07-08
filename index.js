@@ -94,6 +94,7 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api', require('./routes/plans')); // /api/plans, /api/categories
 app.use('/api/admin', require('./routes/admin')); // /api/admin/users (จัดการตัวแทน — เฉพาะ SupperAdmin)
 app.use('/api', require('./routes/userpages')); // /api/pages (ปุ่ม/หน้าที่ตัวแทนสร้างเอง)
+app.use('/api', require('./routes/contact')); // /api/contact (ฟอร์มติดต่อสอบถามจากผู้สนใจ)
 
 // ===== HTML Pages =====
 app.use('/', require('./routes/pages'));

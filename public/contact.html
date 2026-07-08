@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ติดต่อสอบถาม — VP Kanniporn FWD</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/Logo.svg">
+    <link rel="shortcut icon" href="/assets/Logo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+        .req::after { content: " *"; color: #ef4444; }
+        .field-input {
+            width: 100%; padding: 11px 14px; border: 1px solid #e5e7eb; border-radius: 12px;
+            font-size: 15px; font-family: inherit; outline: none; transition: border-color .2s, box-shadow .2s;
+        }
+        .field-input:focus { border-color: #FF6B00; box-shadow: 0 0 0 3px rgba(255,107,0,0.15); }
+        .purpose-chip {
+            display: flex; align-items: center; gap: 8px; padding: 11px 14px; border: 1px solid #e5e7eb;
+            border-radius: 12px; cursor: pointer; font-size: 14px; transition: all .15s; user-select: none;
+        }
+        .purpose-chip:hover { border-color: #fdba74; background: #fff7ed; }
+        .purpose-chip input { width: 18px; height: 18px; accent-color: #FF6B00; cursor: pointer; }
+        .purpose-chip.checked { border-color: #FF6B00; background: #fff7ed; font-weight: 600; color: #c2410c; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased min-h-screen">
+
+    <!-- HEADER -->
+    <header class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
+        <div class="max-w-2xl mx-auto px-4 py-2.5 flex justify-between items-center">
+            <a href="/home" class="flex items-center gap-3">
+                <img src="/assets/Logo.svg" alt="VP Kanniporn FWD" class="h-10 w-auto">
+            </a>
+            <a id="back-link" href="/home" class="text-xs font-semibold text-gray-500 hover:text-orange-600">← กลับ</a>
+        </div>
+    </header>
+
+    <main class="max-w-2xl mx-auto px-4 py-8">
+
+        <!-- FORM CARD -->
+        <div id="form-card" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-orange-50 text-3xl mb-3">📝</div>
+                <h1 class="text-2xl font-extrabold text-gray-800">สนใจรับคำปรึกษาและวางแผนประกัน</h1>
+                <p class="text-sm text-gray-500 mt-1">กรอกข้อมูลด้านล่าง <span id="agent-name-wrap" class="hidden">แล้ว <b id="agent-name" class="text-orange-600"></b> จะติดต่อกลับ</span></p>
+            </div>
+
+            <form id="contact-form" class="space-y-5" novalidate>
+                <!-- 1. ชื่อ-นามสกุล -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5 req">ชื่อ-นามสกุล</label>
+                    <input type="text" name="full_name" class="field-input" maxlength="150" placeholder="เช่น สมชาย ใจดี" required>
+                </div>
+
+                <!-- 2. เบอร์โทรศัพท์ -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5 req">เบอร์โทรศัพท์</label>
+                    <input type="tel" name="phone" class="field-input" maxlength="30" placeholder="08X-XXX-XXXX" required>
+                </div>
+
+                <!-- 3. วันเดือนปีเกิด -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5 req">วันเดือนปีเกิด</label>
+                    <input type="date" name="birthdate" class="field-input" required>
+                </div>
+
+                <!-- 4. วัตถุประสงค์ -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2 req">วัตถุประสงค์ในการทำประกัน <span class="font-normal text-gray-400 text-xs">(เลือกได้หลายข้อ)</span></label>
+                    <div id="purposes" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <!-- chips ถูกสร้างด้วย JS -->
+                    </div>
+                </div>
+
+                <!-- 5. งบประมาณ -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">งบประมาณเบี้ยประกันที่ต้องการ <span class="font-normal text-gray-400 text-xs">(ไม่บังคับ)</span></label>
+                    <input type="text" name="budget" class="field-input" maxlength="100" placeholder="เช่น 20,000 บาท/ปี หรือ ยังไม่แน่ใจ">
+                </div>
+
+                <!-- 6. รายละเอียดเพิ่มเติม -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">รายละเอียดเพิ่มเติม <span class="font-normal text-gray-400 text-xs">(ถ้ามี)</span></label>
+                    <textarea name="note" class="field-input" rows="3" maxlength="2000" placeholder="ระบุความต้องการเพิ่มเติม เช่น ช่วงเวลาที่สะดวกให้ติดต่อกลับ"></textarea>
+                </div>
+
+                <!-- Consent -->
+                <label class="flex items-start gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+                    <input type="checkbox" name="consent" class="mt-1 w-5 h-5 flex-shrink-0" style="accent-color:#FF6B00;" required>
+                    <span class="text-xs text-gray-600 leading-relaxed">
+                        ข้าพเจ้ายินยอมให้ตัวแทนติดต่อกลับเพื่อให้คำแนะนำและนำเสนอแบบประกันที่เหมาะสม พร้อมยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคลตามนโยบายความเป็นส่วนตัว เพื่อวัตถุประสงค์ในการให้บริการและติดต่อกลับเท่านั้น
+                    </span>
+                </label>
+
+                <button type="submit" id="submit-btn"
+                        class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 rounded-full text-base shadow-lg shadow-orange-500/30 transition disabled:opacity-60">
+                    ส่งข้อมูลติดต่อ
+                </button>
+            </form>
+        </div>
+
+        <!-- SUCCESS -->
+        <div id="success-card" class="hidden bg-white rounded-2xl shadow-sm border border-green-100 p-8 text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 text-4xl mb-4">✅</div>
+            <h2 class="text-xl font-extrabold text-gray-800">ส่งข้อมูลเรียบร้อยแล้ว</h2>
+            <p class="text-sm text-gray-500 mt-2">ขอบคุณสำหรับความสนใจ ตัวแทนจะติดต่อกลับโดยเร็วที่สุดครับ/ค่ะ</p>
+            <a id="success-back" href="/home" class="inline-block mt-6 text-orange-600 font-semibold text-sm">← กลับหน้าตัวแทน</a>
+        </div>
+    </main>
+
+    <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold opacity-0 pointer-events-none transition-opacity z-50"></div>
+
+    <script>
+        const m = location.pathname.match(/^\/contact\/(\d+)/);
+        const agentId = m ? Number(m[1]) : null;
+
+        const PURPOSES = ['คุ้มครองชีวิต', 'ค่ารักษาพยาบาล', 'โรคร้ายแรง', 'สะสมทรัพย์', 'วางแผนเกษียณ', 'ลดหย่อนภาษี', 'วางแผนมรดก'];
+
+        function toast(msg, ok) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold transition-opacity z-50 ${ok === false ? 'bg-red-600' : 'bg-green-600'} opacity-100`;
+            setTimeout(() => { t.classList.replace('opacity-100', 'opacity-0'); }, 2800);
+        }
+
+        // สร้าง checkbox วัตถุประสงค์
+        const purposesEl = document.getElementById('purposes');
+        purposesEl.innerHTML = PURPOSES.map(p => `
+            <label class="purpose-chip">
+                <input type="checkbox" name="purpose" value="${p}">
+                <span>${p}</span>
+            </label>`).join('');
+        purposesEl.querySelectorAll('.purpose-chip').forEach(chip => {
+            const cb = chip.querySelector('input');
+            cb.addEventListener('change', () => chip.classList.toggle('checked', cb.checked));
+        });
+
+        // โหลดชื่อตัวแทน + ตั้งลิงก์กลับไปหน้าตัวแทน
+        async function loadAgent() {
+            if (!agentId) return;
+            document.getElementById('back-link').href = '/agent/' + agentId;
+            document.getElementById('success-back').href = '/agent/' + agentId;
+            try {
+                const res = await fetch('/api/users/' + agentId);
+                if (!res.ok) return;
+                const d = await res.json();
+                if (d && d.user) {
+                    const name = `${d.user.first_name || ''} ${d.user.last_name || ''}`.trim();
+                    if (name) {
+                        document.getElementById('agent-name').textContent = name;
+                        document.getElementById('agent-name-wrap').classList.remove('hidden');
+                    }
+                }
+            } catch (e) { /* เงียบไว้ */ }
+        }
+
+        // ส่งฟอร์ม
+        document.getElementById('contact-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const f = e.target;
+            const btn = document.getElementById('submit-btn');
+
+            const full_name = f.full_name.value.trim();
+            const phone = f.phone.value.trim();
+            const birthdate = f.birthdate.value;
+            const purposes = Array.from(f.querySelectorAll('input[name="purpose"]:checked')).map(c => c.value);
+            const budget = f.budget.value.trim();
+            const note = f.note.value.trim();
+            const consent = f.consent.checked;
+
+            if (!full_name) return toast('กรุณากรอกชื่อ-นามสกุล', false);
+            if (!phone) return toast('กรุณากรอกเบอร์โทรศัพท์', false);
+            if (!birthdate) return toast('กรุณาเลือกวันเดือนปีเกิด', false);
+            if (purposes.length === 0) return toast('กรุณาเลือกวัตถุประสงค์อย่างน้อย 1 ข้อ', false);
+            if (!consent) return toast('กรุณายินยอมให้ติดต่อกลับก่อนส่ง', false);
+
+            btn.disabled = true;
+            btn.textContent = 'กำลังส่ง...';
+            try {
+                const res = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: agentId, full_name, phone, birthdate, purposes, budget, note, consent }),
+                });
+                const d = await res.json();
+                if (!res.ok) throw new Error(d.error || 'ส่งข้อมูลไม่สำเร็จ');
+                document.getElementById('form-card').classList.add('hidden');
+                document.getElementById('success-card').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (err) {
+                toast(err.message, false);
+                btn.disabled = false;
+                btn.textContent = 'ส่งข้อมูลติดต่อ';
+            }
+        });
+
+        loadAgent();
+    </script>
+</body>
+</html>
