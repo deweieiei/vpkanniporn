@@ -99,6 +99,64 @@
         .admin-btn:hover { background: rgba(255,255,255,0.18); }
         .admin-btn.danger:hover { background: #dc2626; border-color: #dc2626; }
 
+        /* ===== ปุ่มตั้งค่า (ฟันเฟือง) + เมนู ===== */
+        .settings-wrap { position: relative; display: inline-block; }
+        .settings-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: #fff;
+            color: var(--text-main);
+            border-radius: 14px;
+            box-shadow: 0 14px 36px rgba(0,0,0,0.28);
+            min-width: 260px;
+            padding: 8px;
+            z-index: 1200;
+            display: none;
+        }
+        .settings-menu.open { display: block; }
+        .settings-menu-header { font-size: 11px; font-weight: 700; color: #9ca3af; padding: 6px 10px 4px; }
+        .settings-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: none;
+            border: none;
+            padding: 10px;
+            border-radius: 9px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            text-align: left;
+        }
+        .settings-item:hover { background: var(--light-orange-bg); }
+        .settings-count {
+            background: #f3f4f6;
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 700;
+            min-width: 26px;
+            text-align: center;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+        .settings-divider { height: 1px; background: #f0f0f0; margin: 6px 4px; }
+        .settings-total {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px;
+            font-weight: 800;
+            font-size: 13px;
+            color: var(--text-main);
+        }
+        .settings-count.total { background: var(--primary-orange); color: #fff; }
+
         /* ===== Header (Brand) ===== */
         .site-header {
             display: flex;
@@ -767,6 +825,29 @@
             <span style="color: rgba(255,255,255,0.6); font-size: 11px;">— สิ่งที่คุณแก้จะแสดงในหน้าเว็บทันที</span>
         </div>
         <div class="admin-bar-right">
+            <div class="settings-wrap" id="settings-wrap">
+                <button class="admin-btn" id="settings-btn" title="ตั้งค่า">⚙ ตั้งค่า</button>
+                <div class="settings-menu" id="settings-menu">
+                    <div class="settings-menu-header">รายการผู้ติดต่อ</div>
+                    <button type="button" class="settings-item" data-action="inquiry">
+                        <span>📩 ติดต่อสอบถาม</span><span class="settings-count" id="count-inquiry">0</span>
+                    </button>
+                    <button type="button" class="settings-item" data-action="agent">
+                        <span>🤝 สนใจเป็นตัวแทนประกัน</span><span class="settings-count" id="count-agent">0</span>
+                    </button>
+                    <button type="button" class="settings-item" data-action="life">
+                        <span>🛡️ สนใจทำประกันชีวิต</span><span class="settings-count" id="count-life">0</span>
+                    </button>
+                    <div class="settings-divider"></div>
+                    <button type="button" class="settings-item" data-action="edit-article">
+                        <span>✏️ แก้ไขบทความ</span>
+                    </button>
+                    <div class="settings-divider"></div>
+                    <div class="settings-total">
+                        <span>รวม จำนวนผู้ติดต่อ</span><span class="settings-count total" id="count-total">0</span>
+                    </div>
+                </div>
+            </div>
             <div class="admin-user">
                 <div class="avatar" id="user-avatar"></div>
                 <span id="user-name" style="font-weight: 600;">…</span>
@@ -1719,6 +1800,29 @@
         });
 
         // ===== Logout =====
+        // ===== ปุ่มตั้งค่า (ฟันเฟือง) =====
+        // ตอนนี้เป็น UI ล้วน ยังไม่เก็บข้อมูลจริง — จำนวนขึ้น 0 ไว้ก่อน กดแล้วแจ้งว่ากำลังพัฒนา
+        (function initSettingsMenu() {
+            const wrap = document.getElementById('settings-wrap');
+            const btn = document.getElementById('settings-btn');
+            const menu = document.getElementById('settings-menu');
+            if (!wrap || !btn || !menu) return;
+
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menu.classList.toggle('open');
+            });
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#settings-wrap')) menu.classList.remove('open');
+            });
+            menu.querySelectorAll('.settings-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    menu.classList.remove('open');
+                    toast('เมนูนี้กำลังพัฒนา — ยังไม่เก็บข้อมูลจริง');
+                });
+            });
+        })();
+
         document.getElementById('logout-btn').addEventListener('click', async () => {
             if (!confirm('ออกจากระบบ?')) return;
             try {
