@@ -822,7 +822,7 @@
             <div class="brand-meta">
                 <p class="title">Agent VP Kanniporn FWD</p>
                 <p class="sub">
-                    <span>สำนักงานตัวแทนดิจิทัล เสนอโดย ตัวแทนทีมVP กัลนิภรณ์ เอฟ ดับบลิว ดี</span>
+                    <span>สำนักงานตัวแทนดิจิทัล เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</span>
                 </p>
             </div>
         </a>
@@ -843,6 +843,9 @@
                             <span>🛡️ สนใจทำประกันชีวิต</span><span class="settings-count" id="count-life">0</span>
                         </button>
                         <div class="settings-divider"></div>
+                        <button type="button" class="settings-item" data-action="traffic">
+                            <span>📊 สถิติการเข้าชมเว็บไซต์</span><span style="font-size:15px;">›</span>
+                        </button>
                         <button type="button" class="settings-item" data-action="edit-article">
                             <span>✏️ แก้ไขบทความ</span>
                         </button>
@@ -852,6 +855,7 @@
                         </div>
                     </div>
                 </div>
+                <button class="admin-btn" id="copy-profile-btn" title="คัดลอกลิงก์โปรไฟล์ไว้ส่งให้ผู้อื่น">🔗 คัดลอกลิงก์</button>
                 <div class="admin-user">
                     <div class="avatar" id="user-avatar"></div>
                     <span id="user-name" style="font-weight: 600;">…</span>
@@ -880,7 +884,13 @@
                         </div>
                     </div>
                     <a id="hero-appt-btn" href="#" class="hero-btn outline">📅 นัดหมายออนไลน์</a>
-                    <a href="#about-agent" class="hero-btn outline">ปรึกษาเคลม</a>
+                    <div class="hero-consult-wrap">
+                        <button type="button" id="hero-claim-btn" class="hero-btn outline">🛡️ ปรึกษาเคลม</button>
+                        <div id="hero-claim-menu" class="hero-consult-menu">
+                            <a id="hclaim-call" href="#">📞 โทร</a>
+                            <a id="hclaim-line" href="#" target="_blank" rel="noopener">💬 LINE</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1141,6 +1151,7 @@
     <!-- ===== Toast ===== -->
     <div id="toast" class="toast"></div>
 
+    <script src="/track.js"></script>
     <script>
         let currentUser = null;
 
@@ -1175,6 +1186,8 @@
             if (ownerControls) ownerControls.style.display = 'none';
             document.getElementById('header-mode-label').innerHTML = '<a href="/home" style="color:var(--primary-orange); font-weight:600;">← กลับหน้าหลัก</a>';
             document.querySelectorAll('.edit-btn').forEach(b => b.style.display = 'none');
+            // นับการเข้าชมหน้าโปรไฟล์ (เฉพาะผู้ชม ไม่นับตอนเจ้าของดูเองที่ /profile)
+            if (window.trackView) window.trackView(viewingAgentId, 'profile', 'หน้าโปรไฟล์');
         }
 
         // ===== Cover Slideshow (ย้ายมาจาก profile.html เดิม) =====
@@ -1345,6 +1358,12 @@
             if (apptBtn) apptBtn.href = apptUrl;              // "นัดหมายออนไลน์" → ฟอร์มมีวันเวลานัด
             if (call) { if (phone) { call.href = 'tel:' + phone; call.style.display = 'flex'; } else call.style.display = 'none'; }
             if (lineA) { if (lineHref) { lineA.href = lineHref; lineA.style.display = 'flex'; } else lineA.style.display = 'none'; }
+
+            // ปุ่ม "ปรึกษาเคลม" → เมนู โทร/LINE
+            const claimCall = document.getElementById('hclaim-call');
+            const claimLine = document.getElementById('hclaim-line');
+            if (claimCall) { if (phone) { claimCall.href = 'tel:' + phone; claimCall.style.display = 'flex'; } else claimCall.style.display = 'none'; }
+            if (claimLine) { if (lineHref) { claimLine.href = lineHref; claimLine.style.display = 'flex'; } else claimLine.style.display = 'none'; }
         }
 
         // ===== ติดต่อไลน์ =====
@@ -1356,9 +1375,11 @@
         function lineHrefFrom(raw) {
             raw = (raw || '').trim();
             if (!raw) return null;
+            // เก็บ '@' เป็นตัวอักษรจริง (ไม่ encode เป็น %40) — iOS Safari ไม่เปิดแอป LINE ถ้าเป็น %40
+            const id = raw.replace(/^@+/, '');
             return raw.startsWith('@')
-                ? 'https://line.me/R/ti/p/' + encodeURIComponent(raw)
-                : 'https://line.me/ti/p/~' + encodeURIComponent(raw);
+                ? 'https://line.me/R/ti/p/@' + id
+                : 'https://line.me/ti/p/~' + id;
         }
 
         function renderLineContact() {
@@ -1838,6 +1859,7 @@
                 item.addEventListener('click', () => {
                     menu.classList.remove('open');
                     if (item.dataset.action === 'inquiry') { window.location.href = '/inquiries'; return; }
+                    if (item.dataset.action === 'traffic') { window.location.href = '/traffic'; return; }
                     toast('เมนูนี้กำลังพัฒนา — ยังไม่เก็บข้อมูลจริง');
                 });
             });
@@ -1869,13 +1891,51 @@
         }
 
         // ===== เมนู popup ปุ่ม "รับคำปรึกษาฟรี" (โทร/นัด/LINE) =====
-        (function initHeroConsult() {
-            const btn = document.getElementById('hero-consult-btn');
-            const menu = document.getElementById('hero-consult-menu');
-            if (!btn || !menu) return;
-            btn.addEventListener('click', (e) => { e.stopPropagation(); menu.classList.toggle('open'); });
-            document.addEventListener('click', (e) => { if (!e.target.closest('.hero-consult-wrap')) menu.classList.remove('open'); });
-            menu.addEventListener('click', () => menu.classList.remove('open'));
+        (function initHeroPopups() {
+            const pairs = [
+                ['hero-consult-btn', 'hero-consult-menu'],
+                ['hero-claim-btn', 'hero-claim-menu'],
+            ];
+            const menus = [];
+            pairs.forEach(([btnId, menuId]) => {
+                const btn = document.getElementById(btnId);
+                const menu = document.getElementById(menuId);
+                if (!btn || !menu) return;
+                menus.push(menu);
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const willOpen = !menu.classList.contains('open');
+                    menus.forEach(mm => mm.classList.remove('open')); // ปิดเมนูอื่นก่อน
+                    if (willOpen) menu.classList.add('open');
+                });
+                menu.addEventListener('click', () => menu.classList.remove('open'));
+            });
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.hero-consult-wrap')) menus.forEach(mm => mm.classList.remove('open'));
+            });
+        })();
+
+        // ===== คัดลอกลิงก์ (ไว้ส่งให้คนอื่นเข้ามาเยี่ยมชม) =====
+        function copyLink(url) {
+            const done = () => toast('✓ คัดลอกลิงก์แล้ว');
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(done).catch(() => fallbackCopy(url, done));
+            } else { fallbackCopy(url, done); }
+        }
+        function fallbackCopy(text, done) {
+            const ta = document.createElement('textarea');
+            ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+            document.body.appendChild(ta); ta.focus(); ta.select();
+            try { document.execCommand('copy'); done(); } catch (e) { prompt('คัดลอกลิงก์นี้:', text); }
+            document.body.removeChild(ta);
+        }
+        (function () {
+            const btn = document.getElementById('copy-profile-btn');
+            if (btn) btn.addEventListener('click', () => {
+                const id = currentUser && currentUser.id;
+                if (!id) return toast('ยังโหลดข้อมูลไม่เสร็จ', 'error');
+                copyLink(location.origin + '/agent/' + id);
+            });
         })();
 
         document.getElementById('logout-btn').addEventListener('click', async () => {

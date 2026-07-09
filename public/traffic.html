@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สถิติการเข้าชม — VP Kanniporn FWD</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/Logo.svg">
+    <link rel="shortcut icon" href="/assets/Logo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Prompt', sans-serif; } </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased min-h-screen">
+
+    <header class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
+        <div class="max-w-4xl mx-auto px-4 py-2.5 flex justify-between items-center">
+            <a href="/profile" class="flex items-center gap-3">
+                <img src="/assets/Logo.svg" alt="VP Kanniporn FWD" class="h-10 w-auto">
+            </a>
+            <a href="/profile" class="text-xs font-semibold text-gray-500 hover:text-orange-600">← กลับหน้าจัดการ</a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <h1 class="text-2xl font-extrabold text-gray-800">📊 สถิติการเข้าชมเว็บไซต์</h1>
+        <p class="text-sm text-gray-500 mt-1 mb-6">ภาพรวมผู้เข้าชมหน้าเว็บของคุณ</p>
+
+        <div id="loading" class="text-center text-gray-400 py-16 text-sm">⏳ กำลังโหลด…</div>
+
+        <div id="content" class="hidden space-y-6">
+            <!-- ภาพรวม -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                    <p class="text-xs font-bold text-gray-400">ผู้เข้าชมทั้งหมด <span class="text-gray-300">(Total Visitors)</span></p>
+                    <p id="m-total" class="text-3xl font-extrabold text-orange-600 mt-1">0</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                    <p class="text-xs font-bold text-gray-400">ผู้ใช้งานจริง <span class="text-gray-300">(Unique)</span></p>
+                    <p id="m-unique" class="text-3xl font-extrabold text-indigo-600 mt-1">0</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                    <p class="text-xs font-bold text-gray-400">การเข้าชมทั้งหมด <span class="text-gray-300">(Page Views)</span></p>
+                    <p id="m-views" class="text-3xl font-extrabold text-gray-800 mt-1">0</p>
+                </div>
+            </div>
+
+            <!-- ตามช่วงเวลา -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center">
+                    <p class="text-xs font-bold text-gray-400">วันนี้</p>
+                    <p id="p-today" class="text-2xl font-extrabold text-gray-800 mt-1">0</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center">
+                    <p class="text-xs font-bold text-gray-400">สัปดาห์นี้</p>
+                    <p id="p-week" class="text-2xl font-extrabold text-gray-800 mt-1">0</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center">
+                    <p class="text-xs font-bold text-gray-400">เดือนนี้</p>
+                    <p id="p-month" class="text-2xl font-extrabold text-gray-800 mt-1">0</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center">
+                    <p class="text-xs font-bold text-gray-400">เทียบเดือนก่อน</p>
+                    <p id="p-change" class="text-2xl font-extrabold mt-1">—</p>
+                </div>
+            </div>
+
+            <!-- แยกตามหน้า -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-gray-100">
+                    <h2 class="font-extrabold text-gray-800">หน้าไหนมีคนสนใจมากที่สุด</h2>
+                    <p class="text-xs text-gray-400 mt-0.5">เรียงตามจำนวนการเข้าชม (Page Views)</p>
+                </div>
+                <div id="pages-list"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/i18n.js"></script>
+    <script>
+        function nf(n) { return (Number(n) || 0).toLocaleString('th-TH'); }
+        function escapeHtml(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+                ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        async function load() {
+            try {
+                const res = await fetch('/api/track/stats', { credentials: 'same-origin' });
+                if (res.status === 401) { window.location.href = '/login'; return; }
+                const d = await res.json();
+                if (!res.ok) throw new Error(d.error || 'โหลดไม่สำเร็จ');
+                render(d);
+            } catch (e) {
+                document.getElementById('loading').textContent = 'โหลดข้อมูลไม่สำเร็จ';
+            }
+        }
+
+        function render(d) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('content').classList.remove('hidden');
+
+            document.getElementById('m-total').textContent = nf(d.overall.totalVisits);
+            document.getElementById('m-unique').textContent = nf(d.overall.uniqueVisitors);
+            document.getElementById('m-views').textContent = nf(d.overall.pageViews);
+
+            document.getElementById('p-today').textContent = nf(d.period.today);
+            document.getElementById('p-week').textContent = nf(d.period.week);
+            document.getElementById('p-month').textContent = nf(d.period.month);
+
+            const chg = document.getElementById('p-change');
+            const pct = d.period.monthChangePct;
+            if (pct == null) { chg.textContent = '—'; chg.className = 'text-2xl font-extrabold mt-1 text-gray-400'; }
+            else if (pct >= 0) { chg.textContent = '▲ ' + pct + '%'; chg.className = 'text-2xl font-extrabold mt-1 text-green-600'; }
+            else { chg.textContent = '▼ ' + Math.abs(pct) + '%'; chg.className = 'text-2xl font-extrabold mt-1 text-red-600'; }
+
+            const list = document.getElementById('pages-list');
+            const pages = d.byPage || [];
+            if (pages.length === 0) {
+                list.innerHTML = '<p class="px-5 py-10 text-center text-sm text-gray-400">ยังไม่มีข้อมูลการเข้าชม</p>';
+                return;
+            }
+            const max = Math.max.apply(null, pages.map(p => Number(p.views) || 0)) || 1;
+            list.innerHTML = pages.map((p, i) => {
+                const title = p.title || p.pageKey || '(ไม่มีชื่อ)';
+                const pctBar = Math.round(((Number(p.views) || 0) / max) * 100);
+                const rank = i === 0 ? '🥇' : (i === 1 ? '🥈' : (i === 2 ? '🥉' : (i + 1) + '.'));
+                return `
+                    <div class="px-5 py-3 border-b border-gray-50 last:border-0">
+                        <div class="flex items-center gap-3">
+                            <span class="w-7 text-center text-sm font-bold text-gray-400 flex-shrink-0">${rank}</span>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-bold text-gray-800 truncate">${escapeHtml(title)}</p>
+                                <div class="h-1.5 bg-gray-100 rounded-full mt-1.5 overflow-hidden">
+                                    <div class="h-full bg-orange-400 rounded-full" style="width:${pctBar}%"></div>
+                                </div>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <p class="text-sm font-extrabold text-gray-800">${nf(p.views)} <span class="text-xs font-normal text-gray-400">ครั้ง</span></p>
+                                <p class="text-xs text-gray-400">${nf(p.visitors)} คน</p>
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        load();
+    </script>
+</body>
+</html>

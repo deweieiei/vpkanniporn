@@ -33,7 +33,7 @@
             <a href="/home" class="flex items-center gap-3">
                 <img src="/assets/Logo.svg" alt="VP Kanniporn FWD" class="h-10 w-auto">
             </a>
-            <a id="back-link" href="/home" class="text-xs font-semibold text-gray-500 hover:text-orange-600">← กลับ</a>
+            <a id="back-link" href="/home" class="text-xs font-semibold text-gray-500 hover:text-orange-600" data-i18n="common.back">← กลับ</a>
         </div>
     </header>
 
@@ -42,41 +42,44 @@
         <div id="form-card" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
             <div class="text-center mb-6">
                 <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-orange-50 text-3xl mb-3">📅</div>
-                <h1 class="text-2xl font-extrabold text-gray-800">นัดปรึกษาออนไลน์ฟรี</h1>
-                <p class="text-sm text-gray-500 mt-1">เลือกวันและเวลาที่สะดวก ทีมงานจะติดต่อกลับเพื่อยืนยันการนัดหมาย</p>
+                <h1 class="text-2xl font-extrabold text-gray-800" data-i18n="appt.title">นัดปรึกษาออนไลน์ฟรี</h1>
+                <p class="text-sm text-gray-500 mt-1" data-i18n="appt.subtitle">เลือกวันและเวลาที่สะดวก ทีมงานจะติดต่อกลับเพื่อยืนยันการนัดหมาย</p>
             </div>
 
             <form id="appt-form" class="space-y-6" novalidate>
 
                 <!-- ข้อมูลผู้ติดต่อ -->
                 <div>
-                    <p class="section-label">ข้อมูลผู้ติดต่อ</p>
+                    <p class="section-label" data-i18n="appt.sec.contact">ข้อมูลผู้ติดต่อ</p>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1.5 req">ชื่อ-นามสกุล</label>
-                            <input type="text" name="full_name" class="field-input" maxlength="150" placeholder="เช่น สมชาย ใจดี" required>
+                            <label class="block text-sm font-bold text-gray-700 mb-1.5 req" data-i18n="appt.f.fullname">ชื่อ-นามสกุล</label>
+                            <input type="text" name="full_name" class="field-input" maxlength="150" data-i18n-ph="appt.ph.fullname" placeholder="เช่น สมชาย ใจดี" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1.5 req">เบอร์โทรศัพท์</label>
-                            <input type="tel" name="phone" class="field-input" maxlength="30" placeholder="08X-XXX-XXXX" required>
+                            <label class="block text-sm font-bold text-gray-700 mb-1.5 req" data-i18n="appt.f.phone">เบอร์โทรศัพท์</label>
+                            <input type="tel" name="phone" class="field-input" maxlength="30" data-i18n-ph="appt.ph.phone" placeholder="08X-XXX-XXXX" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1.5">LINE ID <span class="font-normal text-gray-400 text-xs">(ถ้ามี)</span></label>
-                            <input type="text" name="line_id" class="field-input" maxlength="64" placeholder="@yourid หรือ line id">
+                            <label class="block text-sm font-bold text-gray-700 mb-1.5">
+                                <span data-i18n="appt.f.lineid">LINE ID</span>
+                                <span class="font-normal text-gray-400 text-xs" data-i18n="common.optional">(ถ้ามี)</span>
+                            </label>
+                            <input type="text" name="line_id" class="field-input" maxlength="64" data-i18n-ph="appt.ph.lineid" placeholder="@yourid หรือ line id">
                         </div>
                     </div>
                 </div>
 
                 <!-- วันและเวลาที่ต้องการนัด -->
                 <div>
-                    <p class="section-label">วันและเวลาที่ต้องการนัด</p>
+                    <p class="section-label" data-i18n="appt.sec.datetime">วันและเวลาที่ต้องการนัด</p>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1.5 req">เลือกวันนัดหมาย</label>
+                            <label class="block text-sm font-bold text-gray-700 mb-1.5 req" data-i18n="appt.f.pickdate">เลือกวันนัดหมาย</label>
                             <input type="date" name="appointment_date" id="appt-date" class="field-input" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-2 req">เลือกเวลาที่สะดวก</label>
+                            <label class="block text-sm font-bold text-gray-700 mb-2 req" data-i18n="appt.f.picktime">เลือกเวลาที่สะดวก</label>
                             <div id="slots" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
                         </div>
                     </div>
@@ -84,20 +87,21 @@
 
                 <!-- ช่องทางการนัดหมาย -->
                 <div>
-                    <p class="section-label">ช่องทางการนัดหมาย</p>
+                    <p class="section-label" data-i18n="appt.sec.channel">ช่องทางการนัดหมาย</p>
                     <div id="channels" class="grid grid-cols-2 gap-2"></div>
                 </div>
 
                 <!-- Consent -->
                 <label class="flex items-start gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
                     <input type="checkbox" name="consent" class="mt-1 w-5 h-5 flex-shrink-0" style="accent-color:#FF6B00;" required>
-                    <span class="text-xs text-gray-600 leading-relaxed">
+                    <span class="text-xs text-gray-600 leading-relaxed" data-i18n="appt.consent">
                         ข้าพเจ้ายินยอมให้ตัวแทนติดต่อกลับเพื่อยืนยันการนัดหมาย และยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคลเพื่อการให้บริการตามนโยบายความเป็นส่วนตัว
                     </span>
                 </label>
 
                 <button type="submit" id="submit-btn"
-                        class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 rounded-full text-base shadow-lg shadow-orange-500/30 transition disabled:opacity-60">
+                        class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 rounded-full text-base shadow-lg shadow-orange-500/30 transition disabled:opacity-60"
+                        data-i18n="appt.submit">
                     ยืนยันนัดหมาย
                 </button>
             </form>
@@ -105,45 +109,45 @@
 
         <div id="success-card" class="hidden bg-white rounded-2xl shadow-sm border border-green-100 p-8 text-center">
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 text-4xl mb-4">✅</div>
-            <h2 class="text-xl font-extrabold text-gray-800">ส่งคำขอนัดหมายเรียบร้อย</h2>
-            <p class="text-sm text-gray-500 mt-2">ทีมงานจะติดต่อกลับเพื่อยืนยันการนัดหมายโดยเร็วที่สุดครับ/ค่ะ</p>
-            <a id="success-back" href="/home" class="inline-block mt-6 text-orange-600 font-semibold text-sm">← กลับหน้าตัวแทน</a>
+            <h2 class="text-xl font-extrabold text-gray-800" data-i18n="appt.success.title">ส่งคำขอนัดหมายเรียบร้อย</h2>
+            <p class="text-sm text-gray-500 mt-2" data-i18n="appt.success.msg">ทีมงานจะติดต่อกลับเพื่อยืนยันการนัดหมายโดยเร็วที่สุดครับ/ค่ะ</p>
+            <a id="success-back" href="/home" class="inline-block mt-6 text-orange-600 font-semibold text-sm" data-i18n="common.backAgent">← กลับหน้าตัวแทน</a>
         </div>
     </main>
 
     <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold opacity-0 pointer-events-none transition-opacity z-50"></div>
 
+    <script src="/i18n.js"></script>
+    <script src="/track.js"></script>
     <script>
         const m = location.pathname.match(/^\/appointment\/(\d+)/);
         const agentId = m ? Number(m[1]) : null;
+        if (agentId && window.trackView) window.trackView(agentId, 'appointment', 'นัดหมายออนไลน์');
 
-        const SLOTS = [
-            { v: '09:00', label: '09:00–10:00 น.' },
-            { v: '10:00', label: '10:00–11:00 น.' },
-            { v: '13:00', label: '13:00–14:00 น.' },
-            { v: '14:00', label: '14:00–15:00 น.' },
-            { v: '16:00', label: '16:00–17:00 น.' },
-            { v: '19:00', label: '19:00–20:00 น.' },
-        ];
+        // ช่วงเวลา: value = เวลาเริ่ม (ส่งไป backend) / เวลาที่แสดงต่อท้าย "น." เฉพาะภาษาไทย
+        const SLOTS = ['09:00–10:00', '10:00–11:00', '13:00–14:00', '14:00–15:00', '16:00–17:00', '19:00–20:00'];
+        const SLOT_VALUES = ['09:00', '10:00', '13:00', '14:00', '16:00', '19:00'];
         const CHANNELS = [
-            { v: 'phone', label: '📞 โทรศัพท์' },
-            { v: 'linecall', label: '💬 LINE Call' },
-            { v: 'meet', label: '🎥 Google Meet' },
-            { v: 'zoom', label: '💻 Zoom' },
+            { v: 'phone', key: 'appt.ch.phone' },
+            { v: 'linecall', key: 'appt.ch.linecall' },
+            { v: 'meet', key: 'appt.ch.meet' },
+            { v: 'zoom', key: 'appt.ch.zoom' },
         ];
 
         function toast(msg, ok) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.className = `fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold transition-opacity z-50 ${ok === false ? 'bg-red-600' : 'bg-green-600'} opacity-100`;
-            setTimeout(() => { t.classList.replace('opacity-100', 'opacity-0'); }, 2800);
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = `fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold transition-opacity z-50 ${ok === false ? 'bg-red-600' : 'bg-green-600'} opacity-100`;
+            setTimeout(() => { el.classList.replace('opacity-100', 'opacity-0'); }, 2800);
         }
 
-        // สร้าง radio chips (เลือกได้ 1 ต่อกลุ่ม)
-        function buildChips(container, name, items) {
+        // สร้าง radio chips (เลือกได้ 1 ต่อกลุ่ม) — รักษาค่าที่เลือกไว้เมื่อ render ใหม่
+        function chipGroup(container, name, items) {
+            const prev = container.querySelector('input:checked');
+            const keep = prev ? prev.value : null;
             container.innerHTML = items.map(it => `
-                <label class="opt-chip">
-                    <input type="radio" name="${name}" value="${it.v}">
+                <label class="opt-chip${it.v === keep ? ' checked' : ''}">
+                    <input type="radio" name="${name}" value="${it.v}"${it.v === keep ? ' checked' : ''}>
                     <span>${it.label}</span>
                 </label>`).join('');
             container.querySelectorAll('.opt-chip').forEach(chip => {
@@ -154,8 +158,15 @@
                 });
             });
         }
-        buildChips(document.getElementById('slots'), 'time_slot', SLOTS);
-        buildChips(document.getElementById('channels'), 'channel', CHANNELS);
+        function renderChips() {
+            const suffix = window.i18nLang && window.i18nLang() === 'th' ? ' น.' : '';
+            const slots = SLOTS.map((label, i) => ({ v: SLOT_VALUES[i], label: label + suffix }));
+            const chans = CHANNELS.map(c => ({ v: c.v, label: t(c.key) }));
+            chipGroup(document.getElementById('slots'), 'time_slot', slots);
+            chipGroup(document.getElementById('channels'), 'channel', chans);
+        }
+        renderChips();
+        window.addEventListener('i18n:changed', renderChips);
 
         // วันนัดต่ำสุด = พรุ่งนี้
         (function () {
@@ -164,8 +175,7 @@
             document.getElementById('appt-date').min = off.toISOString().slice(0, 10);
         })();
 
-        async function loadAgent() {
-            if (!agentId) return;
+        if (agentId) {
             document.getElementById('back-link').href = '/agent/' + agentId;
             document.getElementById('success-back').href = '/agent/' + agentId;
         }
@@ -183,15 +193,15 @@
             const chEl = f.querySelector('input[name="channel"]:checked');
             const consent = f.consent.checked;
 
-            if (!full_name) return toast('กรุณากรอกชื่อ-นามสกุล', false);
-            if (!phone) return toast('กรุณากรอกเบอร์โทรศัพท์', false);
-            if (!appointment_date) return toast('กรุณาเลือกวันนัดหมาย', false);
-            if (!slotEl) return toast('กรุณาเลือกเวลาที่สะดวก', false);
-            if (!chEl) return toast('กรุณาเลือกช่องทางการนัดหมาย', false);
-            if (!consent) return toast('กรุณายินยอมก่อนส่งข้อมูล', false);
+            if (!full_name) return toast(t('appt.err.fullname'), false);
+            if (!phone) return toast(t('appt.err.phone'), false);
+            if (!appointment_date) return toast(t('appt.err.date'), false);
+            if (!slotEl) return toast(t('appt.err.slot'), false);
+            if (!chEl) return toast(t('appt.err.channel'), false);
+            if (!consent) return toast(t('appt.err.consent'), false);
 
             btn.disabled = true;
-            btn.textContent = 'กำลังส่ง...';
+            btn.textContent = t('appt.sending');
             try {
                 const res = await fetch('/api/contact', {
                     method: 'POST',
@@ -203,18 +213,16 @@
                     }),
                 });
                 const d = await res.json();
-                if (!res.ok) throw new Error(d.error || 'ส่งข้อมูลไม่สำเร็จ');
+                if (!res.ok) throw new Error(d.error || t('appt.err.send'));
                 document.getElementById('form-card').classList.add('hidden');
                 document.getElementById('success-card').classList.remove('hidden');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (err) {
                 toast(err.message, false);
                 btn.disabled = false;
-                btn.textContent = 'ยืนยันนัดหมาย';
+                btn.textContent = t('appt.submit');
             }
         });
-
-        loadAgent();
     </script>
 </body>
 </html>

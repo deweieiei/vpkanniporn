@@ -33,7 +33,7 @@
             <a href="/home" class="flex items-center gap-3">
                 <img src="/assets/Logo.svg" alt="VP Kanniporn FWD" class="h-10 w-auto">
             </a>
-            <a id="back-link" href="/home" class="text-xs font-semibold text-gray-500 hover:text-orange-600">← กลับ</a>
+            <a id="back-link" href="/home" class="text-xs font-semibold text-gray-500 hover:text-orange-600" data-i18n="common.back">← กลับ</a>
         </div>
     </header>
 
@@ -43,61 +43,69 @@
         <div id="form-card" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
             <div class="text-center mb-6">
                 <div id="form-icon" class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-orange-50 text-3xl mb-3">📝</div>
-                <h1 id="form-title" class="text-2xl font-extrabold text-gray-800">สนใจรับคำปรึกษาและวางแผนประกัน</h1>
-                <p class="text-sm text-gray-500 mt-1">กรอกข้อมูลด้านล่าง <span id="agent-name-wrap" class="hidden">แล้ว <b id="agent-name" class="text-orange-600"></b> จะติดต่อกลับ</span></p>
+                <h1 id="form-title" class="text-2xl font-extrabold text-gray-800" data-i18n="ct.title">สนใจรับคำปรึกษาและวางแผนประกัน</h1>
+                <p class="text-sm text-gray-500 mt-1"><span data-i18n="ct.subtitlePre">กรอกข้อมูลด้านล่าง</span> <span id="agent-suffix"></span></p>
             </div>
 
             <form id="contact-form" class="space-y-5" novalidate>
                 <!-- 1. ชื่อ-นามสกุล -->
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1.5 req">ชื่อ-นามสกุล</label>
-                    <input type="text" name="full_name" class="field-input" maxlength="150" placeholder="เช่น สมชาย ใจดี" required>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5 req" data-i18n="ct.f.fullname">ชื่อ-นามสกุล</label>
+                    <input type="text" name="full_name" class="field-input" maxlength="150" data-i18n-ph="ct.ph.fullname" placeholder="เช่น สมชาย ใจดี" required>
                 </div>
 
                 <!-- 2. เบอร์โทรศัพท์ -->
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1.5 req">เบอร์โทรศัพท์</label>
-                    <input type="tel" name="phone" class="field-input" maxlength="30" placeholder="08X-XXX-XXXX" required>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5 req" data-i18n="ct.f.phone">เบอร์โทรศัพท์</label>
+                    <input type="tel" name="phone" class="field-input" maxlength="30" data-i18n-ph="ct.ph.phone" placeholder="08X-XXX-XXXX" required>
                 </div>
 
                 <!-- 3. วันเดือนปีเกิด -->
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1.5 req">วันเดือนปีเกิด</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5 req" data-i18n="ct.f.birth">วันเดือนปีเกิด</label>
                     <input type="date" name="birthdate" class="field-input" required>
                 </div>
 
                 <!-- 4. วัตถุประสงค์ -->
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2 req">วัตถุประสงค์ในการทำประกัน <span class="font-normal text-gray-400 text-xs">(เลือกได้หลายข้อ)</span></label>
-                    <div id="purposes" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <!-- chips ถูกสร้างด้วย JS -->
-                    </div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2 req">
+                        <span data-i18n="ct.f.purpose">วัตถุประสงค์ในการทำประกัน</span>
+                        <span class="font-normal text-gray-400 text-xs" data-i18n="ct.f.purposeHint">(เลือกได้หลายข้อ)</span>
+                    </label>
+                    <div id="purposes" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
                     <input type="text" id="purpose-other-input" maxlength="255"
-                           class="field-input mt-2 hidden" placeholder="ระบุวัตถุประสงค์อื่นๆ ที่ต้องการ">
+                           class="field-input mt-2 hidden" data-i18n-ph="ct.ph.other" placeholder="ระบุวัตถุประสงค์อื่นๆ ที่ต้องการ">
                 </div>
 
                 <!-- 5. งบประมาณ -->
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1.5">งบประมาณเบี้ยประกันที่ต้องการ <span class="font-normal text-gray-400 text-xs">(ไม่บังคับ)</span></label>
-                    <input type="text" name="budget" class="field-input" maxlength="100" placeholder="เช่น 20,000 บาท/ปี หรือ ยังไม่แน่ใจ">
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">
+                        <span data-i18n="ct.f.budget">งบประมาณเบี้ยประกันที่ต้องการ</span>
+                        <span class="font-normal text-gray-400 text-xs" data-i18n="ct.f.budgetHint">(ไม่บังคับ)</span>
+                    </label>
+                    <input type="text" name="budget" class="field-input" maxlength="100" data-i18n-ph="ct.ph.budget" placeholder="เช่น 20,000 บาท/ปี หรือ ยังไม่แน่ใจ">
                 </div>
 
                 <!-- 6. รายละเอียดเพิ่มเติม -->
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1.5">รายละเอียดเพิ่มเติม <span class="font-normal text-gray-400 text-xs">(ถ้ามี)</span></label>
-                    <textarea name="note" class="field-input" rows="3" maxlength="2000" placeholder="ระบุความต้องการเพิ่มเติม เช่น ช่วงเวลาที่สะดวกให้ติดต่อกลับ"></textarea>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">
+                        <span data-i18n="ct.f.note">รายละเอียดเพิ่มเติม</span>
+                        <span class="font-normal text-gray-400 text-xs" data-i18n="ct.f.noteHint">(ถ้ามี)</span>
+                    </label>
+                    <textarea name="note" class="field-input" rows="3" maxlength="2000" data-i18n-ph="ct.ph.note" placeholder="ระบุความต้องการเพิ่มเติม เช่น ช่วงเวลาที่สะดวกให้ติดต่อกลับ"></textarea>
                 </div>
 
                 <!-- Consent -->
                 <label class="flex items-start gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
                     <input type="checkbox" name="consent" class="mt-1 w-5 h-5 flex-shrink-0" style="accent-color:#FF6B00;" required>
-                    <span class="text-xs text-gray-600 leading-relaxed">
+                    <span class="text-xs text-gray-600 leading-relaxed" data-i18n="ct.consent">
                         ข้าพเจ้ายินยอมให้ตัวแทนติดต่อกลับเพื่อให้คำแนะนำและนำเสนอแบบประกันที่เหมาะสม พร้อมยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคลตามนโยบายความเป็นส่วนตัว เพื่อวัตถุประสงค์ในการให้บริการและติดต่อกลับเท่านั้น
                     </span>
                 </label>
 
                 <button type="submit" id="submit-btn"
-                        class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 rounded-full text-base shadow-lg shadow-orange-500/30 transition disabled:opacity-60">
+                        class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 rounded-full text-base shadow-lg shadow-orange-500/30 transition disabled:opacity-60"
+                        data-i18n="ct.submit">
                     ส่งข้อมูลติดต่อ
                 </button>
             </form>
@@ -106,51 +114,88 @@
         <!-- SUCCESS -->
         <div id="success-card" class="hidden bg-white rounded-2xl shadow-sm border border-green-100 p-8 text-center">
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 text-4xl mb-4">✅</div>
-            <h2 class="text-xl font-extrabold text-gray-800">ส่งข้อมูลเรียบร้อยแล้ว</h2>
-            <p class="text-sm text-gray-500 mt-2">ขอบคุณสำหรับความสนใจ ตัวแทนจะติดต่อกลับโดยเร็วที่สุดครับ/ค่ะ</p>
-            <a id="success-back" href="/home" class="inline-block mt-6 text-orange-600 font-semibold text-sm">← กลับหน้าตัวแทน</a>
+            <h2 class="text-xl font-extrabold text-gray-800" data-i18n="ct.success.title">ส่งข้อมูลเรียบร้อยแล้ว</h2>
+            <p class="text-sm text-gray-500 mt-2" data-i18n="ct.success.msg">ขอบคุณสำหรับความสนใจ ตัวแทนจะติดต่อกลับโดยเร็วที่สุดครับ/ค่ะ</p>
+            <a id="success-back" href="/home" class="inline-block mt-6 text-orange-600 font-semibold text-sm" data-i18n="common.backAgent">← กลับหน้าตัวแทน</a>
         </div>
     </main>
 
     <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold opacity-0 pointer-events-none transition-opacity z-50"></div>
 
+    <script src="/i18n.js"></script>
+    <script src="/track.js"></script>
     <script>
         const m = location.pathname.match(/^\/contact\/(\d+)/);
         const agentId = m ? Number(m[1]) : null;
+        let agentName = '';
+        if (agentId && window.trackView) window.trackView(agentId, 'contact', 'ติดต่อเรา');
 
-        const PURPOSES = ['คุ้มครองชีวิต', 'ค่ารักษาพยาบาล', 'โรคร้ายแรง', 'สะสมทรัพย์', 'วางแผนเกษียณ', 'ลดหย่อนภาษี', 'วางแผนมรดก'];
+        // value = ค่าที่ส่ง backend (คงเป็นภาษาไทยเสมอ) / key = ป้ายข้อความที่แปล
+        const PURPOSES = [
+            { v: 'คุ้มครองชีวิต', key: 'ct.p.life' },
+            { v: 'ค่ารักษาพยาบาล', key: 'ct.p.health' },
+            { v: 'โรคร้ายแรง', key: 'ct.p.ci' },
+            { v: 'สะสมทรัพย์', key: 'ct.p.savings' },
+            { v: 'วางแผนเกษียณ', key: 'ct.p.retire' },
+            { v: 'ลดหย่อนภาษี', key: 'ct.p.tax' },
+            { v: 'วางแผนมรดก', key: 'ct.p.legacy' },
+        ];
 
+        function escapeHtml(s){
+            return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+                ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
         function toast(msg, ok) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.className = `fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold transition-opacity z-50 ${ok === false ? 'bg-red-600' : 'bg-green-600'} opacity-100`;
-            setTimeout(() => { t.classList.replace('opacity-100', 'opacity-0'); }, 2800);
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = `fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold transition-opacity z-50 ${ok === false ? 'bg-red-600' : 'bg-green-600'} opacity-100`;
+            setTimeout(() => { el.classList.replace('opacity-100', 'opacity-0'); }, 2800);
         }
 
-        // สร้าง checkbox วัตถุประสงค์
         const purposesEl = document.getElementById('purposes');
-        purposesEl.innerHTML = PURPOSES.map(p => `
-            <label class="purpose-chip">
-                <input type="checkbox" name="purpose" value="${p}">
-                <span>${p}</span>
-            </label>`).join('') + `
-            <label class="purpose-chip" id="other-chip">
-                <input type="checkbox" name="purpose" value="อื่นๆ" id="purpose-other-cb">
-                <span>อื่นๆ (ระบุ)</span>
-            </label>`;
-        purposesEl.querySelectorAll('.purpose-chip').forEach(chip => {
-            const cb = chip.querySelector('input');
-            cb.addEventListener('change', () => chip.classList.toggle('checked', cb.checked));
-        });
-        // "อื่นๆ" → โชว์ช่องกรอกข้อความ
-        const otherCb = document.getElementById('purpose-other-cb');
         const otherInput = document.getElementById('purpose-other-input');
-        otherCb.addEventListener('change', () => {
-            otherInput.classList.toggle('hidden', !otherCb.checked);
-            if (otherCb.checked) otherInput.focus(); else otherInput.value = '';
-        });
 
-        // โหลดชื่อตัวแทน + ตั้งลิงก์กลับไปหน้าตัวแทน
+        // render chips วัตถุประสงค์ (คงค่าที่เลือกไว้เมื่อสลับภาษา)
+        function renderPurposes() {
+            const checked = new Set(Array.from(purposesEl.querySelectorAll('input:checked')).map(i => i.value));
+            let html = PURPOSES.map(p => `
+                <label class="purpose-chip${checked.has(p.v) ? ' checked' : ''}">
+                    <input type="checkbox" name="purpose" value="${p.v}"${checked.has(p.v) ? ' checked' : ''}>
+                    <span>${t(p.key)}</span>
+                </label>`).join('');
+            html += `
+                <label class="purpose-chip${checked.has('อื่นๆ') ? ' checked' : ''}" id="other-chip">
+                    <input type="checkbox" name="purpose" value="อื่นๆ" id="purpose-other-cb"${checked.has('อื่นๆ') ? ' checked' : ''}>
+                    <span>${t('ct.p.other')}</span>
+                </label>`;
+            purposesEl.innerHTML = html;
+            otherInput.classList.toggle('hidden', !checked.has('อื่นๆ'));
+        }
+        // delegation: ผูกครั้งเดียว รอด re-render
+        purposesEl.addEventListener('change', (e) => {
+            const cb = e.target.closest('input[type=checkbox]');
+            if (!cb) return;
+            const chip = cb.closest('.purpose-chip');
+            if (chip) chip.classList.toggle('checked', cb.checked);
+            if (cb.value === 'อื่นๆ') {
+                otherInput.classList.toggle('hidden', !cb.checked);
+                if (cb.checked) otherInput.focus(); else otherInput.value = '';
+            }
+        });
+        renderPurposes();
+
+        // ป้ายชื่อตัวแทนใน subtitle (แปลตามภาษา)
+        function updateAgentSuffix() {
+            const el = document.getElementById('agent-suffix');
+            if (!el) return;
+            el.innerHTML = agentName
+                ? t('ct.subtitleAgent').replace('{name}', `<b class="text-orange-600">${escapeHtml(agentName)}</b>`)
+                : '';
+        }
+
+        // สลับภาษา → render chips + subtitle ใหม่
+        window.addEventListener('i18n:changed', () => { renderPurposes(); updateAgentSuffix(); });
+
         async function loadAgent() {
             if (!agentId) return;
             document.getElementById('back-link').href = '/agent/' + agentId;
@@ -160,16 +205,12 @@
                 if (!res.ok) return;
                 const d = await res.json();
                 if (d && d.user) {
-                    const name = `${d.user.first_name || ''} ${d.user.last_name || ''}`.trim();
-                    if (name) {
-                        document.getElementById('agent-name').textContent = name;
-                        document.getElementById('agent-name-wrap').classList.remove('hidden');
-                    }
+                    agentName = `${d.user.first_name || ''} ${d.user.last_name || ''}`.trim();
+                    updateAgentSuffix();
                 }
             } catch (e) { /* เงียบไว้ */ }
         }
 
-        // ส่งฟอร์ม
         document.getElementById('contact-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const f = e.target;
@@ -179,20 +220,21 @@
             const phone = f.phone.value.trim();
             const birthdate = f.birthdate.value;
             const purposes = Array.from(f.querySelectorAll('input[name="purpose"]:checked')).map(c => c.value);
-            const purpose_other = otherCb.checked ? otherInput.value.trim() : '';
+            const otherChecked = purposes.includes('อื่นๆ');
+            const purpose_other = otherChecked ? otherInput.value.trim() : '';
             const budget = f.budget.value.trim();
             const note = f.note.value.trim();
             const consent = f.consent.checked;
 
-            if (!full_name) return toast('กรุณากรอกชื่อ-นามสกุล', false);
-            if (!phone) return toast('กรุณากรอกเบอร์โทรศัพท์', false);
-            if (!birthdate) return toast('กรุณาเลือกวันเดือนปีเกิด', false);
-            if (purposes.length === 0) return toast('กรุณาเลือกวัตถุประสงค์อย่างน้อย 1 ข้อ', false);
-            if (purposes.includes('อื่นๆ') && !purpose_other) return toast('กรุณาระบุวัตถุประสงค์ "อื่นๆ"', false);
-            if (!consent) return toast('กรุณายินยอมให้ติดต่อกลับก่อนส่ง', false);
+            if (!full_name) return toast(t('ct.err.fullname'), false);
+            if (!phone) return toast(t('ct.err.phone'), false);
+            if (!birthdate) return toast(t('ct.err.birth'), false);
+            if (purposes.length === 0) return toast(t('ct.err.purpose'), false);
+            if (otherChecked && !purpose_other) return toast(t('ct.err.other'), false);
+            if (!consent) return toast(t('ct.err.consent'), false);
 
             btn.disabled = true;
-            btn.textContent = 'กำลังส่ง...';
+            btn.textContent = t('ct.sending');
             try {
                 const res = await fetch('/api/contact', {
                     method: 'POST',
@@ -200,14 +242,14 @@
                     body: JSON.stringify({ user_id: agentId, full_name, phone, birthdate, purposes, purpose_other, budget, note, consent }),
                 });
                 const d = await res.json();
-                if (!res.ok) throw new Error(d.error || 'ส่งข้อมูลไม่สำเร็จ');
+                if (!res.ok) throw new Error(d.error || t('ct.err.send'));
                 document.getElementById('form-card').classList.add('hidden');
                 document.getElementById('success-card').classList.remove('hidden');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (err) {
                 toast(err.message, false);
                 btn.disabled = false;
-                btn.textContent = 'ส่งข้อมูลติดต่อ';
+                btn.textContent = t('ct.submit');
             }
         });
 

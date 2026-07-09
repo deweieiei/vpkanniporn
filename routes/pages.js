@@ -50,6 +50,11 @@ router.get('/inquiries', requireAuth, (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'inquiries.html'));
 });
 
+// หน้าสถิติการเข้าชมเว็บไซต์ (เฉพาะเจ้าของที่ล็อกอิน)
+router.get('/traffic', requireAuth, (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'traffic.html'));
+});
+
 // profile.html ถูกยุบรวมเข้า dashboard.html แล้ว (2026-07-03)
 // dashboard.html เดี๋ยวนี้ทำหน้าที่ 2 โหมดในไฟล์เดียว ผ่าน URL:
 //   /profile, /dashboard  → โหมดตัวเอง (ต้อง login, มีปุ่มแก้ไข)
