@@ -274,6 +274,70 @@
             margin: 6px 4px;
         }
 
+        .mobile-menu-user-section {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 8px 4px;
+            border-top: 1px solid #f0f0f0;
+            margin-top: 6px;
+        }
+
+        .mobile-user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            border-radius: 9px;
+        }
+
+        .mobile-user-info .avatar-mobile {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #cbd5e1;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid var(--primary-orange);
+            flex-shrink: 0;
+        }
+
+        .mobile-user-info .user-name-mobile {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-main);
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mobile-menu .copy-link-btn,
+        .mobile-menu .logout-btn-mobile {
+            width: 100%;
+            text-align: left;
+            padding: 10px;
+            border: none;
+            background: none;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 9px;
+            margin: 0;
+            font-family: inherit;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        .mobile-menu .copy-link-btn:hover {
+            background: var(--light-orange-bg);
+        }
+
+        .mobile-menu .logout-btn-mobile:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
         /* ===== Header (Brand) ===== */
         .site-header {
             display: flex;
@@ -345,6 +409,12 @@
 
             .hamburger-btn {
                 display: inline-block;
+            }
+
+            #copy-profile-btn,
+            .admin-user,
+            #logout-btn {
+                display: none;
             }
         }
 
@@ -1542,6 +1612,14 @@
                             <div class="settings-total">
                                 <span>รวม จำนวนผู้ติดต่อ</span><span class="settings-count total"
                                     id="count-total-mobile">0</span>
+                            </div>
+                            <div class="mobile-menu-user-section">
+                                <button type="button" class="copy-link-btn" id="copy-profile-btn-mobile">🔗 คัดลอกลิงก์</button>
+                                <div class="mobile-user-info">
+                                    <div class="avatar-mobile" id="user-avatar-mobile"></div>
+                                    <span class="user-name-mobile" id="user-name-mobile">…</span>
+                                </div>
+                                <button type="button" class="logout-btn-mobile" id="logout-btn-mobile">ออกจากระบบ</button>
                             </div>
                         </div>
                     </div>
