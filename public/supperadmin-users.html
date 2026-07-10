@@ -56,6 +56,9 @@
     th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
     th { font-size: 11px; color: #888; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
     tr:hover td { background: #fafafa; }
+    tr.row-click { cursor: pointer; }
+    tr.row-click:hover td { background: #FFF5EF; }
+    .name-link { color: var(--primary-orange); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
     .tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; display: inline-block; }
     .tag-admin { background: #fee2e2; color: #b91c1c; }
     .tag-agent { background: #ffedd5; color: #9a3412; }
@@ -159,7 +162,12 @@
           </table></div>`;
         wrap.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => delUser(b.dataset.del, b.dataset.name)));
         wrap.querySelectorAll('[data-toggle]').forEach(b => b.addEventListener('click', () => toggleActive(b.dataset.toggle, b.dataset.active === '1')));
-        wrap.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => viewAsUser(b.dataset.view)));
+        wrap.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', (e) => { e.stopPropagation(); viewAsUser(b.dataset.view); }));
+        // คลิกที่แถวไหนก็เข้าดู dashboard ของคนนั้นได้เลย (ยกเว้นคลิกที่ปุ่มจัดการ)
+        wrap.querySelectorAll('[data-rowview]').forEach(tr => tr.addEventListener('click', (e) => {
+          if (e.target.closest('button')) return;
+          viewAsUser(tr.dataset.rowview);
+        }));
       } catch (e) { wrap.innerHTML = '<p class="muted">โหลดข้อมูลไม่สำเร็จ</p>'; }
     }
 
@@ -175,14 +183,15 @@
       const uv = (Number(st.uniqueVisitors) || 0).toLocaleString('th-TH');
       const pvv = (Number(st.pageViews) || 0).toLocaleString('th-TH');
       const visits = `<b style="color:#ea580c">${uv}</b> คน <span class="muted" style="font-size:11px">/ ${pvv} ครั้ง</span>`;
-      return `<tr>
-        <td>${name}</td>
+      const clickable = u.role !== 'admin';
+      return `<tr${clickable ? ` class="row-click" data-rowview="${u.id}" title="คลิกเพื่อเข้าดู dashboard ของ ${name}"` : ''}>
+        <td>${clickable ? `<span class="name-link">${name}</span>` : name}</td>
         <td>${esc(u.email)}</td>
         <td>${roleTag}</td>
         <td>${visits}</td>
         <td>${status}</td>
         <td><div class="row-actions">
-          ${u.role !== 'admin' ? `<button class="btn btn-sm" data-view="${u.id}" title="เข้าดู/แก้ dashboard ของผู้ใช้คนนี้">👁 เข้าดู</button>` : ''}
+          ${clickable ? `<button class="btn btn-sm" data-view="${u.id}" title="เข้าดู/แก้ dashboard ของผู้ใช้คนนี้">👁 เข้าดู</button>` : ''}
           <button class="btn btn-sm btn-ghost" data-toggle="${u.id}" data-active="${u.is_active ? 1 : 0}">${u.is_active ? 'ปิดใช้งาน' : 'เปิดใช้งาน'}</button>
           <button class="btn btn-sm btn-danger" data-del="${u.id}" data-name="${esc(name)}">ลบ</button>
         </div></td>
