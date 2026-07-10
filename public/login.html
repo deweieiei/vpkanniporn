@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,8 +11,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* ย่อ-ขยายทุกอย่างสมส่วนตามจอ (มือถือ→iPad→คอม) ผ่าน root font-size — Tailwind ใช้หน่วย rem จึงปรับตามอัตโนมัติ */
-        html { font-size: clamp(13px, 0.5vw + 11px, 16px); }
-        body { font-family: 'Prompt', sans-serif; }
+        html {
+            font-size: clamp(13px, 0.5vw + 11px, 16px);
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+        }
+
         .fwd-bg-gradient {
             /* พื้นหลังเต็มจอจากไฟล์ใน assets ให้เข้าชุดกับหน้า SupperAdmin */
             background:
@@ -19,18 +26,23 @@
                 url('/assets/background.svg') center center / cover no-repeat fixed,
                 linear-gradient(135deg, #FFF3EB 0%, #FF6B00 60%, #D45500 100%);
         }
-        input, select { font-family: inherit; }
+
+        input,
+        select {
+            font-family: inherit;
+        }
     </style>
 </head>
+
 <body class="fwd-bg-gradient min-h-screen flex items-center justify-center p-4">
 
     <div class="w-full max-w-lg">
         <!-- Logo Header -->
         <div class="text-center mb-6">
-            <img src="/assets/Logo.svg" alt="VP Kanniporn — FWD Agent Office"
-                class="w-72 mx-auto drop-shadow-lg">
+            <img src="/assets/Logo.svg" alt="VP Kanniporn — FWD Agent Office" class="w-72 mx-auto drop-shadow-lg">
             <p class="text-white mt-2 font-semibold text-sm drop-shadow">Agent VP Kanniporn FWD</p>
-            <p class="text-white/90 mt-1 text-xs drop-shadow">สำนักงานตัวแทนดิจิทัล เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
+            <p class="text-white/90 mt-1 text-xs drop-shadow">สำนักงานตัวแทนดิจิทัล เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ
+                ดับบลิว ดี</p>
         </div>
 
         <!-- Card -->
@@ -65,7 +77,7 @@
             </form>
 
             <p class="text-center text-[11px] text-gray-400 mt-6">
-                © 2026 FWD 
+                © 2026 FWD
             </p>
         </div>
 
@@ -120,5 +132,7 @@
             }
         });
     </script>
+    <script src="/i18n.js"></script>
 </body>
+
 </html>

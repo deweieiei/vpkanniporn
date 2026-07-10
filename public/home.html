@@ -1,28 +1,50 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ค้นหาตัวแทน — VP Kanniporn | FWD Insurance</title>
-    <meta name="description" content="ค้นหาตัวแทนประกัน FWD สำนักงาน VP Kanniporn — ค้นด้วยชื่อ รหัสตัวแทน จังหวัด หรือสาขา">
+    <meta name="description"
+        content="ค้นหาตัวแทนประกัน FWD สำนักงาน VP Kanniporn — ค้นด้วยชื่อ รหัสตัวแทน จังหวัด หรือสาขา">
     <link rel="icon" type="image/svg+xml" href="/assets/Logo.svg">
     <link rel="shortcut icon" href="/assets/Logo.svg">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         /* ย่อ-ขยายทุกอย่างสมส่วนตามจอ (มือถือ→iPad→คอม) ผ่าน root font-size — Tailwind ใช้หน่วย rem จึงปรับตามอัตโนมัติ */
-        html { font-size: clamp(13px, 0.5vw + 11px, 16px); }
-        body { font-family: 'Prompt', sans-serif; }
-        .fwd-orange { color: #FF6B00; }
-        .fwd-bg-orange { background-color: #FF6B00; }
+        html {
+            font-size: clamp(13px, 0.5vw + 11px, 16px);
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .fwd-orange {
+            color: #FF6B00;
+        }
+
+        .fwd-bg-orange {
+            background-color: #FF6B00;
+        }
+
         .hero-band {
             background:
-                linear-gradient(135deg, rgba(255,107,0,0.92) 0%, rgba(214,85,0,0.95) 100%),
+                linear-gradient(135deg, rgba(255, 107, 0, 0.92) 0%, rgba(214, 85, 0, 0.95) 100%),
                 url('/assets/background.svg') center center / cover no-repeat;
         }
-        .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
     </style>
 </head>
+
 <body class="bg-gray-50 text-gray-800 antialiased">
 
     <!-- ===== HEADER ===== -->
@@ -31,8 +53,10 @@
             <a href="/home" class="flex items-center gap-3">
                 <img src="/assets/Logo.svg" alt="VP Kanniporn FWD" class="h-11 w-auto">
                 <div class="border-l-2 border-gray-200 pl-3 hidden sm:block">
-                    <p style="font-size:13px; font-weight:700; color:#E66D18; line-height:1.2;">Agent VP Kanniporn FWD</p>
-                    <p style="font-size:11px; color:#6b7280; line-height:1.2; margin-top:2px;">สำนักงานตัวแทนดิจิทัล เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
+                    <p style="font-size:13px; font-weight:700; color:#E66D18; line-height:1.2;">Agent VP Kanniporn FWD
+                    </p>
+                    <p style="font-size:11px; color:#6b7280; line-height:1.2; margin-top:2px;">สำนักงานตัวแทนดิจิทัล
+                        เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
                 </div>
             </a>
             <!-- <a href="/login" class="fwd-bg-orange text-white text-xs font-bold px-4 py-2 rounded-full shadow-md hover:bg-orange-600 transition inline-flex items-center gap-1.5" title="เข้าสู่ระบบตัวแทน">
@@ -45,7 +69,8 @@
     <section class="hero-band text-white pt-10 pb-24 px-4 text-center relative">
         <div class="max-w-3xl mx-auto">
             <h1 class="text-2xl md:text-4xl font-extrabold drop-shadow-sm">ค้นหาตัวแทนประกัน FWD</h1>
-            <p class="text-sm md:text-base text-white/90 mt-3">พิมพ์ชื่อ รหัสตัวแทน จังหวัด หรือสาขา เพื่อค้นหาตัวแทนที่ดูแลคุณ</p>
+            <p class="text-sm md:text-base text-white/90 mt-3">พิมพ์ชื่อ รหัสตัวแทน จังหวัด หรือสาขา
+                เพื่อค้นหาตัวแทนที่ดูแลคุณ</p>
         </div>
     </section>
 
@@ -65,10 +90,12 @@
                 </select>
             </div>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-2 mt-4">
-                <button id="search-btn" class="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-8 py-2.5 rounded-full text-sm shadow-md transition">
+                <button id="search-btn"
+                    class="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-8 py-2.5 rounded-full text-sm shadow-md transition">
                     🔍 ค้นหา
                 </button>
-                <button id="search-reset" class="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold px-6 py-2.5 rounded-full text-sm transition">
+                <button id="search-reset"
+                    class="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold px-6 py-2.5 rounded-full text-sm transition">
                     ล้างค้นหา
                 </button>
             </div>
@@ -96,16 +123,16 @@
 
     <script>
         const PROVINCES = [
-            'กรุงเทพมหานคร','กระบี่','กาญจนบุรี','กาฬสินธุ์','กำแพงเพชร','ขอนแก่น','จันทบุรี','ฉะเชิงเทรา',
-            'ชลบุรี','ชัยนาท','ชัยภูมิ','ชุมพร','เชียงราย','เชียงใหม่','ตรัง','ตราด','ตาก','นครนายก',
-            'นครปฐม','นครพนม','นครราชสีมา','นครศรีธรรมราช','นครสวรรค์','นนทบุรี','นราธิวาส','น่าน',
-            'บึงกาฬ','บุรีรัมย์','ปทุมธานี','ประจวบคีรีขันธ์','ปราจีนบุรี','ปัตตานี','พระนครศรีอยุธยา',
-            'พังงา','พัทลุง','พิจิตร','พิษณุโลก','เพชรบุรี','เพชรบูรณ์','แพร่','พะเยา','ภูเก็ต',
-            'มหาสารคาม','มุกดาหาร','แม่ฮ่องสอน','ยะลา','ยโสธร','ร้อยเอ็ด','ระนอง','ระยอง','ราชบุรี',
-            'ลพบุรี','ลำปาง','ลำพูน','เลย','ศรีสะเกษ','สกลนคร','สงขลา','สตูล','สมุทรปราการ',
-            'สมุทรสงคราม','สมุทรสาคร','สระแก้ว','สระบุรี','สิงห์บุรี','สุโขทัย','สุพรรณบุรี',
-            'สุราษฎร์ธานี','สุรินทร์','หนองคาย','หนองบัวลำภู','อ่างทอง','อำนาจเจริญ','อุดรธานี',
-            'อุตรดิตถ์','อุทัยธานี','อุบลราชธานี'
+            'กรุงเทพมหานคร', 'กระบี่', 'กาญจนบุรี', 'กาฬสินธุ์', 'กำแพงเพชร', 'ขอนแก่น', 'จันทบุรี', 'ฉะเชิงเทรา',
+            'ชลบุรี', 'ชัยนาท', 'ชัยภูมิ', 'ชุมพร', 'เชียงราย', 'เชียงใหม่', 'ตรัง', 'ตราด', 'ตาก', 'นครนายก',
+            'นครปฐม', 'นครพนม', 'นครราชสีมา', 'นครศรีธรรมราช', 'นครสวรรค์', 'นนทบุรี', 'นราธิวาส', 'น่าน',
+            'บึงกาฬ', 'บุรีรัมย์', 'ปทุมธานี', 'ประจวบคีรีขันธ์', 'ปราจีนบุรี', 'ปัตตานี', 'พระนครศรีอยุธยา',
+            'พังงา', 'พัทลุง', 'พิจิตร', 'พิษณุโลก', 'เพชรบุรี', 'เพชรบูรณ์', 'แพร่', 'พะเยา', 'ภูเก็ต',
+            'มหาสารคาม', 'มุกดาหาร', 'แม่ฮ่องสอน', 'ยะลา', 'ยโสธร', 'ร้อยเอ็ด', 'ระนอง', 'ระยอง', 'ราชบุรี',
+            'ลพบุรี', 'ลำปาง', 'ลำพูน', 'เลย', 'ศรีสะเกษ', 'สกลนคร', 'สงขลา', 'สตูล', 'สมุทรปราการ',
+            'สมุทรสงคราม', 'สมุทรสาคร', 'สระแก้ว', 'สระบุรี', 'สิงห์บุรี', 'สุโขทัย', 'สุพรรณบุรี',
+            'สุราษฎร์ธานี', 'สุรินทร์', 'หนองคาย', 'หนองบัวลำภู', 'อ่างทอง', 'อำนาจเจริญ', 'อุดรธานี',
+            'อุตรดิตถ์', 'อุทัยธานี', 'อุบลราชธานี'
         ];
 
         const provinceSelect = document.getElementById('search-province');
@@ -117,7 +144,7 @@
 
         function escapeHtml(s) {
             return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
-                ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+                ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         }
         function initials(first, last) {
             const a = (first || '').trim().charAt(0);
@@ -236,6 +263,8 @@
             if (e.key === 'Enter') { e.preventDefault(); applyFilters(); }
         });
     </script>
+    <script src="/i18n.js"></script>
 
 </body>
+
 </html>

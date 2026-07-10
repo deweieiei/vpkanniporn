@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,13 +11,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* ย่อ-ขยายทุกอย่างสมส่วนตามจอ (มือถือ→iPad→คอม) ผ่าน root font-size — Tailwind ใช้หน่วย rem จึงปรับตามอัตโนมัติ */
-        html { font-size: clamp(13px, 0.5vw + 11px, 16px); }
-        body { font-family: 'Prompt', sans-serif; }
-        .fwd-orange { color: #FF6B00; }
-        .fwd-bg-orange { background-color: #FF6B00; }
-        .cat-tab.active { background: #FF6B00; color: #fff; }
+        html {
+            font-size: clamp(13px, 0.5vw + 11px, 16px);
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .fwd-orange {
+            color: #FF6B00;
+        }
+
+        .fwd-bg-orange {
+            background-color: #FF6B00;
+        }
+
+        .cat-tab.active {
+            background: #FF6B00;
+            color: #fff;
+        }
     </style>
 </head>
+
 <body class="bg-gray-50 text-gray-800 antialiased">
 
     <!-- HEADER -->
@@ -25,11 +42,15 @@
             <a href="/" class="flex items-center space-x-4">
                 <div class="text-3xl font-black text-slate-800 tracking-wider">FWD</div>
                 <div class="border-l-2 border-gray-200 pl-3">
-                    <p style="font-size:13px; font-weight:700; color:#E66D18; line-height:1.2;">Agent VP Kanniporn FWD</p>
-                    <p style="font-size:11px; color:#6b7280; line-height:1.2; margin-top:2px;">สำนักงานตัวแทนดิจิทัล เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
+                    <p style="font-size:13px; font-weight:700; color:#E66D18; line-height:1.2;">Agent VP Kanniporn FWD
+                    </p>
+                    <p style="font-size:11px; color:#6b7280; line-height:1.2; margin-top:2px;">สำนักงานตัวแทนดิจิทัล
+                        เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
                 </div>
             </a>
-            <a href="/login" class="w-9 h-9 rounded-full fwd-bg-orange text-white flex items-center justify-center font-bold shadow-md hover:bg-orange-600 transition" title="เข้าสู่ระบบ">
+            <a href="/login"
+                class="w-9 h-9 rounded-full fwd-bg-orange text-white flex items-center justify-center font-bold shadow-md hover:bg-orange-600 transition"
+                title="เข้าสู่ระบบ">
                 ➔
             </a>
         </div>
@@ -47,7 +68,8 @@
 
         <!-- Category tabs -->
         <div id="category-tabs" class="flex flex-wrap justify-center gap-2 mb-8">
-            <button data-slug="" class="cat-tab px-4 py-2 rounded-full text-xs font-bold bg-white border border-gray-200 text-gray-600 hover:border-orange-300 transition">
+            <button data-slug=""
+                class="cat-tab px-4 py-2 rounded-full text-xs font-bold bg-white border border-gray-200 text-gray-600 hover:border-orange-300 transition">
                 ทั้งหมด
             </button>
         </div>
@@ -56,7 +78,8 @@
             <span class="inline-block animate-pulse">⏳ กำลังโหลดแบบประกัน…</span>
         </div>
         <div id="plans-empty" class="hidden text-center text-sm text-gray-400 py-10">
-            😔 ยังไม่มีแบบประกันในหมวดนี้ — <a href="/#contact" class="text-orange-500 hover:underline">ติดต่อสอบถามตัวแทนได้เลย</a>
+            😔 ยังไม่มีแบบประกันในหมวดนี้ — <a href="/#contact"
+                class="text-orange-500 hover:underline">ติดต่อสอบถามตัวแทนได้เลย</a>
         </div>
         <div id="plans-grid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12"></div>
     </section>
@@ -69,7 +92,7 @@
     <script>
         function escapeHtml(s) {
             return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
-                ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+                ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         }
 
         const params = new URLSearchParams(window.location.search);
@@ -167,6 +190,8 @@
         loadCategories();
         loadPlans();
     </script>
+    <script src="/i18n.js"></script>
 
 </body>
+
 </html>

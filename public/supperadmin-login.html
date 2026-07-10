@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,13 +8,20 @@
   <link rel="icon" type="image/svg+xml" href="/assets/Logo.svg">
   <link rel="shortcut icon" href="/assets/Logo.svg">
   <meta name="robots" content="noindex" />
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <style>
     :root {
       --primary-orange: #E66D18;
       --secondary-orange: #cf5e10;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Prompt', 'Helvetica Neue', Arial, sans-serif;
       min-height: 100vh;
@@ -28,6 +36,7 @@
         url('/assets/background.svg') center center / cover no-repeat fixed,
         linear-gradient(135deg, #FF8A3D 0%, #FF6B00 55%, #E65C00 100%);
     }
+
     .card-wrapper {
       width: 100%;
       max-width: 400px;
@@ -36,6 +45,7 @@
       align-items: center;
       gap: 14px;
     }
+
     .card {
       background: rgba(255, 255, 255, 0.97);
       width: 100%;
@@ -44,12 +54,17 @@
       padding: 34px 30px 30px;
       backdrop-filter: blur(2px);
     }
+
     .hero-logo {
       display: block;
       width: 200px;
       height: auto;
     }
-    .role-wrap { text-align: center; }
+
+    .role-wrap {
+      text-align: center;
+    }
+
     .role-tag {
       display: inline-block;
       font-size: 13px;
@@ -60,8 +75,22 @@
       border-radius: 999px;
       margin-bottom: 6px;
     }
-    h1 { font-size: 19px; text-align: center; margin: 8px 0 22px; color: #222; }
-    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #444; }
+
+    h1 {
+      font-size: 19px;
+      text-align: center;
+      margin: 8px 0 22px;
+      color: #222;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #444;
+    }
+
     input {
       width: 100%;
       padding: 12px 14px;
@@ -72,7 +101,12 @@
       margin-bottom: 18px;
       transition: border-color 0.2s;
     }
-    input:focus { outline: none; border-color: var(--primary-orange); }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary-orange);
+    }
+
     button {
       width: 100%;
       padding: 13px;
@@ -86,8 +120,16 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-    button:hover { background: var(--secondary-orange); }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    button:hover {
+      background: var(--secondary-orange);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     .msg {
       display: none;
       background: #FEECEC;
@@ -99,36 +141,53 @@
       margin-bottom: 16px;
       text-align: center;
     }
-    .back { text-align: center; margin-top: 20px; }
-    .back a { color: #888; font-size: 12px; text-decoration: none; }
-    .back a:hover { color: var(--primary-orange); }
+
+    .back {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .back a {
+      color: #888;
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .back a:hover {
+      color: var(--primary-orange);
+    }
   </style>
 </head>
+
 <body>
-  
+
   <div class="card-wrapper">
     <img src="/assets/Logo.svg" alt="FWD SupperAdmin logo" class="hero-logo" />
-    <p style="text-align:center; color:#fff; font-weight:600; font-size:14px; margin-top:8px; text-shadow:0 1px 3px rgba(0,0,0,0.35);">Agent VP Kanniporn FWD</p>
-    <p style="text-align:center; color:rgba(255,255,255,0.92); font-size:12px; margin-bottom:14px; text-shadow:0 1px 3px rgba(0,0,0,0.35);">สำนักงานตัวแทนดิจิทัล เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
+    <p
+      style="text-align:center; color:#fff; font-weight:600; font-size:14px; margin-top:8px; text-shadow:0 1px 3px rgba(0,0,0,0.35);">
+      Agent VP Kanniporn FWD</p>
+    <p
+      style="text-align:center; color:rgba(255,255,255,0.92); font-size:12px; margin-bottom:14px; text-shadow:0 1px 3px rgba(0,0,0,0.35);">
+      สำนักงานตัวแทนดิจิทัล เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
 
     <div class="card">
       <div class="role-wrap"><span class="role-tag">SupperAdmin</span></div>
-    <h1>เข้าสู่ระบบผู้ดูแลเนื้อหา</h1>
+      <h1>เข้าสู่ระบบผู้ดูแลเนื้อหา</h1>
 
-    <div class="msg" id="msg"></div>
+      <div class="msg" id="msg"></div>
 
-    <form id="loginForm">
-      <label for="username">ชื่อผู้ใช้</label>
-      <input type="text" id="username" name="username" autocomplete="username" required />
+      <form id="loginForm">
+        <label for="username">ชื่อผู้ใช้</label>
+        <input type="text" id="username" name="username" autocomplete="username" required />
 
-      <label for="password">รหัสผ่าน</label>
-      <input type="password" id="password" name="password" autocomplete="current-password" required />
+        <label for="password">รหัสผ่าน</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required />
 
-      <button type="submit" id="submitBtn">เข้าสู่ระบบ</button>
-    </form>
+        <button type="submit" id="submitBtn">เข้าสู่ระบบ</button>
+      </form>
 
-    <div class="back"><a href="/">← กลับหน้าเว็บหลัก</a></div>
-  </div>
+      <div class="back"><a href="/">← กลับหน้าเว็บหลัก</a></div>
+    </div>
   </div>
 
   <script>
@@ -177,5 +236,7 @@
       }
     });
   </script>
+  <script src="/i18n.js"></script>
 </body>
+
 </html>

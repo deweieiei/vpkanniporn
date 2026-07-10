@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,12 +11,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* ย่อ-ขยายทุกอย่างสมส่วนตามจอ (มือถือ→iPad→คอม) ผ่าน root font-size — Tailwind ใช้หน่วย rem จึงปรับตามอัตโนมัติ */
-        html { font-size: clamp(13px, 0.5vw + 11px, 16px); }
-        body { font-family: 'Prompt', sans-serif; }
-        .fwd-orange { color: #FF6B00; }
-        .fwd-bg-orange { background-color: #FF6B00; }
+        html {
+            font-size: clamp(13px, 0.5vw + 11px, 16px);
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .fwd-orange {
+            color: #FF6B00;
+        }
+
+        .fwd-bg-orange {
+            background-color: #FF6B00;
+        }
     </style>
 </head>
+
 <body class="bg-gray-50 text-gray-800 antialiased">
 
     <!-- HEADER -->
@@ -24,11 +37,15 @@
             <a href="/" class="flex items-center space-x-4">
                 <div class="text-3xl font-black text-slate-800 tracking-wider">FWD</div>
                 <div class="border-l-2 border-gray-200 pl-3">
-                    <p style="font-size:13px; font-weight:700; color:#E66D18; line-height:1.2;">Agent VP Kanniporn FWD</p>
-                    <p style="font-size:11px; color:#6b7280; line-height:1.2; margin-top:2px;">สำนักงานตัวแทนดิจิทัล เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
+                    <p style="font-size:13px; font-weight:700; color:#E66D18; line-height:1.2;">Agent VP Kanniporn FWD
+                    </p>
+                    <p style="font-size:11px; color:#6b7280; line-height:1.2; margin-top:2px;">สำนักงานตัวแทนดิจิทัล
+                        เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
                 </div>
             </a>
-            <a href="/login" class="w-9 h-9 rounded-full fwd-bg-orange text-white flex items-center justify-center font-bold shadow-md hover:bg-orange-600 transition" title="เข้าสู่ระบบ">
+            <a href="/login"
+                class="w-9 h-9 rounded-full fwd-bg-orange text-white flex items-center justify-center font-bold shadow-md hover:bg-orange-600 transition"
+                title="เข้าสู่ระบบ">
                 ➔
             </a>
         </div>
@@ -50,7 +67,7 @@
     <script>
         function escapeHtml(s) {
             return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
-                ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+                ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         }
         // render เป็น plain text เท่านั้น (escape ก่อนเสมอ) ป้องกัน stored XSS
         // จากเนื้อหาที่ตัวแทนกรอกเอง — ไม่ใช้ innerHTML ตรงๆ กับ content_html
@@ -131,6 +148,7 @@
 
         loadPlan();
     </script>
-
+    <script src="/i18n.js"></script>
 </body>
+
 </html>

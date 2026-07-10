@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,47 +8,246 @@
     <link rel="icon" type="image/svg+xml" href="/assets/Logo.svg">
     <link rel="shortcut icon" href="/assets/Logo.svg">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         /* ย่อ-ขยายทุกอย่างสมส่วนตามจอ (มือถือ→iPad→คอม) ผ่าน root font-size — Tailwind ใช้หน่วย rem จึงปรับตามอัตโนมัติ */
-        html { font-size: clamp(13px, 0.5vw + 11px, 16px); }
-        body { font-family: 'Prompt', sans-serif; }
+        html {
+            font-size: clamp(13px, 0.5vw + 11px, 16px);
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+        }
+
         /* ===== เนื้อหา Rich Text (ใช้ทั้งหน้าดูและช่องแก้ไข) ===== */
-        .rt-content { color:#374151; line-height:1.75; font-size:15px; }
-        .rt-content h2 { font-size:1.5rem; font-weight:800; color:#1f2937; margin:1.1em 0 .5em; }
-        .rt-content h3 { font-size:1.2rem; font-weight:700; color:#374151; margin:.9em 0 .4em; }
-        .rt-content p { margin:0 0 .8em; }
-        .rt-content ul { list-style:disc; padding-left:1.5em; margin:0 0 .8em; }
-        .rt-content ol { list-style:decimal; padding-left:1.5em; margin:0 0 .8em; }
-        .rt-content li { margin:.2em 0; }
-        .rt-content a { color:#ea580c; text-decoration:underline; }
-        .rt-content img { max-width:100%; height:auto; border-radius:12px; margin:.6em 0; }
-        .rt-content b, .rt-content strong { font-weight:700; }
-        .rt-editor { min-height:320px; outline:none; }
-        .rt-editor:empty:before { content: attr(data-placeholder); color:#9ca3af; }
+        .rt-content {
+            color: #374151;
+            line-height: 1.75;
+            font-size: 15px;
+        }
+
+        .rt-content h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1f2937;
+            margin: 1.1em 0 .5em;
+        }
+
+        .rt-content h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #374151;
+            margin: .9em 0 .4em;
+        }
+
+        .rt-content p {
+            margin: 0 0 .8em;
+        }
+
+        .rt-content ul {
+            list-style: disc;
+            padding-left: 1.5em;
+            margin: 0 0 .8em;
+        }
+
+        .rt-content ol {
+            list-style: decimal;
+            padding-left: 1.5em;
+            margin: 0 0 .8em;
+        }
+
+        .rt-content li {
+            margin: .2em 0;
+        }
+
+        .rt-content a {
+            color: #ea580c;
+            text-decoration: underline;
+        }
+
+        .rt-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: .6em 0;
+        }
+
+        .rt-content b,
+        .rt-content strong {
+            font-weight: 700;
+        }
+
+        .rt-editor {
+            min-height: 320px;
+            outline: none;
+        }
+
+        .rt-editor:empty:before {
+            content: attr(data-placeholder);
+            color: #9ca3af;
+        }
+
         /* ปุ่ม toolbar */
-        .rt-btn { min-width:34px; height:32px; padding:0 8px; border:1px solid #e5e7eb; background:#fff; border-radius:8px; font-size:13px; color:#374151; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
-        .rt-btn:hover { background:#fff7ed; border-color:#fdba74; color:#ea580c; }
-        .rt-sep { width:1px; align-self:stretch; background:#e5e7eb; margin:2px 4px; }
+        .rt-btn {
+            min-width: 34px;
+            height: 32px;
+            padding: 0 8px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #374151;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rt-btn:hover {
+            background: #fff7ed;
+            border-color: #fdba74;
+            color: #ea580c;
+        }
+
+        .rt-sep {
+            width: 1px;
+            align-self: stretch;
+            background: #e5e7eb;
+            margin: 2px 4px;
+        }
 
         /* ===== การ์ดบลอคย่อย (เหมือนส่วน "คุณกำลังมองหาอะไรอยู่?" ในโปรไฟล์เป๊ะ) ===== */
-        .lf-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:12px; }
-        .lf-card { position: relative; min-height: 150px; border-radius: 14px; overflow: hidden; cursor: pointer; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 5px rgba(0,0,0,0.10); transition: box-shadow .15s, transform .15s; }
-        .lf-card:hover { box-shadow: 0 8px 22px rgba(0,0,0,0.16); transform: translateY(-2px); }
-        .lf-card.lf-noimg { background: linear-gradient(135deg, #ff9a4d, #ff6b00); }
-        .lf-shade { position: absolute; inset: 0; background: rgba(0,0,0,0.34); }
-        .lf-card.lf-noimg .lf-shade { background: transparent; }
-        .lf-label { position: relative; z-index: 1; padding: 14px 12px; color: #fff; font-weight: 700; font-size: 16px; text-align: center; line-height: 1.35; text-shadow: 0 1px 6px rgba(0,0,0,0.55); }
-        .lf-tools { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; z-index: 2; }
-        .lf-tools button { width: 28px; height: 28px; border: none; border-radius: 50%; background: rgba(255,255,255,0.92); font-size: 13px; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
-        .lf-edit { color: #ea580c; } .lf-edit:hover { background: #ffedd5; }
-        .lf-del { color: #ef4444; } .lf-del:hover { background: #fee2e2; }
-        .lf-add { cursor: pointer; border: 2px dashed #f0b787; background: #fff8f2; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 150px; border-radius: 14px; color: #ea580c; font-weight: 700; gap: 6px; transition: background .15s; }
-        .lf-add:hover { background: #fff2e6; }
-        .lf-add .plus { font-size: 30px; line-height: 1; }
-        .inactive-tag { display:inline-block; margin-left:6px; font-size:10px; font-weight:600; color:#fff; background:rgba(0,0,0,0.45); padding:1px 6px; border-radius:8px; vertical-align:middle; }
+        .lf-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .lf-card {
+            position: relative;
+            min-height: 150px;
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.10);
+            transition: box-shadow .15s, transform .15s;
+        }
+
+        .lf-card:hover {
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
+            transform: translateY(-2px);
+        }
+
+        .lf-card.lf-noimg {
+            background: linear-gradient(135deg, #ff9a4d, #ff6b00);
+        }
+
+        .lf-shade {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.34);
+        }
+
+        .lf-card.lf-noimg .lf-shade {
+            background: transparent;
+        }
+
+        .lf-label {
+            position: relative;
+            z-index: 1;
+            padding: 14px 12px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 16px;
+            text-align: center;
+            line-height: 1.35;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
+        }
+
+        .lf-tools {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 6px;
+            z-index: 2;
+        }
+
+        .lf-tools button {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.92);
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lf-edit {
+            color: #ea580c;
+        }
+
+        .lf-edit:hover {
+            background: #ffedd5;
+        }
+
+        .lf-del {
+            color: #ef4444;
+        }
+
+        .lf-del:hover {
+            background: #fee2e2;
+        }
+
+        .lf-add {
+            cursor: pointer;
+            border: 2px dashed #f0b787;
+            background: #fff8f2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 150px;
+            border-radius: 14px;
+            color: #ea580c;
+            font-weight: 700;
+            gap: 6px;
+            transition: background .15s;
+        }
+
+        .lf-add:hover {
+            background: #fff2e6;
+        }
+
+        .lf-add .plus {
+            font-size: 30px;
+            line-height: 1;
+        }
+
+        .inactive-tag {
+            display: inline-block;
+            margin-left: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 1px 6px;
+            border-radius: 8px;
+            vertical-align: middle;
+        }
     </style>
 </head>
+
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen">
 
     <!-- HEADER -->
@@ -56,13 +256,16 @@
             <a href="/home" class="flex items-center gap-3">
                 <img src="/assets/Logo.svg" alt="VP Kanniporn FWD" class="h-10 w-auto">
                 <div class="border-l-2 border-gray-200 pl-3 hidden sm:block">
-                    <p style="font-size:13px; font-weight:700; color:#E66D18; line-height:1.2;">Agent VP Kanniporn FWD</p>
-                    <p style="font-size:11px; color:#6b7280; line-height:1.2; margin-top:2px;">สำนักงานตัวแทนดิจิทัล เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
+                    <p style="font-size:13px; font-weight:700; color:#E66D18; line-height:1.2;">Agent VP Kanniporn FWD
+                    </p>
+                    <p style="font-size:11px; color:#6b7280; line-height:1.2; margin-top:2px;">สำนักงานตัวแทนดิจิทัล
+                        เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
                 </div>
             </a>
-             <button id="btn-copy" class="bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded-full font-bold">🔗 คัดลอกลิงก์</button>
-              
-            <a id="back-link" href="/home" class="text-xs font-semibold text-gray-500 hover:text-orange-600">← กลับ</a>
+            <button id="btn-copy" class="bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded-full font-bold">🔗
+                คัดลอกลิงก์</button>
+
+
         </div>
     </header>
 
@@ -72,9 +275,12 @@
             <span class="font-bold text-orange-400">🛠️ โหมดเจ้าของ</span>
             <span class="text-white/50">— แก้ไขเนื้อหาหน้านี้ได้</span>
             <div class="ml-auto flex gap-2">
-                 <button id="btn-edit" class="bg-orange-500 hover:bg-orange-600 px-4 py-1.5 rounded-full font-bold">✏️ แก้ไข</button>
-                <button id="btn-save" class="hidden bg-green-500 hover:bg-green-600 px-4 py-1.5 rounded-full font-bold">💾 บันทึก</button>
-                <button id="btn-cancel" class="hidden bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded-full font-bold">ยกเลิก</button>
+                <button id="btn-edit" class="bg-orange-500 hover:bg-orange-600 px-4 py-1.5 rounded-full font-bold">✏️
+                    แก้ไข</button>
+                <button id="btn-save"
+                    class="hidden bg-green-500 hover:bg-green-600 px-4 py-1.5 rounded-full font-bold">💾 บันทึก</button>
+                <button id="btn-cancel"
+                    class="hidden bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded-full font-bold">ยกเลิก</button>
             </div>
         </div>
     </div>
@@ -88,7 +294,7 @@
         <div id="notfound" class="hidden text-center py-16">
             <p class="text-4xl mb-3">😔</p>
             <p class="font-bold text-lg">ไม่พบหน้านี้</p>
-            <a href="/home" class="text-orange-600 text-sm mt-3 inline-block">← กลับหน้าหลัก</a>
+
         </div>
 
         <!-- VIEW MODE -->
@@ -109,8 +315,10 @@
                 <button type="button" class="rt-btn" data-block="h3" title="หัวข้อรอง">H3</button>
                 <button type="button" class="rt-btn" data-block="p" title="ข้อความปกติ">ข้อความ</button>
                 <span class="rt-sep"></span>
-                <button type="button" class="rt-btn" data-cmd="insertUnorderedList" title="รายการหัวข้อ">• รายการ</button>
-                <button type="button" class="rt-btn" data-cmd="insertOrderedList" title="รายการตัวเลข">1. รายการ</button>
+                <button type="button" class="rt-btn" data-cmd="insertUnorderedList" title="รายการหัวข้อ">•
+                    รายการ</button>
+                <button type="button" class="rt-btn" data-cmd="insertOrderedList" title="รายการตัวเลข">1.
+                    รายการ</button>
                 <span class="rt-sep"></span>
                 <button type="button" class="rt-btn" data-cmd="justifyLeft" title="ชิดซ้าย">⬅</button>
                 <button type="button" class="rt-btn" data-cmd="justifyCenter" title="กึ่งกลาง">↔</button>
@@ -121,12 +329,15 @@
                 <input type="file" id="rt-image-input" accept="image/*" class="hidden">
             </div>
             <div id="rt-editor" class="rt-editor rt-content border border-gray-200 rounded-lg p-4"
-                 contenteditable="true" data-placeholder="พิมพ์เนื้อหาที่นี่... ใช้ปุ่มด้านบนจัดตัวหนา หัวข้อ ใส่รูปได้"></div>
-            <p class="text-[11px] text-gray-400 mt-2">💡 เลือกข้อความก่อนกดปุ่มจัดรูปแบบ • กด 🖼️ เพื่อแทรกรูปในเนื้อหา</p>
+                contenteditable="true" data-placeholder="พิมพ์เนื้อหาที่นี่... ใช้ปุ่มด้านบนจัดตัวหนา หัวข้อ ใส่รูปได้">
+            </div>
+            <p class="text-[11px] text-gray-400 mt-2">💡 เลือกข้อความก่อนกดปุ่มจัดรูปแบบ • กด 🖼️ เพื่อแทรกรูปในเนื้อหา
+            </p>
         </div>
 
         <!-- AGENT CARD (ตัวแทนผู้ดูแล) — แสดงใต้ Rich Text เฉพาะหน้า 3 -->
-        <div id="agent-card" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mt-6"></div>
+        <div id="agent-card" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mt-6">
+        </div>
 
         <!-- ===== บลอคย่อย (recursive) — grid เหมือนหน้าโปรไฟล์เป๊ะ กดเข้าไปสร้างต่อได้อีกไม่จำกัดชั้น ===== -->
         <section id="blocks-section" class="hidden mt-8">
@@ -142,32 +353,39 @@
     <div id="block-modal" class="fixed inset-0 bg-black/55 z-[5000] hidden items-center justify-center p-5">
         <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
             <h2 id="block-modal-title" class="text-lg font-bold mb-1">➕ เพิ่มรายการใหม่</h2>
-            <p class="text-xs text-gray-500 mb-5">การ์ดนี้จะแสดงในหน้านี้ — กดที่การ์ดเพื่อเข้าไปหน้าเนื้อหา (Rich Text Editor)</p>
+            <p class="text-xs text-gray-500 mb-5">การ์ดนี้จะแสดงในหน้านี้ — กดที่การ์ดเพื่อเข้าไปหน้าเนื้อหา (Rich Text
+                Editor)</p>
             <form id="block-form">
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-gray-600 mb-1">ชื่อรายการ *</label>
                     <input type="text" name="button_text" maxlength="120" required
-                           class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
-                           placeholder="เช่น กรุงเทพมหานคร">
+                        class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                        placeholder="เช่น กรุงเทพมหานคร">
                 </div>
                 <div class="mb-4">
-                    <label class="block text-xs font-bold text-gray-600 mb-1">รูปการ์ด (ไม่ใส่ก็ได้ — ใช้เป็นพื้นหลังการ์ด)</label>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">รูปการ์ด (ไม่ใส่ก็ได้ —
+                        ใช้เป็นพื้นหลังการ์ด)</label>
                     <div class="flex items-center gap-2.5">
-                        <div class="w-[88px] h-14 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
+                        <div
+                            class="w-[88px] h-14 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
                             <img id="block-preview" class="hidden w-full h-full object-cover" src="" alt="">
                             <span id="block-ph" class="text-[11px] text-gray-400">ไม่มีรูป</span>
                         </div>
                         <input type="file" name="image" id="block-image" accept="image/*" class="text-xs">
                     </div>
-                    <p class="text-[11px] text-gray-400 mt-1.5">แนะนำขนาด <b>800 × 800 px</b> • jpg/png/webp สูงสุด 5MB</p>
+                    <p class="text-[11px] text-gray-400 mt-1.5">แนะนำขนาด <b>800 × 800 px</b> • jpg/png/webp สูงสุด 5MB
+                    </p>
                 </div>
                 <label class="flex items-center gap-2 text-sm mb-5 cursor-pointer text-gray-600">
                     <input type="checkbox" name="is_active" id="block-active" checked>
                     แสดงการ์ดนี้ให้ผู้เข้าชมเห็น <span class="text-[11px] text-gray-400">(เอาติ๊กออก = ซ่อน)</span>
                 </label>
                 <div class="flex justify-end gap-2.5 pt-4 border-t border-gray-100">
-                    <button type="button" id="block-cancel" class="px-5 py-2.5 rounded-full font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200">ยกเลิก</button>
-                    <button type="submit" class="px-5 py-2.5 rounded-full font-bold text-sm bg-orange-500 text-white hover:bg-orange-600">💾 บันทึก</button>
+                    <button type="button" id="block-cancel"
+                        class="px-5 py-2.5 rounded-full font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200">ยกเลิก</button>
+                    <button type="submit"
+                        class="px-5 py-2.5 rounded-full font-bold text-sm bg-orange-500 text-white hover:bg-orange-600">💾
+                        บันทึก</button>
                 </div>
             </form>
         </div>
@@ -176,18 +394,22 @@
     <!-- ===== ปุ่มติดต่อสอบถาม (ลอยมุมขวาล่าง) — เฉพาะหน้า Rich Text ===== -->
     <div id="contact-fab-wrap" class="hidden fixed bottom-5 right-5 z-40 flex-col items-end gap-3">
         <div id="contact-menu" class="flex-col gap-2" style="display:none;">
-            <a id="fab-call" href="#" class="flex items-center gap-2 bg-white text-gray-700 font-semibold text-sm pl-4 pr-5 py-3 rounded-full shadow-lg hover:bg-gray-50">
+            <a id="fab-call" href="#"
+                class="flex items-center gap-2 bg-white text-gray-700 font-semibold text-sm pl-4 pr-5 py-3 rounded-full shadow-lg hover:bg-gray-50">
                 <span class="text-lg">📞</span> โทรหาตัวแทน
             </a>
-            <a id="fab-form" href="#" class="flex items-center gap-2 bg-white text-gray-700 font-semibold text-sm pl-4 pr-5 py-3 rounded-full shadow-lg hover:bg-gray-50">
+            <a id="fab-form" href="#"
+                class="flex items-center gap-2 bg-white text-gray-700 font-semibold text-sm pl-4 pr-5 py-3 rounded-full shadow-lg hover:bg-gray-50">
                 <span class="text-lg">📝</span> สร้างรายการติดต่อ
             </a>
         </div>
         <button id="contact-fab" title="ติดต่อสอบถาม"
-                class="w-16 h-16 flex items-center justify-center bg-green-500 hover:bg-green-600 text-white rounded-full shadow-xl shadow-green-500/40 transition text-2xl">💬</button>
+            class="w-16 h-16 flex items-center justify-center bg-green-500 hover:bg-green-600 text-white rounded-full shadow-xl shadow-green-500/40 transition text-2xl">💬</button>
     </div>
 
-    <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold opacity-0 pointer-events-none transition-opacity z-50"></div>
+    <div id="toast"
+        class="fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold opacity-0 pointer-events-none transition-opacity z-50">
+    </div>
 
     <script src="/track.js"></script>
     <script>
@@ -199,19 +421,19 @@
 
         const editor = document.getElementById('rt-editor');
 
-        function escapeHtml(s){
+        function escapeHtml(s) {
             return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
-                ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+                ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         }
 
-        function toast(msg, ok){
+        function toast(msg, ok) {
             const t = document.getElementById('toast');
             t.textContent = msg;
-            t.className = `fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold transition-opacity z-50 ${ok===false?'bg-red-600':'bg-green-600'} opacity-100`;
-            setTimeout(()=>{ t.classList.replace('opacity-100','opacity-0'); }, 2600);
+            t.className = `fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold transition-opacity z-50 ${ok === false ? 'bg-red-600' : 'bg-green-600'} opacity-100`;
+            setTimeout(() => { t.classList.replace('opacity-100', 'opacity-0'); }, 2600);
         }
 
-        function renderView(){
+        function renderView() {
             const contentEl = document.getElementById('view-content');
             contentEl.innerHTML = (pageData.content && pageData.content.trim())
                 ? pageData.content
@@ -224,7 +446,7 @@
         }
 
         // ===== Breadcrumb: หน้าโปรไฟล์ › จังหวัด › อำเภอ › (หน้าปัจจุบัน) =====
-        function renderBreadcrumb(){
+        function renderBreadcrumb() {
             const el = document.getElementById('breadcrumb');
             const rootHref = isOwner ? '/profile' : ('/agent/' + pageData.user_id);
             const sep = '<span class="text-gray-300 mx-1.5">›</span>';
@@ -238,7 +460,7 @@
         }
 
         // ===== การ์ด "ตัวแทนผู้ดูแล" (ดึงข้อมูลตัวแทนเจ้าของหน้า) =====
-        async function loadAgentCard(){
+        async function loadAgentCard() {
             if (!pageData || !pageData.user_id) return;
             try {
                 const res = await fetch('/api/users/' + pageData.user_id, { credentials: 'same-origin' });
@@ -249,7 +471,7 @@
         }
 
         // ===== ปุ่มติดต่อสอบถาม (ลอย) =====
-        function setupContactFab(){
+        function setupContactFab() {
             const wrap = document.getElementById('contact-fab-wrap');
             const fab = document.getElementById('contact-fab');
             const menu = document.getElementById('contact-menu');
@@ -270,7 +492,7 @@
         }
 
         // ตั้งลิงก์โทร — ถ้าตัวแทนไม่มีเบอร์ก็ซ่อนตัวเลือก "โทร"
-        function setContactPhone(phone){
+        function setContactPhone(phone) {
             const callBtn = document.getElementById('fab-call');
             if (!callBtn) return;
             const clean = phone ? String(phone).replace(/[^0-9+]/g, '') : '';
@@ -278,7 +500,7 @@
             else { callBtn.style.display = 'none'; }
         }
 
-        function renderAgentCard(u){
+        function renderAgentCard(u) {
             const card = document.getElementById('agent-card');
             const fullName = `${u.first_name || ''} ${u.last_name || ''}`.trim() || 'ตัวแทน';
             const pos = u.position ? (u.company ? `${u.position} | ${u.company}` : u.position) : '';
@@ -313,7 +535,7 @@
             card.classList.remove('hidden');
         }
 
-        async function load(){
+        async function load() {
             if (!pageId) { showNotFound(); return; }
             try {
                 const res = await fetch('/api/pages/' + pageId, { credentials: 'same-origin' });
@@ -342,7 +564,7 @@
                 }
             } catch (e) { showNotFound(); }
         }
-        function showNotFound(){
+        function showNotFound() {
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('notfound').classList.remove('hidden');
         }
@@ -352,13 +574,13 @@
         const btnSave = document.getElementById('btn-save');
         const btnCancel = document.getElementById('btn-cancel');
 
-        function enterEdit(){
+        function enterEdit() {
             editor.innerHTML = pageData.content || '';
             document.getElementById('view').classList.add('hidden');
             document.getElementById('edit').classList.remove('hidden');
             btnEdit.classList.add('hidden'); btnSave.classList.remove('hidden'); btnCancel.classList.remove('hidden');
         }
-        function exitEdit(){
+        function exitEdit() {
             document.getElementById('edit').classList.add('hidden');
             document.getElementById('view').classList.remove('hidden');
             btnEdit.classList.remove('hidden'); btnSave.classList.add('hidden'); btnCancel.classList.add('hidden');
@@ -383,19 +605,19 @@
         }
 
         // ===== Rich text toolbar =====
-        function exec(cmd, val){ document.execCommand(cmd, false, val || null); editor.focus(); }
+        function exec(cmd, val) { document.execCommand(cmd, false, val || null); editor.focus(); }
 
         // จำตำแหน่ง cursor ไว้ (เผื่อโฟกัสหลุดตอนกดปุ่ม/เลือกไฟล์)
         let savedRange = null;
         editor.addEventListener('keyup', saveSel);
         editor.addEventListener('mouseup', saveSel);
-        function saveSel(){
+        function saveSel() {
             const sel = window.getSelection();
             if (sel.rangeCount && editor.contains(sel.anchorNode)) savedRange = sel.getRangeAt(0);
         }
-        function restoreSel(){
+        function restoreSel() {
             editor.focus();
-            if (savedRange){ const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(savedRange); }
+            if (savedRange) { const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(savedRange); }
         }
 
         document.getElementById('rt-toolbar').addEventListener('click', (e) => {
@@ -421,7 +643,7 @@
             if (!f) return;
             const fd = new FormData(); fd.append('image', f);
             try {
-                const res = await fetch(`/api/pages/${pageId}/content-image`, { method:'POST', credentials:'same-origin', body: fd });
+                const res = await fetch(`/api/pages/${pageId}/content-image`, { method: 'POST', credentials: 'same-origin', body: fd });
                 const d = await res.json();
                 if (!res.ok) { toast(d.error || 'อัปโหลดไม่สำเร็จ', false); return; }
                 restoreSel();
@@ -429,7 +651,7 @@
                 saveSel();
                 toast('แทรกรูปแล้ว');
             } catch (err) { toast('อัปโหลดไม่สำเร็จ', false); }
-            finally { e.target.value=''; }
+            finally { e.target.value = ''; }
         });
 
         btnSave.addEventListener('click', async () => {
@@ -437,7 +659,7 @@
             try {
                 const body = { content: editor.innerHTML };
                 const res = await fetch('/api/pages/' + pageId, {
-                    method:'PUT', headers:{'Content-Type':'application/json'}, credentials:'same-origin',
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
                     body: JSON.stringify(body),
                 });
                 const d = await res.json();
@@ -455,7 +677,7 @@
         let blocks = [];
         let editingBlockId = null; // null = สร้างใหม่
 
-        function blockCard(p){
+        function blockCard(p) {
             const hasImg = !!p.button_image;
             const style = hasImg ? ` style="background-image:url('${escapeHtml(p.button_image)}')"` : '';
             const noimg = hasImg ? '' : ' lf-noimg';
@@ -473,7 +695,7 @@
                 </div>`;
         }
 
-        async function loadBlocks(){
+        async function loadBlocks() {
             const grid = document.getElementById('blocks-grid');
             const section = document.getElementById('blocks-section');
             // เจ้าของ: /api/pages/mine (เห็นที่ซ่อนด้วย) / ผู้ชม: /api/pages (เฉพาะที่เปิด)
@@ -526,22 +748,22 @@
         const blockModal = document.getElementById('block-modal');
         const blockForm = document.getElementById('block-form');
 
-        function resetBlockForm(){
+        function resetBlockForm() {
             blockForm.reset();
             document.getElementById('block-preview').classList.add('hidden');
             document.getElementById('block-ph').classList.remove('hidden');
             document.getElementById('block-active').checked = true;
         }
-        function openBlockModal(){ blockModal.classList.remove('hidden'); blockModal.classList.add('flex'); }
-        function closeBlockModal(){ blockModal.classList.add('hidden'); blockModal.classList.remove('flex'); }
+        function openBlockModal() { blockModal.classList.remove('hidden'); blockModal.classList.add('flex'); }
+        function closeBlockModal() { blockModal.classList.add('hidden'); blockModal.classList.remove('flex'); }
 
-        function openBlockNew(){
+        function openBlockNew() {
             editingBlockId = null;
             resetBlockForm();
             document.getElementById('block-modal-title').textContent = '➕ เพิ่มรายการใหม่';
             openBlockModal();
         }
-        async function openBlockEdit(id){
+        async function openBlockEdit(id) {
             try {
                 const res = await fetch('/api/pages/' + id, { credentials: 'same-origin' });
                 const d = await res.json();
@@ -626,5 +848,7 @@
 
         load();
     </script>
+    <script src="/i18n.js"></script>
 </body>
+
 </html>

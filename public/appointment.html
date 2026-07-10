@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,27 +8,81 @@
     <link rel="icon" type="image/svg+xml" href="/assets/Logo.svg">
     <link rel="shortcut icon" href="/assets/Logo.svg">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         /* ย่อ-ขยายทุกอย่างสมส่วนตามจอ (มือถือ→iPad→คอม) ผ่าน root font-size — Tailwind ใช้หน่วย rem จึงปรับตามอัตโนมัติ */
-        html { font-size: clamp(13px, 0.5vw + 11px, 16px); }
-        body { font-family: 'Prompt', sans-serif; }
-        .req::after { content: " *"; color: #ef4444; }
+        html {
+            font-size: clamp(13px, 0.5vw + 11px, 16px);
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .req::after {
+            content: " *";
+            color: #ef4444;
+        }
+
         .field-input {
-            width: 100%; padding: 11px 14px; border: 1px solid #e5e7eb; border-radius: 12px;
-            font-size: 15px; font-family: inherit; outline: none; transition: border-color .2s, box-shadow .2s;
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
         }
-        .field-input:focus { border-color: #FF6B00; box-shadow: 0 0 0 3px rgba(255,107,0,0.15); }
+
+        .field-input:focus {
+            border-color: #FF6B00;
+            box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.15);
+        }
+
         .opt-chip {
-            display: flex; align-items: center; gap: 8px; padding: 12px 14px; border: 1px solid #e5e7eb;
-            border-radius: 12px; cursor: pointer; font-size: 14px; transition: all .15s; user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all .15s;
+            user-select: none;
         }
-        .opt-chip:hover { border-color: #fdba74; background: #fff7ed; }
-        .opt-chip input { width: 18px; height: 18px; accent-color: #FF6B00; cursor: pointer; }
-        .opt-chip.checked { border-color: #FF6B00; background: #fff7ed; font-weight: 600; color: #c2410c; }
-        .section-label { font-size: 12px; font-weight: 800; color: #9ca3af; letter-spacing: .03em; margin: 6px 0 10px; }
+
+        .opt-chip:hover {
+            border-color: #fdba74;
+            background: #fff7ed;
+        }
+
+        .opt-chip input {
+            width: 18px;
+            height: 18px;
+            accent-color: #FF6B00;
+            cursor: pointer;
+        }
+
+        .opt-chip.checked {
+            border-color: #FF6B00;
+            background: #fff7ed;
+            font-weight: 600;
+            color: #c2410c;
+        }
+
+        .section-label {
+            font-size: 12px;
+            font-weight: 800;
+            color: #9ca3af;
+            letter-spacing: .03em;
+            margin: 6px 0 10px;
+        }
     </style>
 </head>
+
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen">
 
     <header class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
@@ -35,11 +90,13 @@
             <a href="/home" class="flex items-center gap-3">
                 <img src="/assets/Logo.svg" alt="VP Kanniporn FWD" class="h-10 w-auto">
                 <div class="border-l-2 border-gray-200 pl-3 hidden sm:block">
-                    <p style="font-size:13px; font-weight:700; color:#E66D18; line-height:1.2;">Agent VP Kanniporn FWD</p>
-                    <p style="font-size:11px; color:#6b7280; line-height:1.2; margin-top:2px;">สำนักงานตัวแทนดิจิทัล เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
+                    <p style="font-size:13px; font-weight:700; color:#E66D18; line-height:1.2;">Agent VP Kanniporn FWD
+                    </p>
+                    <p style="font-size:11px; color:#6b7280; line-height:1.2; margin-top:2px;">สำนักงานตัวแทนดิจิทัล
+                        เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
                 </div>
             </a>
-            <a id="back-link" href="/home" class="text-xs font-semibold text-gray-500 hover:text-orange-600" data-i18n="common.back">← กลับ</a>
+
         </div>
     </header>
 
@@ -47,9 +104,11 @@
 
         <div id="form-card" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
             <div class="text-center mb-6">
-                <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-orange-50 text-3xl mb-3">📅</div>
+                <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-orange-50 text-3xl mb-3">
+                    📅</div>
                 <h1 class="text-2xl font-extrabold text-gray-800" data-i18n="appt.title">นัดปรึกษาออนไลน์ฟรี</h1>
-                <p class="text-sm text-gray-500 mt-1" data-i18n="appt.subtitle">เลือกวันและเวลาที่สะดวก ทีมงานจะติดต่อกลับเพื่อยืนยันการนัดหมาย</p>
+                <p class="text-sm text-gray-500 mt-1" data-i18n="appt.subtitle">เลือกวันและเวลาที่สะดวก
+                    ทีมงานจะติดต่อกลับเพื่อยืนยันการนัดหมาย</p>
             </div>
 
             <form id="appt-form" class="space-y-6" novalidate>
@@ -59,19 +118,25 @@
                     <p class="section-label" data-i18n="appt.sec.contact">ข้อมูลผู้ติดต่อ</p>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1.5 req" data-i18n="appt.f.fullname">ชื่อ-นามสกุล</label>
-                            <input type="text" name="full_name" class="field-input" maxlength="150" data-i18n-ph="appt.ph.fullname" placeholder="เช่น สมชาย ใจดี" required>
+                            <label class="block text-sm font-bold text-gray-700 mb-1.5 req"
+                                data-i18n="appt.f.fullname">ชื่อ-นามสกุล</label>
+                            <input type="text" name="full_name" class="field-input" maxlength="150"
+                                data-i18n-ph="appt.ph.fullname" placeholder="เช่น สมชาย ใจดี" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1.5 req" data-i18n="appt.f.phone">เบอร์โทรศัพท์</label>
-                            <input type="tel" name="phone" class="field-input" maxlength="30" data-i18n-ph="appt.ph.phone" placeholder="08X-XXX-XXXX" required>
+                            <label class="block text-sm font-bold text-gray-700 mb-1.5 req"
+                                data-i18n="appt.f.phone">เบอร์โทรศัพท์</label>
+                            <input type="tel" name="phone" class="field-input" maxlength="30"
+                                data-i18n-ph="appt.ph.phone" placeholder="08X-XXX-XXXX" required>
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-1.5">
                                 <span data-i18n="appt.f.lineid">LINE ID</span>
-                                <span class="font-normal text-gray-400 text-xs" data-i18n="common.optional">(ถ้ามี)</span>
+                                <span class="font-normal text-gray-400 text-xs"
+                                    data-i18n="common.optional">(ถ้ามี)</span>
                             </label>
-                            <input type="text" name="line_id" class="field-input" maxlength="64" data-i18n-ph="appt.ph.lineid" placeholder="@yourid หรือ line id">
+                            <input type="text" name="line_id" class="field-input" maxlength="64"
+                                data-i18n-ph="appt.ph.lineid" placeholder="@yourid หรือ line id">
                         </div>
                     </div>
                 </div>
@@ -81,11 +146,13 @@
                     <p class="section-label" data-i18n="appt.sec.datetime">วันและเวลาที่ต้องการนัด</p>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1.5 req" data-i18n="appt.f.pickdate">เลือกวันนัดหมาย</label>
+                            <label class="block text-sm font-bold text-gray-700 mb-1.5 req"
+                                data-i18n="appt.f.pickdate">เลือกวันนัดหมาย</label>
                             <input type="date" name="appointment_date" id="appt-date" class="field-input" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-2 req" data-i18n="appt.f.picktime">เลือกเวลาที่สะดวก</label>
+                            <label class="block text-sm font-bold text-gray-700 mb-2 req"
+                                data-i18n="appt.f.picktime">เลือกเวลาที่สะดวก</label>
                             <div id="slots" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
                         </div>
                     </div>
@@ -99,29 +166,35 @@
 
                 <!-- Consent -->
                 <label class="flex items-start gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
-                    <input type="checkbox" name="consent" class="mt-1 w-5 h-5 flex-shrink-0" style="accent-color:#FF6B00;" required>
+                    <input type="checkbox" name="consent" class="mt-1 w-5 h-5 flex-shrink-0"
+                        style="accent-color:#FF6B00;" required>
                     <span class="text-xs text-gray-600 leading-relaxed" data-i18n="appt.consent">
-                        ข้าพเจ้ายินยอมให้ตัวแทนติดต่อกลับเพื่อยืนยันการนัดหมาย และยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคลเพื่อการให้บริการตามนโยบายความเป็นส่วนตัว
+                        ข้าพเจ้ายินยอมให้ตัวแทนติดต่อกลับเพื่อยืนยันการนัดหมาย
+                        และยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคลเพื่อการให้บริการตามนโยบายความเป็นส่วนตัว
                     </span>
                 </label>
 
                 <button type="submit" id="submit-btn"
-                        class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 rounded-full text-base shadow-lg shadow-orange-500/30 transition disabled:opacity-60"
-                        data-i18n="appt.submit">
+                    class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 rounded-full text-base shadow-lg shadow-orange-500/30 transition disabled:opacity-60"
+                    data-i18n="appt.submit">
                     ยืนยันนัดหมาย
                 </button>
             </form>
         </div>
 
         <div id="success-card" class="hidden bg-white rounded-2xl shadow-sm border border-green-100 p-8 text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 text-4xl mb-4">✅</div>
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 text-4xl mb-4">✅
+            </div>
             <h2 class="text-xl font-extrabold text-gray-800" data-i18n="appt.success.title">ส่งคำขอนัดหมายเรียบร้อย</h2>
-            <p class="text-sm text-gray-500 mt-2" data-i18n="appt.success.msg">ทีมงานจะติดต่อกลับเพื่อยืนยันการนัดหมายโดยเร็วที่สุดครับ/ค่ะ</p>
-            <a id="success-back" href="/home" class="inline-block mt-6 text-orange-600 font-semibold text-sm" data-i18n="common.backAgent">← กลับหน้าตัวแทน</a>
+            <p class="text-sm text-gray-500 mt-2" data-i18n="appt.success.msg">
+                ทีมงานจะติดต่อกลับเพื่อยืนยันการนัดหมายโดยเร็วที่สุดครับ/ค่ะ</p>
+
         </div>
     </main>
 
-    <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold opacity-0 pointer-events-none transition-opacity z-50"></div>
+    <div id="toast"
+        class="fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-white text-sm font-semibold opacity-0 pointer-events-none transition-opacity z-50">
+    </div>
 
     <script src="/i18n.js"></script>
     <script src="/track.js"></script>
@@ -231,4 +304,5 @@
         });
     </script>
 </body>
+
 </html>
