@@ -353,7 +353,7 @@
               <select name="role">
                 <option value="agent" selected>ตัวแทน (agent)</option>
                 <option value="user">ผู้ใช้ทั่วไป (user)</option>
-                <option value="admin">SupperAdmin (admin)</option>
+                <!-- admin role hidden from selection -->
               </select>
             </div>
           </div>
@@ -418,7 +418,8 @@
 
     function rowHtml(u) {
       const name = esc(`${u.first_name || ''} ${u.last_name || ''}`.trim() || '—');
-      const roleTag = u.role === 'admin' ? '<span class="tag tag-admin">SupperAdmin</span>'
+      // Do not display the admin role tag in the user list (hide admin role)
+      const roleTag = u.role === 'admin' ? ''
         : u.role === 'agent' ? '<span class="tag tag-agent">ตัวแทน</span>'
           : '<span class="tag tag-user">ผู้ใช้</span>';
       const status = u.is_active
