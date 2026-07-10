@@ -62,22 +62,22 @@
 
     <section class="max-w-5xl mx-auto px-4 mt-6">
         <div class="text-center mb-6">
-            <h1 class="text-xl md:text-2xl font-bold text-gray-800">เลือกแผนที่เหมาะกับคุณ</h1>
-            <p class="text-xs md:text-sm text-gray-500 mt-1">แบบประกันจากตัวแทน FWD</p>
+            <h1 class="text-xl md:text-2xl font-bold text-gray-800" data-i18n="plans.title">เลือกแผนที่เหมาะกับคุณ</h1>
+            <p class="text-xs md:text-sm text-gray-500 mt-1" data-i18n="plans.subtitle">แบบประกันจากตัวแทน FWD</p>
         </div>
 
         <!-- Category tabs -->
         <div id="category-tabs" class="flex flex-wrap justify-center gap-2 mb-8">
             <button data-slug=""
                 class="cat-tab px-4 py-2 rounded-full text-xs font-bold bg-white border border-gray-200 text-gray-600 hover:border-orange-300 transition">
-                ทั้งหมด
+                <span data-i18n="plans.all">ทั้งหมด</span>
             </button>
         </div>
 
         <div id="plans-loading" class="text-center text-xs text-gray-400 py-10">
             <span class="inline-block animate-pulse">⏳ กำลังโหลดแบบประกัน…</span>
         </div>
-        <div id="plans-empty" class="hidden text-center text-sm text-gray-400 py-10">
+        <div id="plans-empty" class="hidden text-center text-sm text-gray-400 py-10" data-i18n-html="plans.empty">
             😔 ยังไม่มีแบบประกันในหมวดนี้ — <a href="/#contact"
                 class="text-orange-500 hover:underline">ติดต่อสอบถามตัวแทนได้เลย</a>
         </div>
@@ -86,7 +86,7 @@
 
     <!-- FOOTER -->
     <footer class="bg-slate-900 text-gray-400 text-center py-6 text-xs border-t-4 border-orange-500 mt-10">
-        <p>© 2026 FWD Insurance Agent Office</p>
+        <p data-i18n="common.footer">© 2026 FWD Insurance Agent Office</p>
     </footer>
 
     <script>
@@ -112,8 +112,8 @@
                         <h3 class="font-bold text-sm text-gray-800 mb-1">${escapeHtml(p.title)}</h3>
                         <p class="text-xs text-gray-500 line-clamp-2 flex-1">${escapeHtml(p.summary || '')}</p>
                         <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-50">
-                            <span class="text-[10px] text-gray-400">โดย ${agentName}</span>
-                            <span class="text-[10px] font-bold text-orange-400 group-hover:text-orange-600">ดูรายละเอียด ➔</span>
+                            <span class="text-[10px] text-gray-400">${window.t ? window.t('plans.by') : 'โดย'} ${agentName}</span>
+                            <span class="text-[10px] font-bold text-orange-400 group-hover:text-orange-600">${window.t ? window.t('plans.viewDetails') : 'ดูรายละเอียด ➔'}</span>
                         </div>
                     </div>
                 </a>
@@ -189,6 +189,12 @@
         setActiveTab();
         loadCategories();
         loadPlans();
+
+        // Re-load plans when language changes so dynamic labels update
+        window.addEventListener('i18n:changed', function () {
+            setActiveTab();
+            loadPlans();
+        });
     </script>
     <script src="/i18n.js"></script>
 

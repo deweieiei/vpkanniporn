@@ -68,9 +68,10 @@
     <!-- ===== HERO + SEARCH ===== -->
     <section class="hero-band text-white pt-10 pb-24 px-4 text-center relative">
         <div class="max-w-3xl mx-auto">
-            <h1 class="text-2xl md:text-4xl font-extrabold drop-shadow-sm">ค้นหาตัวแทนประกัน FWD</h1>
-            <p class="text-sm md:text-base text-white/90 mt-3">พิมพ์ชื่อ รหัสตัวแทน จังหวัด หรือสาขา
-                เพื่อค้นหาตัวแทนที่ดูแลคุณ</p>
+            <h1 class="text-2xl md:text-4xl font-extrabold drop-shadow-sm" data-i18n="search.title">ค้นหาตัวแทนประกัน
+                FWD</h1>
+            <p class="text-sm md:text-base text-white/90 mt-3" data-i18n="search.subtitle">พิมพ์ชื่อ รหัสตัวแทน จังหวัด
+                หรือสาขา เพื่อค้นหาตัวแทนที่ดูแลคุณ</p>
         </div>
     </section>
 
@@ -78,29 +79,30 @@
     <section class="max-w-5xl mx-auto px-4 -mt-16 relative z-10">
         <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-5 md:p-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <input type="text" id="search-name" placeholder="รหัสตัวแทน / ชื่อ-นามสกุล"
+                <input type="text" id="search-name" placeholder="รหัสตัวแทน / ชื่อ-นามสกุล" data-i18n-ph="search.name"
                     class="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition">
                 <select id="search-province"
                     class="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition bg-white">
-                    <option value="">เลือกจังหวัด</option>
+                    <option value="" data-i18n="search.province">เลือกจังหวัด</option>
                 </select>
                 <select id="search-branch"
                     class="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition bg-white">
-                    <option value="">สาขา</option>
+                    <option value="" data-i18n="search.branch">สาขา</option>
                 </select>
             </div>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-2 mt-4">
                 <button id="search-btn"
                     class="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-8 py-2.5 rounded-full text-sm shadow-md transition">
-                    🔍 ค้นหา
+                    🔍 <span data-i18n="search.button">ค้นหา</span>
                 </button>
                 <button id="search-reset"
                     class="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold px-6 py-2.5 rounded-full text-sm transition">
-                    ล้างค้นหา
+                    <span data-i18n="search.reset">ล้างค้นหา</span>
                 </button>
             </div>
             <p class="text-xs text-gray-500 mt-5 text-center font-medium">
-                พบตัวแทน <span id="result-count-num" class="text-orange-600 font-bold">0</span> รายการ
+                <span data-i18n="search.found">พบตัวแทน</span> <span id="result-count-num"
+                    class="text-orange-600 font-bold">0</span> <span data-i18n="search.items">รายการ</span>
             </p>
         </div>
 
@@ -118,7 +120,7 @@
 
     <!-- ===== FOOTER ===== -->
     <footer class="bg-slate-900 text-gray-400 text-center py-6 text-xs border-t-4 border-orange-500">
-        <p>© 2026 VP Kanniporn Office | สำนักงานตัวแทน FWD Insurance</p>
+        <p data-i18n="common.footer">© 2026 VP Kanniporn Office | สำนักงานตัวแทน FWD Insurance</p>
     </footer>
 
     <script>
@@ -178,7 +180,7 @@
                     </div>
                     ${quote}
                     <div class="mt-3 text-[10px] font-bold text-orange-400 group-hover:text-orange-600 flex items-center gap-1">
-                        ดูโปรไฟล์ <span class="group-hover:translate-x-1 transition">➔</span>
+                        ${window.t ? window.t('agent.viewProfile') : 'ดูโปรไฟล์'} <span class="group-hover:translate-x-1 transition">➔</span>
                     </div>
                 </a>
             `;
@@ -204,6 +206,9 @@
                 grid.classList.remove('hidden');
             }
         }
+
+        // Re-render agent cards when language changes
+        window.addEventListener('i18n:changed', function () { renderResults(allAgents); });
 
         function applyFilters() {
             const name = document.getElementById('search-name').value.trim().toLowerCase();

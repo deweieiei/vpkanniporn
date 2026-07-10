@@ -60,38 +60,38 @@
         <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-5 md:p-6">
             <div class="text-center mb-5">
                 <h3 class="text-base md:text-lg font-bold text-orange-600 flex items-center justify-center gap-2">
-                    🔍 ค้นหาตัวแทน
+                    🔍 <span data-i18n="search.title">ค้นหาตัวแทน</span>
                 </h3>
-                <p class="text-xs text-gray-500 mt-1">ค้นหาสำนักงานตัวแทนดิจิทัลใกล้คุณ</p>
+                <p class="text-xs text-gray-500 mt-1" data-i18n="search.subtitle">ค้นหาสำนักงานตัวแทนดิจิทัลใกล้คุณ</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <input type="text" id="search-name" placeholder="รหัสตัวแทน / ชื่อ-นามสกุล"
+                <input type="text" id="search-name" placeholder="รหัสตัวแทน / ชื่อ-นามสกุล" data-i18n-ph="search.name"
                     class="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition">
                 <select id="search-province"
                     class="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition bg-white">
-                    <option value="">เลือกจังหวัด</option>
+                    <option value="" data-i18n="search.province">เลือกจังหวัด</option>
                 </select>
                 <select id="search-branch"
                     class="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition bg-white">
-                    <option value="">สาขา</option>
+                    <option value="" data-i18n="search.branch">สาขา</option>
                 </select>
             </div>
 
             <div class="flex flex-col sm:flex-row items-center justify-center gap-2 mt-4">
                 <button id="search-btn"
                     class="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-8 py-2.5 rounded-full text-sm shadow-md transition">
-                    🔍 ค้นหา
+                    🔍 <span data-i18n="search.button">ค้นหา</span>
                 </button>
                 <button id="search-reset"
                     class="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold px-6 py-2.5 rounded-full text-sm transition">
-                    ล้างค้นหา
+                    <span data-i18n="search.reset">ล้างค้นหา</span>
                 </button>
             </div>
 
             <p class="text-xs text-gray-500 mt-5 text-center font-medium">
-                ผลการค้นหาตัวแทนดิจิทัล จำนวน <span id="result-count-num" class="text-orange-600 font-bold">0</span>
-                รายการ
+                <span data-i18n="search.results">ผลการค้นหาตัวแทนดิจิทัล จำนวน</span> <span id="result-count-num"
+                    class="text-orange-600 font-bold">0</span> <span data-i18n="search.items">รายการ</span>
             </p>
         </div>
 
@@ -171,7 +171,7 @@
                     </div>
                     ${quote}
                     <div class="mt-3 text-[10px] font-bold text-orange-400 group-hover:text-orange-600 flex items-center gap-1">
-                        ดูโปรไฟล์ <span class="group-hover:translate-x-1 transition">➔</span>
+                        ${window.t ? window.t('agent.viewProfile') : 'ดูโปรไฟล์'} <span class="group-hover:translate-x-1 transition">➔</span>
                     </div>
                 </a>
             `;
@@ -197,6 +197,9 @@
                 grid.classList.remove('hidden');
             }
         }
+
+        // Re-render agent cards when language changes
+        window.addEventListener('i18n:changed', function () { renderResults(allAgents); });
 
         function applyFilters() {
             const name = document.getElementById('search-name').value.trim().toLowerCase();

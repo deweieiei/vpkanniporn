@@ -4,9 +4,9 @@
 
 (function () {
     const NAV_ITEMS = [
-        { path: '/',         label: 'หน้าหลัก',      icon: '🏠', exact: true },
-        { path: '/plans',    label: 'แบบประกัน',     icon: '📋' },
-        { path: '/search',   label: 'ค้นหาตัวแทน',   icon: '🔍' },
+        { path: '/',         label: 'หน้าหลัก',      icon: '🏠', i18nKey: 'nav.home', exact: true },
+        { path: '/plans',    label: 'แบบประกัน',     icon: '📋', i18nKey: 'nav.plans' },
+        { path: '/search',   label: 'ค้นหาตัวแทน',   icon: '🔍', i18nKey: 'nav.search' },
         // เพิ่มเมนูใหม่ที่นี่ในอนาคต เช่น:
         // { path: '/news',   label: 'ข่าวสาร',        icon: '📰' },
     ];
@@ -21,19 +21,29 @@
         return currentPath === item.path || currentPath.startsWith(item.path + '/');
     }
 
-    const nav = document.createElement('nav');
-    nav.className = 'max-w-6xl mx-auto px-4 mt-3';
-    nav.innerHTML = `
+    function translateLabel(item) {
+        if (window.t && item.i18nKey) return window.t(item.i18nKey);
+        return item.label;
+    }
+
+    function renderNav() {
+        nav.innerHTML = `
         <div class="flex flex-wrap items-center gap-2">
             ${NAV_ITEMS.map(item => {
                 const active = isActive(item);
                 const cls = active ? ACTIVE_CLS : INACTIVE_CLS;
-                return `<a href="${item.path}" class="${cls} font-medium text-xs px-4 py-2 rounded-lg flex items-center gap-1 transition whitespace-nowrap">
-                    <span>${item.icon}</span> ${item.label}
+                const label = translateLabel(item);
+                return `<a href="${item.path}" class="${cls} font-medium text-xs px-4 py-2 rounded-lg flex items-center gap-1 transition whitespace-nowrap" title="${label}">
+                    <span>${item.icon}</span> ${label}
                 </a>`;
             }).join('')}
         </div>
     `;
+    }
+
+    const nav = document.createElement('nav');
+    nav.className = 'max-w-6xl mx-auto px-4 mt-3';
+    renderNav();
 
     const placeholder = document.getElementById('main-nav');
     if (placeholder) {
@@ -43,4 +53,7 @@
         const header = document.querySelector('header');
         if (header && header.parentNode) header.parentNode.insertBefore(nav, header.nextSibling);
     }
+    window.addEventListener('i18n:changed', function () {
+        renderNav();
+    });
 })();

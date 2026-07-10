@@ -87,7 +87,7 @@
         async function loadPlan() {
             const main = document.getElementById('main-content');
             if (!planId) {
-                main.innerHTML = `<div class="text-center text-gray-400 py-16">ไม่พบแบบประกันนี้ <a href="/plans" class="text-orange-500 hover:underline">← กลับไปดูแบบประกันทั้งหมด</a></div>`;
+                main.innerHTML = `<div class="text-center text-gray-400 py-16">${window.t ? window.t('plan.notFound') : 'ไม่พบแบบประกันนี้'} <a href="/plans" class="text-orange-500 hover:underline">${window.t ? window.t('plan.backAll') : '← กลับไปดูแบบประกันทั้งหมด'}</a></div>`;
                 return;
             }
             try {
@@ -95,9 +95,9 @@
                 if (!res.ok) {
                     main.innerHTML = `
                         <div class="text-center py-16">
-                            <p class="text-4xl mb-3">😔</p>
-                            <p class="font-bold text-lg">ไม่พบแบบประกันนี้</p>
-                            <a href="/plans" class="text-orange-500 hover:underline text-sm mt-3 inline-block">← กลับไปดูแบบประกันทั้งหมด</a>
+                                    <p class="text-4xl mb-3">😔</p>
+                                    <p class="font-bold text-lg">${window.t ? window.t('plan.notFound') : 'ไม่พบแบบประกันนี้'}</p>
+                                    <a href="/plans" class="text-orange-500 hover:underline text-sm mt-3 inline-block">${window.t ? window.t('plan.backAll') : '← กลับไปดูแบบประกันทั้งหมด'}</a>
                         </div>`;
                     return;
                 }
@@ -120,7 +120,7 @@
                 : `<span class="text-sm font-bold text-orange-500">${initials(p.agent_first_name, p.agent_last_name)}</span>`;
 
             document.getElementById('main-content').innerHTML = `
-                <a href="/plans" class="text-xs text-gray-400 hover:text-orange-500">← กลับไปดูแบบประกันทั้งหมด</a>
+                <a href="/plans" class="text-xs text-gray-400 hover:text-orange-500">${window.t ? window.t('plan.backAll') : '← กลับไปดูแบบประกันทั้งหมด'}</a>
                 ${cover}
                 <span class="inline-block text-xs font-bold text-orange-500 bg-orange-50 px-3 py-1 rounded-full mb-2">
                     ${escapeHtml(p.category_icon || '')} ${escapeHtml(p.category_name || '')}
@@ -136,12 +136,12 @@
                         </div>
                         <div>
                             <p class="text-sm font-bold text-gray-800 group-hover:text-orange-500 transition">${agentName}</p>
-                            <p class="text-[11px] text-gray-400">ดูโปรไฟล์ตัวแทน ➔</p>
+                                <p class="text-[11px] text-gray-400">${window.t ? window.t('agent.viewProfileAgent') : 'ดูโปรไฟล์ตัวแทน ➔'}</p>
                         </div>
                     </a>
-                    <a href="/agent/${p.user_id}#contact" class="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-5 py-2.5 rounded-full text-xs shadow-md transition whitespace-nowrap">
-                        สนใจแบบนี้
-                    </a>
+                        <a href="/agent/${p.user_id}#contact" class="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-5 py-2.5 rounded-full text-xs shadow-md transition whitespace-nowrap">
+                            ${window.t ? window.t('plan.interested') : 'สนใจแบบนี้'}
+                        </a>
                 </div>
             `;
         }

@@ -30,7 +30,42 @@
     th: {
       'common.back': '← กลับ',
       'common.backAgent': '← กลับหน้าตัวแทน',
+      'nav.home': 'หน้าหลัก',
+      'nav.plans': 'แบบประกัน',
+      'nav.search': 'ค้นหาตัวแทน',
       'common.optional': '(ถ้ามี)',
+      'login.title': 'เข้าสู่ระบบ',
+      'login.subtitle': 'สำหรับตัวแทน FWD เท่านั้น',
+      'login.labelEmail': 'อีเมล',
+      'login.phEmail': 'you@example.com',
+      'login.labelPassword': 'รหัสผ่าน',
+      'login.phPassword': '••••••••',
+      'login.submit': 'เข้าสู่ระบบ',
+      'login.backSearch': 'ดูหน้าค้นหาตัวแทน →',
+      'login.errorGeneric': 'เกิดข้อผิดพลาด',
+      'login.success': 'สำเร็จ! กำลังเข้าสู่ระบบ...',
+      'login.errorConnect': 'ไม่สามารถเชื่อมต่อ server ได้',
+      'search.title': 'ค้นหาตัวแทน',
+      'search.subtitle': 'ค้นหาสำนักงานตัวแทนดิจิทัลใกล้คุณ',
+      'search.name': 'รหัสตัวแทน / ชื่อ-นามสกุล',
+      'search.province': 'เลือกจังหวัด',
+      'search.branch': 'สาขา',
+      'search.button': 'ค้นหา',
+      'search.reset': 'ล้างค้นหา',
+      'search.results': 'ผลการค้นหาตัวแทนดิจิทัล จำนวน',
+      'search.items': 'รายการ',
+      'plans.title': 'เลือกแผนที่เหมาะกับคุณ',
+      'plans.subtitle': 'แบบประกันจากตัวแทน FWD',
+      'plans.all': 'ทั้งหมด',
+      'plans.empty': '😔 ยังไม่มีแบบประกันในหมวดนี้ — <a href="/#contact" class="text-orange-500 hover:underline">ติดต่อสอบถามตัวแทนได้เลย</a>',
+      'plans.by': 'โดย',
+      'plans.viewDetails': 'ดูรายละเอียด ➔',
+      'common.footer': '© 2026 VP Kanniporn Office | สำนักงานตัวแทน FWD Insurance',
+      'agent.viewProfile': 'ดูโปรไฟล์',
+      'agent.viewProfileAgent': 'ดูโปรไฟล์ตัวแทน ➔',
+      'plan.backAll': '← กลับไปดูแบบประกันทั้งหมด',
+      'plan.notFound': 'ไม่พบแบบประกันนี้',
+      'plan.interested': 'สนใจแบบนี้',
 
       // ---- ฟอร์มนัดปรึกษาออนไลน์ (appointment.html) ----
       'appt.title': 'นัดปรึกษาออนไลน์ฟรี',
@@ -106,7 +141,42 @@
     en: {
       'common.back': '← Back',
       'common.backAgent': '← Back to agent',
+      'nav.home': 'Home',
+      'nav.plans': 'Plans',
+      'nav.search': 'Agent search',
       'common.optional': '(optional)',
+      'login.title': 'Sign in',
+      'login.subtitle': 'For FWD agents only',
+      'login.labelEmail': 'Email',
+      'login.phEmail': 'you@example.com',
+      'login.labelPassword': 'Password',
+      'login.phPassword': '••••••••',
+      'login.submit': 'Sign in',
+      'login.backSearch': 'Browse agents →',
+      'login.errorGeneric': 'An error occurred',
+      'login.success': 'Success! Signing in...',
+      'login.errorConnect': 'Cannot connect to server',
+      'search.title': 'Find an agent',
+      'search.subtitle': 'Search digital agent offices near you',
+      'search.name': 'Agent ID / name',
+      'search.province': 'Select province',
+      'search.branch': 'Branch',
+      'search.button': 'Search',
+      'search.reset': 'Reset',
+      'search.results': 'Search results',
+      'search.items': 'items',
+      'plans.title': 'Choose the right plan',
+      'plans.subtitle': 'Insurance plans from FWD agents',
+      'plans.all': 'All',
+      'plans.empty': '😔 No plans found in this category — <a href="/#contact" class="text-orange-500 hover:underline">contact an agent</a>',
+      'common.footer': '© 2026 VP Kanniporn Office | FWD Insurance agent office',
+      'plans.by': 'by',
+      'plans.viewDetails': 'View details ➔',
+      'agent.viewProfile': 'View profile',
+      'agent.viewProfileAgent': 'View agent profile ➔',
+      'plan.backAll': '← Back to all plans',
+      'plan.notFound': 'Plan not found',
+      'plan.interested': 'Interested',
 
       // ---- appointment.html ----
       'appt.title': 'Free Online Consultation',
@@ -200,6 +270,12 @@
     });
     document.querySelectorAll('[data-i18n-ph]').forEach(function (el) {
       el.setAttribute('placeholder', tr(el.getAttribute('data-i18n-ph'), lang));
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
+      el.setAttribute('title', tr(el.getAttribute('data-i18n-title'), lang));
+    });
+    document.querySelectorAll('[data-i18n-alt]').forEach(function (el) {
+      el.setAttribute('alt', tr(el.getAttribute('data-i18n-alt'), lang));
     });
     document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
       el.innerHTML = tr(el.getAttribute('data-i18n-html'), lang);
