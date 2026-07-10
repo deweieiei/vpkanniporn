@@ -105,6 +105,70 @@ router.put('/users/:id', requireAdmin, express.json(), async (req, res, next) =>
   }
 });
 
+// ===== โหมดสวมสิทธิ์ (Impersonate) =====
+// แอดมินเข้าดู/แก้ dashboard แทนผู้ใช้แต่ละคน โดยเก็บตัวตนแอดมินไว้ใน session เพื่อกลับมาได้
+
+// POST /api/admin/impersonate/stop — ออกจากโหมดสวมสิทธิ์ กลับเป็นแอดมิน
+// (ต้องประกาศก่อน /impersonate/:id ไม่งั้น 'stop' จะถูกจับเป็น :id)
+// หมายเหตุ: ใช้ requireAdmin ไม่ได้ เพราะระหว่างสวมสิทธิ์ role ใน session เป็นของผู้ใช้
+router.post('/impersonate/stop', async (req, res, next) => {
+  try {
+    if (!req.session || !req.session.adminId) {
+      return res.status(400).json({ error: 'ไม่ได้อยู่ในโหมดดูแทนผู้ใช้' });
+    }
+    const [rows] = await pool.query(
+      `SELECT id, email FROM users WHERE id = ? AND role = 'admin' AND is_active = 1 LIMIT 1`,
+      [req.session.adminId]
+    );
+    if (rows.length === 0) {
+      // บัญชีแอดมินเดิมถูกลบ/ระงับไปแล้ว — จบ session ทิ้งเพื่อความปลอดภัย
+      return req.session.destroy(() => {
+        res.clearCookie('fwd.sid');
+        res.status(403).json({ error: 'บัญชีแอดมินไม่สามารถใช้งานได้แล้ว' });
+      });
+    }
+    req.session.userId = rows[0].id;
+    req.session.email = rows[0].email;
+    req.session.role = 'admin';
+    delete req.session.adminId;
+    delete req.session.adminEmail;
+    res.json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/admin/impersonate/:id — เข้าสู่โหมดดู dashboard แทนผู้ใช้คนนั้น
+router.post('/impersonate/:id', requireAdmin, async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ error: 'id ไม่ถูกต้อง' });
+    if (id === req.session.userId) {
+      return res.status(400).json({ error: 'บัญชีนี้เป็นบัญชีของคุณเอง' });
+    }
+
+    const [rows] = await pool.query(
+      'SELECT id, email, role FROM users WHERE id = ? LIMIT 1',
+      [id]
+    );
+    if (rows.length === 0) return res.status(404).json({ error: 'ไม่พบผู้ใช้' });
+    const target = rows[0];
+    if (target.role === 'admin') {
+      return res.status(400).json({ error: 'ไม่สามารถเข้าดูบัญชี SupperAdmin ด้วยกันได้' });
+    }
+
+    // เก็บตัวตนแอดมินไว้ก่อนสลับ session เป็นผู้ใช้เป้าหมาย
+    req.session.adminId = req.session.userId;
+    req.session.adminEmail = req.session.email;
+    req.session.userId = target.id;
+    req.session.email = target.email;
+    req.session.role = target.role;
+    res.json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // DELETE /api/admin/users/:id — ลบผู้ใช้
 router.delete('/users/:id', requireAdmin, async (req, res, next) => {
   try {

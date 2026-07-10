@@ -159,6 +159,7 @@
           </table></div>`;
         wrap.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => delUser(b.dataset.del, b.dataset.name)));
         wrap.querySelectorAll('[data-toggle]').forEach(b => b.addEventListener('click', () => toggleActive(b.dataset.toggle, b.dataset.active === '1')));
+        wrap.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => viewAsUser(b.dataset.view)));
       } catch (e) { wrap.innerHTML = '<p class="muted">โหลดข้อมูลไม่สำเร็จ</p>'; }
     }
 
@@ -181,10 +182,23 @@
         <td>${visits}</td>
         <td>${status}</td>
         <td><div class="row-actions">
+          ${u.role !== 'admin' ? `<button class="btn btn-sm" data-view="${u.id}" title="เข้าดู/แก้ dashboard ของผู้ใช้คนนี้">👁 เข้าดู</button>` : ''}
           <button class="btn btn-sm btn-ghost" data-toggle="${u.id}" data-active="${u.is_active ? 1 : 0}">${u.is_active ? 'ปิดใช้งาน' : 'เปิดใช้งาน'}</button>
           <button class="btn btn-sm btn-danger" data-del="${u.id}" data-name="${esc(name)}">ลบ</button>
         </div></td>
       </tr>`;
+    }
+
+    // สวมสิทธิ์เข้าดู dashboard ของผู้ใช้ (session จะกลายเป็นของผู้ใช้คนนั้น
+    // จนกว่าจะกด "กลับหน้าแอดมิน" บนแถบส้มใน dashboard)
+    async function viewAsUser(id) {
+      try {
+        const res = await fetch('/api/admin/impersonate/' + id, { method: 'POST', credentials: 'same-origin' });
+        if (authFail(res)) return;
+        const d = await res.json();
+        if (!res.ok) { toast(d.error || 'เข้าดูไม่สำเร็จ', 'err'); return; }
+        window.location.href = '/dashboard';
+      } catch (e) { toast('เข้าดูไม่สำเร็จ', 'err'); }
     }
 
     async function delUser(id, name) {
