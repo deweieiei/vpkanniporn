@@ -42,9 +42,15 @@ router.post('/track', express.json(), async (req, res) => {
 });
 
 // ===== GET /api/track/stats — เจ้าของ: ภาพรวมสถิติการเข้าชมของตัวเอง =====
+// แอดมินส่ง ?user_id=<id> มาเพื่อดูสถิติของตัวแทนคนอื่นได้ (ใช้ในหน้า /support-admin/stats/:id)
 router.get('/track/stats', requireAuth, async (req, res, next) => {
   try {
-    const uid = req.session.userId;
+    let uid = req.session.userId;
+    if (req.query.user_id && req.session.role === 'admin') {
+      const q = Number(req.query.user_id);
+      if (!Number.isInteger(q) || q <= 0) return res.status(400).json({ error: 'user_id ไม่ถูกต้อง' });
+      uid = q;
+    }
 
     const [[overall]] = await pool.query(
       `SELECT

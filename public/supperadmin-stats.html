@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>สถิติการเข้าชม — SupperAdmin</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/Logo.svg">
+  <link rel="shortcut icon" href="/assets/Logo.svg">
+  <meta name="robots" content="noindex" />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --primary-orange: #E66D18;
+      --secondary-orange: #cf5e10;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Prompt', sans-serif;
+      background: #f4f5f7;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    header {
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+      padding: 14px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      gap: 12px;
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #1f2937;
+    }
+
+    .brand span {
+      color: var(--primary-orange);
+    }
+
+    .brand small {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #888;
+      letter-spacing: 0;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .header-actions a,
+    .header-actions button {
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      border: 1.5px solid #e5e7eb;
+      background: #fff;
+      color: #444;
+    }
+
+    .header-actions a:hover,
+    .header-actions button:hover {
+      border-color: var(--primary-orange);
+      color: var(--primary-orange);
+    }
+
+    .wrap {
+      max-width: 960px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 3px 14px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .card-head {
+      background: linear-gradient(135deg, #FFF5EF, #FFE8D6);
+      padding: 13px 20px;
+      font-weight: 700;
+      font-size: 15px;
+      color: #92400e;
+      border-bottom: 1px solid #ffe0c2;
+    }
+
+    .card-body {
+      padding: 18px 20px;
+    }
+
+    /* โปรไฟล์ผู้ใช้ด้านบน */
+    .user-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .avatar {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: #ffedd5 center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .user-name {
+      font-size: 19px;
+      font-weight: 800;
+      color: #1f2937;
+    }
+
+    .user-sub {
+      font-size: 13px;
+      color: #888;
+    }
+
+    .tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .tag-agent {
+      background: #ffedd5;
+      color: #9a3412;
+    }
+
+    .tag-user {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+
+    .tag-off {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .tag-on {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    /* ตัวเลขสถิติ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .period-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 620px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .period-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .stat-box {
+      background: #fff;
+      border: 1px solid #f0f0f0;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-box .label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #9ca3af;
+    }
+
+    .stat-box .value {
+      font-size: 28px;
+      font-weight: 800;
+      color: #1f2937;
+      margin-top: 4px;
+    }
+
+    .stat-box .value.orange {
+      color: var(--primary-orange);
+    }
+
+    .stat-box .value.indigo {
+      color: #4f46e5;
+    }
+
+    .stat-box .value.green {
+      color: #16a34a;
+    }
+
+    .stat-box .value.red {
+      color: #dc2626;
+    }
+
+    .stat-box .value.muted {
+      color: #9ca3af;
+    }
+
+    /* รายการหน้า */
+    .page-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .page-row:last-child {
+      border-bottom: none;
+    }
+
+    .page-rank {
+      width: 28px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #9ca3af;
+      flex-shrink: 0;
+    }
+
+    .page-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .page-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1f2937;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .page-bar {
+      height: 6px;
+      background: #f3f4f6;
+      border-radius: 999px;
+      margin-top: 5px;
+      overflow: hidden;
+    }
+
+    .page-bar>div {
+      height: 100%;
+      background: var(--primary-orange);
+      border-radius: 999px;
+    }
+
+    .page-nums {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .page-nums b {
+      font-size: 13px;
+      color: #1f2937;
+    }
+
+    .page-nums small {
+      display: block;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .muted {
+      color: #9ca3af;
+      font-size: 12px;
+    }
+
+    .center {
+      text-align: center;
+      padding: 28px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="brand">FWD<span>.</span> <small>สถิติการเข้าชมรายบุคคล</small></div>
+    <div class="header-actions">
+      <a href="/support-admin/users">← กลับหน้าจัดการตัวแทน</a>
+      <button type="button" id="logoutBtn">ออกจากระบบ</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <!-- ข้อมูลผู้ใช้ -->
+    <div class="card">
+      <div class="card-body">
+        <div class="user-head" id="userHead">
+          <div class="avatar" id="avatar">👤</div>
+          <div>
+            <div class="user-name" id="userName">กำลังโหลด...</div>
+            <div class="user-sub" id="userSub"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ภาพรวม -->
+    <div class="card">
+      <div class="card-head">📊 ภาพรวมการเข้าชม</div>
+      <div class="card-body">
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="label">ผู้เข้าชมทั้งหมด (Total Visitors)</div>
+            <div class="value orange" id="m-total">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="label">ผู้ใช้งานจริง (Unique)</div>
+            <div class="value indigo" id="m-unique">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="label">การเข้าชมทั้งหมด (Page Views)</div>
+            <div class="value" id="m-views">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ตามช่วงเวลา -->
+    <div class="card">
+      <div class="card-head">🗓 ผู้เข้าชมตามช่วงเวลา</div>
+      <div class="card-body">
+        <div class="period-grid">
+          <div class="stat-box">
+            <div class="label">วันนี้</div>
+            <div class="value" id="p-today">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="label">สัปดาห์นี้</div>
+            <div class="value" id="p-week">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="label">เดือนนี้</div>
+            <div class="value" id="p-month">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="label">เทียบเดือนก่อน</div>
+            <div class="value muted" id="p-change">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- แยกตามหน้า -->
+    <div class="card">
+      <div class="card-head">🔥 หน้าไหนมีคนสนใจมากที่สุด</div>
+      <div class="card-body">
+        <div id="pagesList">
+          <p class="muted center">⏳ กำลังโหลด...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // id ผู้ใช้จาก URL: /support-admin/stats/:id
+    const userId = Number(window.location.pathname.split('/').pop());
+
+    function nf(n) { return (Number(n) || 0).toLocaleString('th-TH'); }
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function authFail(res) { if (res.status === 401 || res.status === 403) { window.location.href = '/support-admin'; return true; } return false; }
+
+    // ข้อมูลผู้ใช้ (ชื่อ/อีเมล/บทบาท/สถานะ) — ดึงจากรายชื่อทั้งหมดของแอดมิน
+    async function loadUserInfo() {
+      try {
+        const res = await fetch('/api/admin/users', { credentials: 'same-origin' });
+        if (authFail(res)) return;
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        const u = (data.users || []).find(x => Number(x.id) === userId);
+        if (!u) {
+          document.getElementById('userName').textContent = 'ไม่พบผู้ใช้รายนี้';
+          document.getElementById('userSub').textContent = 'กรุณากลับไปเลือกจากหน้าจัดการตัวแทน';
+          return;
+        }
+        const name = `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email;
+        document.title = `สถิติ: ${name} — SupperAdmin`;
+        document.getElementById('userName').textContent = name;
+
+        const roleTag = u.role === 'agent' ? '<span class="tag tag-agent">ตัวแทน</span>' : '<span class="tag tag-user">ผู้ใช้</span>';
+        const statusTag = u.is_active ? '<span class="tag tag-on">ใช้งาน</span>' : '<span class="tag tag-off">ปิดใช้งาน</span>';
+        document.getElementById('userSub').innerHTML =
+          `${esc(u.email)}${u.position ? ' · ' + esc(u.position) : ''} &nbsp;${roleTag} ${statusTag}`;
+
+        if (u.avatar_path) {
+          const av = document.getElementById('avatar');
+          av.textContent = '';
+          av.style.backgroundImage = `url('${esc(u.avatar_path)}')`;
+        }
+      } catch (e) {
+        document.getElementById('userName').textContent = 'โหลดข้อมูลผู้ใช้ไม่สำเร็จ';
+      }
+    }
+
+    // สถิติการเข้าชมของผู้ใช้คนนี้ (แอดมินส่ง user_id ไปที่ endpoint เดียวกับที่ user ใช้ดูของตัวเอง)
+    async function loadStats() {
+      const list = document.getElementById('pagesList');
+      try {
+        const res = await fetch('/api/track/stats?user_id=' + userId, { credentials: 'same-origin' });
+        if (authFail(res)) return;
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.error || '');
+
+        document.getElementById('m-total').textContent = nf(d.overall.totalVisits);
+        document.getElementById('m-unique').textContent = nf(d.overall.uniqueVisitors);
+        document.getElementById('m-views').textContent = nf(d.overall.pageViews);
+
+        document.getElementById('p-today').textContent = nf(d.period.today);
+        document.getElementById('p-week').textContent = nf(d.period.week);
+        document.getElementById('p-month').textContent = nf(d.period.month);
+
+        const chg = document.getElementById('p-change');
+        const pct = d.period.monthChangePct;
+        if (pct == null) { chg.textContent = '—'; chg.className = 'value muted'; }
+        else if (pct >= 0) { chg.textContent = '▲ ' + pct + '%'; chg.className = 'value green'; }
+        else { chg.textContent = '▼ ' + Math.abs(pct) + '%'; chg.className = 'value red'; }
+
+        const pages = d.byPage || [];
+        if (pages.length === 0) {
+          list.innerHTML = '<p class="muted center">ยังไม่มีข้อมูลการเข้าชม</p>';
+          return;
+        }
+        const max = Math.max.apply(null, pages.map(p => Number(p.views) || 0)) || 1;
+        list.innerHTML = pages.map((p, i) => {
+          const title = p.title || p.pageKey || '(ไม่มีชื่อ)';
+          const pctBar = Math.round(((Number(p.views) || 0) / max) * 100);
+          const rank = i === 0 ? '🥇' : (i === 1 ? '🥈' : (i === 2 ? '🥉' : (i + 1) + '.'));
+          return `
+            <div class="page-row">
+              <span class="page-rank">${rank}</span>
+              <div class="page-info">
+                <div class="page-title">${esc(title)}</div>
+                <div class="page-bar"><div style="width:${pctBar}%"></div></div>
+              </div>
+              <div class="page-nums">
+                <b>${nf(p.views)}</b> <span class="muted">ครั้ง</span>
+                <small>${nf(p.visitors)} คน</small>
+              </div>
+            </div>`;
+        }).join('');
+      } catch (e) {
+        list.innerHTML = '<p class="muted center">โหลดข้อมูลสถิติไม่สำเร็จ</p>';
+      }
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
+      window.location.href = '/support-admin';
+    });
+
+    if (!Number.isInteger(userId) || userId <= 0) {
+      document.getElementById('userName').textContent = 'ลิงก์ไม่ถูกต้อง';
+    } else {
+      loadUserInfo();
+      loadStats();
+    }
+  </script>
+</body>
+
+</html>

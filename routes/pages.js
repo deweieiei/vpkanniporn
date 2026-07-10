@@ -95,6 +95,11 @@ router.get('/support-admin/users', requireSupportAdmin, (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'supperadmin-users.html'));
 });
 
+// หน้าสถิติการเข้าชมรายบุคคล — แอดมินกดชื่อผู้ใช้จากหน้าจัดการตัวแทนเข้ามาดู
+router.get('/support-admin/stats/:id', requireSupportAdmin, (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'supperadmin-stats.html'));
+});
+
 // back-compat: ลิงก์เก่า /support-admin/editor → หน้าจัดการตัวแทน
 router.get('/support-admin/editor', (_req, res) => res.redirect('/support-admin/users'));
 

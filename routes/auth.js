@@ -218,12 +218,7 @@ router.get('/me', async (req, res, next) => {
       req.session.destroy(() => {});
       return res.json({ authenticated: false });
     }
-    res.json({
-      authenticated: true,
-      user: rows[0],
-      // แอดมินกำลังสวมสิทธิ์ดูแทนผู้ใช้คนนี้อยู่หรือไม่ (ใช้แสดงแถบแจ้งเตือนบน dashboard)
-      impersonating: !!req.session.adminId,
-    });
+    res.json({ authenticated: true, user: rows[0] });
   } catch (err) {
     next(err);
   }
