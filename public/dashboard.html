@@ -200,6 +200,80 @@
             color: #fff;
         }
 
+        /* ===== Hamburger Menu (Mobile) ===== */
+        .hamburger-btn {
+            display: none;
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+
+        .hamburger-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .mobile-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: #fff;
+            color: var(--text-main);
+            border-radius: 14px;
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.28);
+            min-width: 260px;
+            padding: 8px;
+            z-index: 1200;
+            display: none;
+        }
+
+        .mobile-menu.open {
+            display: block;
+        }
+
+        .mobile-menu-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .mobile-menu .admin-btn {
+            width: 100%;
+            text-align: left;
+            padding: 10px;
+            border: none;
+            background: none;
+            font-weight: 600;
+            border-radius: 9px;
+            margin: 0;
+        }
+
+        .mobile-menu .admin-btn:hover {
+            background: var(--light-orange-bg);
+        }
+
+        .mobile-menu .admin-btn.danger {
+            background: #fef2f2;
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+
+        .mobile-menu .admin-btn.danger:hover {
+            background: #dc2626;
+            color: #fff;
+        }
+
+        .mobile-menu .divider {
+            height: 1px;
+            background: #f0f0f0;
+            margin: 6px 4px;
+        }
+
         /* ===== Header (Brand) ===== */
         .site-header {
             display: flex;
@@ -261,6 +335,17 @@
             padding: 2px 8px;
             border-radius: 999px;
             font-weight: 700;
+        }
+
+        /* ===== Media Query: Tablet & Mobile ===== */
+        @media (max-width: 1024px) {
+            .settings-wrap {
+                display: none;
+            }
+
+            .hamburger-btn {
+                display: inline-block;
+            }
         }
 
         /* ===== Nav 4 อัน (Sticky scroll-to-section) ===== */
@@ -1431,6 +1516,36 @@
         <div class="header-right">
             <div id="header-mode-label" style="font-size: 11px; color: #6b7280;">หน้าจัดการ</div>
             <div class="owner-controls" id="owner-controls">
+                <div style="position: relative; display: inline-block;" id="hamburger-wrap">
+                    <button class="hamburger-btn" id="hamburger-btn" title="เมนู">☰</button>
+                    <div class="mobile-menu" id="mobile-menu">
+                        <div class="mobile-menu-content">
+                            <div style="font-size: 11px; font-weight: 700; color: #9ca3af; padding: 6px 10px 4px;">
+                                รายการผู้ติดต่อ</div>
+                            <button type="button" class="settings-item" data-action="inquiry">
+                                <span>📩 ติดต่อสอบถาม</span><span class="settings-count"
+                                    id="count-inquiry-mobile">0</span>
+                            </button>
+                            <button type="button" class="settings-item" data-action="agent">
+                                <span>🤝 สนใจเป็นตัวแทนประกัน</span><span class="settings-count"
+                                    id="count-agent-mobile">0</span>
+                            </button>
+                            <button type="button" class="settings-item" data-action="life">
+                                <span>🛡️ สนใจทำประกันชีวิต</span><span class="settings-count"
+                                    id="count-life-mobile">0</span>
+                            </button>
+                            <div class="settings-divider"></div>
+                            <button type="button" class="settings-item" data-action="traffic">
+                                <span>📊 สถิติการเข้าชมเว็บไซต์</span><span style="font-size:15px;">›</span>
+                            </button>
+                            <div class="settings-divider"></div>
+                            <div class="settings-total">
+                                <span>รวม จำนวนผู้ติดต่อ</span><span class="settings-count total"
+                                    id="count-total-mobile">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="settings-wrap" id="settings-wrap">
                     <button class="admin-btn" id="settings-btn" title="แจ้งเตือน">🔔 แจ้งเตือน</button>
                     <div class="settings-menu" id="settings-menu">
@@ -2565,7 +2680,7 @@
         });
 
         // ===== Logout =====
-        // ===== ปุ่มตั้งค่า (ฟันเฟือง) =====
+        // ===== ปุ่มตั้งค่า (ฟันเฟือง) + เมนู Hamburger (Mobile) =====
         // "ติดต่อสอบถาม" = ของจริง (ไปหน้า /inquiries + โชว์จำนวนรายการใหม่) / ที่เหลือยังเป็น UI
         (function initSettingsMenu() {
             const wrap = document.getElementById('settings-wrap');
@@ -2590,6 +2705,30 @@
             });
         })();
 
+        // ===== Hamburger Menu (Mobile) =====
+        (function initHamburgerMenu() {
+            const hamburger = document.getElementById('hamburger-wrap');
+            const btn = document.getElementById('hamburger-btn');
+            const menu = document.getElementById('mobile-menu');
+            if (!hamburger || !btn || !menu) return;
+
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menu.classList.toggle('open');
+            });
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#hamburger-wrap')) menu.classList.remove('open');
+            });
+            menu.querySelectorAll('.settings-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    menu.classList.remove('open');
+                    if (item.dataset.action === 'inquiry') { window.location.href = '/inquiries'; return; }
+                    if (item.dataset.action === 'traffic') { window.location.href = '/traffic'; return; }
+                    toast('เมนูนี้กำลังพัฒนา — ยังไม่เก็บข้อมูลจริง');
+                });
+            });
+        })();
+
         // โหลดจำนวนผู้ติดต่อของตัวแทน (เฉพาะโหมดตัวเอง) → โชว์ที่ปุ่มฟันเฟือง + จุดแดงถ้ามีรายการใหม่
         async function loadInquiryCount() {
             if (isViewingOther) return;
@@ -2601,8 +2740,12 @@
                 const newCount = d.new_count || 0;
                 const ci = document.getElementById('count-inquiry');
                 const ct = document.getElementById('count-total');
+                const ciMobile = document.getElementById('count-inquiry-mobile');
+                const ctMobile = document.getElementById('count-total-mobile');
                 if (ci) ci.textContent = newCount;
                 if (ct) ct.textContent = total;
+                if (ciMobile) ciMobile.textContent = newCount;
+                if (ctMobile) ctMobile.textContent = total;
                 // จุดแดงบนปุ่มฟันเฟือง เมื่อมีรายการใหม่
                 const btn = document.getElementById('settings-btn');
                 if (btn && newCount > 0 && !btn.querySelector('.settings-dot')) {

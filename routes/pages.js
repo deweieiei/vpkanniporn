@@ -45,6 +45,11 @@ router.get('/appointment/:id', (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'appointment.html'));
 });
 
+// หน้าฟอร์มสมัครเป็นตัวแทน "สนใจเป็นตัวแทนประกัน" (ผูกกับตัวแทน :id) — สาธารณะ
+router.get('/recruit/:id', (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'recruit.html'));
+});
+
 // หน้ารายการผู้ติดต่อเข้ามา (เฉพาะเจ้าของที่ล็อกอิน)
 router.get('/inquiries', requireAuth, (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'inquiries.html'));

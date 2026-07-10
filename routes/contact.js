@@ -47,7 +47,7 @@ router.post('/contact', express.json(), async (req, res, next) => {
     const [u] = await pool.query('SELECT id FROM users WHERE id = ? AND is_active = 1 LIMIT 1', [userId]);
     if (u.length === 0) return res.status(404).json({ error: 'ไม่พบตัวแทนรายนี้' });
 
-    const kind = b.kind === 'appointment' ? 'appointment' : 'contact';
+    const kind = ['appointment', 'recruit'].includes(b.kind) ? b.kind : 'contact';
     const fullName = String(b.full_name || '').trim();
     const phone = String(b.phone || '').trim();
     const consent = b.consent === true || b.consent === 1 || b.consent === '1';
@@ -63,7 +63,10 @@ router.post('/contact', express.json(), async (req, res, next) => {
     let lineId = null, birthdate = null, purposesJson = null, purposeOther = null,
         budget = null, appointmentAt = null, timeSlot = null, channel = null;
 
-    if (kind === 'appointment') {
+    if (kind === 'recruit') {
+      // สมัครเป็นตัวแทน: ต้องการแค่ ชื่อ+เบอร์+ยินยอม (ตรวจไว้ด้านบนแล้ว) + LINE/หมายเหตุ (ไม่บังคับ)
+      lineId = b.line_id != null && String(b.line_id).trim() ? String(b.line_id).trim().slice(0, 64) : null;
+    } else if (kind === 'appointment') {
       lineId = b.line_id != null && String(b.line_id).trim() ? String(b.line_id).trim().slice(0, 64) : null;
       const date = String(b.appointment_date || '').trim();
       const slot = String(b.time_slot || '').trim();

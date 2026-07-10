@@ -111,7 +111,7 @@ const FULL_USER_COLUMNS = `
   phone, position, company, branch, license_number, license_number_2,
   bio, quote, facebook_url, line_id, instagram_url, awards, awards_visible, cover_images,
   cover_image_tablet, cover_image_mobile,
-  hero_heading, hero_tagline, hero_sub, hero_image
+  hero_heading, hero_tagline, hero_sub, hero_image, recruit_visible
 `;
 
 function requireAuth(req, res, next) {
@@ -277,6 +277,12 @@ router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
     if ('awards_visible' in req.body) {
       const v = req.body.awards_visible;
       updates.awards_visible = (v === '1' || v === 1 || v === true || v === 'true') ? 1 : 0;
+    }
+
+    // สถานะเปิด/ปิด บล็อก "สนใจเป็นตัวแทนประกัน" (checkbox → 0/1)
+    if ('recruit_visible' in req.body) {
+      const v = req.body.recruit_visible;
+      updates.recruit_visible = (v === '1' || v === 1 || v === true || v === 'true') ? 1 : 0;
     }
 
     // ไฟล์ที่ต้องลบหลัง update สำเร็จ

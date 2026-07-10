@@ -8,7 +8,7 @@ const PUBLIC_COLUMNS = `
   phone, email, province, license_number, license_number_2,
   bio, quote, facebook_url, line_id, instagram_url, awards, awards_visible, cover_images,
   cover_image_tablet, cover_image_mobile,
-  hero_heading, hero_tagline, hero_sub, hero_image,
+  hero_heading, hero_tagline, hero_sub, hero_image, recruit_visible,
   created_at
 `;
 
