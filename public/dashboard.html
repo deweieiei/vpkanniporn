@@ -1614,12 +1614,14 @@
                                     id="count-total-mobile">0</span>
                             </div>
                             <div class="mobile-menu-user-section">
-                                <button type="button" class="copy-link-btn" id="copy-profile-btn-mobile">🔗 คัดลอกลิงก์</button>
+                                <button type="button" class="copy-link-btn" id="copy-profile-btn-mobile">🔗
+                                    คัดลอกลิงก์</button>
                                 <div class="mobile-user-info">
                                     <div class="avatar-mobile" id="user-avatar-mobile"></div>
                                     <span class="user-name-mobile" id="user-name-mobile">…</span>
                                 </div>
-                                <button type="button" class="logout-btn-mobile" id="logout-btn-mobile">ออกจากระบบ</button>
+                                <button type="button" class="logout-btn-mobile"
+                                    id="logout-btn-mobile">ออกจากระบบ</button>
                             </div>
                         </div>
                     </div>
@@ -2204,6 +2206,16 @@
 
             // จำนวนผู้ติดต่อ (โชว์ที่ปุ่มฟันเฟือง — เฉพาะโหมดตัวเอง)
             loadInquiryCount();
+
+            // อัปเดต user info ใน mobile menu
+            const mobileAvatar = document.getElementById('user-avatar-mobile');
+            const mobileName = document.getElementById('user-name-mobile');
+            if (mobileAvatar && u.avatar_path) {
+                mobileAvatar.style.backgroundImage = `url('${u.avatar_path}')`;
+            }
+            if (mobileName) {
+                mobileName.textContent = fullName;
+            }
         }
 
         // ตั้งลิงก์ปุ่ม Hero: "รับคำปรึกษาฟรี" (เมนู โทร/นัด/LINE) + "นัดหมายออนไลน์"
@@ -2805,6 +2817,26 @@
                     toast('เมนูนี้กำลังพัฒนา — ยังไม่เก็บข้อมูลจริง');
                 });
             });
+
+            // Bind copy-profile-btn-mobile
+            const copyProfileMobile = document.getElementById('copy-profile-btn-mobile');
+            if (copyProfileMobile) {
+                copyProfileMobile.addEventListener('click', () => {
+                    menu.classList.remove('open');
+                    const btn = document.getElementById('copy-profile-btn');
+                    if (btn) btn.click();
+                });
+            }
+
+            // Bind logout-btn-mobile
+            const logoutMobile = document.getElementById('logout-btn-mobile');
+            if (logoutMobile) {
+                logoutMobile.addEventListener('click', () => {
+                    menu.classList.remove('open');
+                    const btn = document.getElementById('logout-btn');
+                    if (btn) btn.click();
+                });
+            }
         })();
 
         // โหลดจำนวนผู้ติดต่อของตัวแทน (เฉพาะโหมดตัวเอง) → โชว์ที่ปุ่มฟันเฟือง + จุดแดงถ้ามีรายการใหม่
