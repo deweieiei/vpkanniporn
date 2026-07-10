@@ -67,7 +67,7 @@ function parseJsonArray(v) {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const isCover = file.fieldname === 'cover_images' || file.fieldname === 'hero_image';
+    const isCover = /^(cover_images|cover_image_tablet|cover_image_mobile|hero_image)$/.test(file.fieldname);
     const baseDir = isCover ? COVERS_DIR : AVATARS_DIR;
     const userId = req.session && req.session.userId;
     if (userId) {
@@ -96,6 +96,8 @@ const upload = multer({
 const profileUpload = upload.fields([
   { name: 'avatar', maxCount: 1 },
   { name: 'cover_images', maxCount: 6 },
+  { name: 'cover_image_tablet', maxCount: 1 },
+  { name: 'cover_image_mobile', maxCount: 1 },
   { name: 'hero_image', maxCount: 1 },
 ]);
 
@@ -108,6 +110,7 @@ const FULL_USER_COLUMNS = `
   role, is_active, created_at, updated_at,
   phone, position, company, branch, license_number, license_number_2,
   bio, quote, facebook_url, line_id, instagram_url, awards, awards_visible, cover_images,
+  cover_image_tablet, cover_image_mobile,
   hero_heading, hero_tagline, hero_sub, hero_image
 `;
 
@@ -230,7 +233,7 @@ router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
 
     // อ่านข้อมูลเก่าเพื่อรู้ว่าไฟล์ใดต้องลบ
     const [currentRows] = await pool.query(
-      'SELECT avatar_path, cover_images, hero_image FROM users WHERE id = ? LIMIT 1',
+      'SELECT avatar_path, cover_images, cover_image_tablet, cover_image_mobile, hero_image FROM users WHERE id = ? LIMIT 1',
       [userId]
     );
     if (currentRows.length === 0) {
@@ -238,6 +241,8 @@ router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
     }
     const oldAvatar = currentRows[0].avatar_path;
     const oldCovers = parseJsonArray(currentRows[0].cover_images);
+    const oldTablet = currentRows[0].cover_image_tablet;
+    const oldMobile = currentRows[0].cover_image_mobile;
     const oldHeroImage = currentRows[0].hero_image;
 
     const allowed = [
@@ -333,6 +338,22 @@ router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
         if (newPaths.includes(p) && !merged.includes(p)) filesToDelete.push(p);
       });
     }
+
+    // Cover override เฉพาะ iPad / มือถือ (อย่างละ 1 รูป — แทนที่สไลด์ desktop เมื่อดูจากจอนั้น)
+    // อัปรูปใหม่ = ตั้งค่า, ส่ง <field>_clear=1 = ล้างกลับไปใช้สไลด์ desktop
+    [
+      { field: 'cover_image_tablet', old: oldTablet },
+      { field: 'cover_image_mobile', old: oldMobile },
+    ].forEach(({ field, old }) => {
+      if (req.files && req.files[field] && req.files[field][0]) {
+        const f = req.files[field][0];
+        updates[field] = `/uploads/covers/${userId}/${f.filename}`;
+        if (old && old !== updates[field]) filesToDelete.push(old);
+      } else if (req.body[`${field}_clear`] === '1') {
+        updates[field] = null;
+        if (old) filesToDelete.push(old);
+      }
+    });
 
     if (updates.gender && !['male', 'female', 'other'].includes(updates.gender)) {
       cleanupUploadedFiles(req);

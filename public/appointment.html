@@ -9,6 +9,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* ย่อ-ขยายทุกอย่างสมส่วนตามจอ (มือถือ→iPad→คอม) ผ่าน root font-size — Tailwind ใช้หน่วย rem จึงปรับตามอัตโนมัติ */
+        html { font-size: clamp(13px, 0.5vw + 11px, 16px); }
         body { font-family: 'Prompt', sans-serif; }
         .req::after { content: " *"; color: #ef4444; }
         .field-input {
