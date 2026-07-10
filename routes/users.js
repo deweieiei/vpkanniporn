@@ -16,7 +16,7 @@ const PUBLIC_COLUMNS = `
 router.get('/', async (_req, res, next) => {
   try {
     const [rows] = await pool.query(
-      `SELECT id, first_name, last_name, avatar_path, position, branch, province, phone, quote
+      `SELECT id, first_name, last_name, avatar_path, position, role, branch, province, phone, quote
        FROM users
        WHERE is_active = 1
        ORDER BY created_at DESC`
