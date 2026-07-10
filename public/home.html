@@ -239,7 +239,7 @@
             try {
                 const res = await fetch('/api/users');
                 const data = await res.json();
-                allAgents = data.users || [];
+                allAgents = (data.users || []).filter(u => u.role !== 'admin');
 
                 const branchSelect = document.getElementById('search-branch');
                 const branches = [...new Set(allAgents.map(u => u.branch).filter(Boolean))].sort();

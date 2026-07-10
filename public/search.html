@@ -230,7 +230,8 @@
             try {
                 const res = await fetch('/api/users');
                 const data = await res.json();
-                allAgents = data.users || [];
+                // Exclude users with role 'admin' from search results
+                allAgents = (data.users || []).filter(u => u.role !== 'admin');
 
                 // เติม dropdown สาขา จากข้อมูลจริงในระบบ
                 const branchSelect = document.getElementById('search-branch');
