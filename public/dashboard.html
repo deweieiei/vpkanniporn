@@ -1783,6 +1783,21 @@
             </div>
         </section>
 
+        <!-- ============= สนใจเป็นตัวแทนประกัน ============= -->
+        <section id="recruit-section" class="line-contact editable">
+            <button class="edit-btn" data-edit="recruit">✏️ แก้ไข</button>
+            <h2 class="section-title">สนใจเป็นตัวแทนประกัน
+                <span id="recruit-hidden-tag" class="inactive-tag" style="display:none;">ซ่อนอยู่</span>
+            </h2>
+            <p class="section-subtitle">อยากมีอาชีพอิสระ รายได้ไม่จำกัด? ร่วมเป็นตัวแทนประกันกับเรา — ทิ้งข้อมูลไว้ เดี๋ยวติดต่อกลับ</p>
+            <div class="line-contact-inner">
+                <a id="recruit-btn" href="#" class="line-add-btn">
+                    <span class="line-ic">🤝</span>
+                    <span>กรอกใบสมัคร / สนใจเป็นตัวแทน</span>
+                </a>
+            </div>
+        </section>
+
     </main>
 
     <!-- ===== MODAL: Hero ===== -->
@@ -1953,6 +1968,28 @@
                         <input type="checkbox" name="awards_visible" id="awards-visible-check" checked
                             style="width:auto;">
                         แสดงส่วน "ความสำเร็จและรางวัล" บนหน้าเว็บ <span class="help" style="margin:0;">(เอาติ๊กออก =
+                            ซ่อนทั้งบลอค)</span>
+                    </label>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
+                    <button type="submit" class="btn btn-save">💾 บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: สนใจเป็นตัวแทนประกัน (เปิด/ปิดบล็อก) ===== -->
+    <div class="modal-overlay" data-modal="recruit">
+        <div class="modal-card">
+            <h2>✏️ บล็อก "สนใจเป็นตัวแทนประกัน"</h2>
+            <p class="modal-sub">ปุ่มชวนผู้สนใจสมัครเป็นตัวแทน — ผู้ที่กรอกใบสมัครจะไปโผล่ในหน้า "รายการผู้ติดต่อ" ให้คุณติดต่อกลับ</p>
+            <form data-form="recruit">
+                <div class="field">
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:400;">
+                        <input type="checkbox" name="recruit_visible" id="recruit-visible-check" checked
+                            style="width:auto;">
+                        แสดงบล็อก "สนใจเป็นตัวแทนประกัน" บนหน้าเว็บ <span class="help" style="margin:0;">(เอาติ๊กออก =
                             ซ่อนทั้งบลอค)</span>
                     </label>
                 </div>
@@ -2211,6 +2248,9 @@
             // ติดต่อไลน์ (ใต้ความสำเร็จและรางวัล)
             renderLineContact();
 
+            // บล็อก "สนใจเป็นตัวแทนประกัน" (ใต้ติดต่อไลน์)
+            renderRecruitSection();
+
             // ปุ่ม Hero "รับคำปรึกษาฟรี" (โทร/นัด/LINE) + "นัดหมายออนไลน์"
             setHeroConsult();
 
@@ -2225,6 +2265,29 @@
             }
             if (mobileName) {
                 mobileName.textContent = fullName;
+            }
+        }
+
+        // ===== บล็อก "สนใจเป็นตัวแทนประกัน" =====
+        // ตั้งลิงก์ปุ่ม → /recruit/:id และจัดการเปิด/ปิด (เหมือน awards_visible)
+        //   เปิดอยู่: แสดงปกติ / ปิดอยู่: ผู้เข้าชม→ซ่อน, เจ้าของ→ยังเห็น (มีป้าย "ซ่อนอยู่") เพื่อกดเปิดคืนได้
+        function renderRecruitSection() {
+            const section = document.getElementById('recruit-section');
+            if (!section) return;
+            const agentId = currentUser && currentUser.id;
+            const btn = document.getElementById('recruit-btn');
+            if (btn) btn.href = agentId ? ('/recruit/' + agentId) : '#';
+
+            const visible = currentUser.recruit_visible != 0;
+            const hiddenTag = document.getElementById('recruit-hidden-tag');
+            if (visible) {
+                section.style.display = '';
+                if (hiddenTag) hiddenTag.style.display = 'none';
+            } else if (isViewingOther) {
+                section.style.display = 'none';
+            } else {
+                section.style.display = '';
+                if (hiddenTag) hiddenTag.style.display = 'inline-block';
             }
         }
 
@@ -2338,6 +2401,8 @@
                 const arr = parseJsonArray(currentUser.awards);
                 form.elements.awards.value = arr.join('\n');
                 form.elements.awards_visible.checked = currentUser.awards_visible != 0;
+            } else if (name === 'recruit') {
+                form.elements.recruit_visible.checked = currentUser.recruit_visible != 0;
             }
             m.classList.add('open');
         }
@@ -2589,6 +2654,24 @@
             }
         });
 
+        // RECRUIT (เปิด/ปิดบล็อก "สนใจเป็นตัวแทนประกัน")
+        document.querySelector('[data-form="recruit"]').addEventListener('submit', async e => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            try {
+                const recruit_visible = e.target.elements.recruit_visible.checked ? 1 : 0;
+                await saveProfile({ recruit_visible });
+                renderAll();
+                closeModals();
+                toast('✓ บันทึกเรียบร้อย');
+            } catch (err) {
+                toast(err.message, 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
         // ===== หัวข้อ "คุณกำลังมองหาอะไรอยู่?" (user_pages / popcard) =====
         // การ์ด 1 ใบ = 1 หน้าเนื้อหา; กดแล้วไปหน้า /page/:id (แสดงข้อมูลจาก DB)
         // เจ้าของ (ไม่ใช่โหมดดูคนอื่น) จะเห็นปุ่มลบ 🗑️ และการ์ด "＋ เพิ่มหัวข้อใหม่"
@@ -2799,6 +2882,7 @@
                 item.addEventListener('click', () => {
                     menu.classList.remove('open');
                     if (item.dataset.action === 'inquiry') { window.location.href = '/inquiries'; return; }
+                    if (item.dataset.action === 'agent') { window.location.href = '/inquiries'; return; }
                     if (item.dataset.action === 'traffic') { window.location.href = '/traffic'; return; }
                     toast('เมนูนี้กำลังพัฒนา — ยังไม่เก็บข้อมูลจริง');
                 });
@@ -2823,6 +2907,7 @@
                 item.addEventListener('click', () => {
                     menu.classList.remove('open');
                     if (item.dataset.action === 'inquiry') { window.location.href = '/inquiries'; return; }
+                    if (item.dataset.action === 'agent') { window.location.href = '/inquiries'; return; }
                     if (item.dataset.action === 'traffic') { window.location.href = '/traffic'; return; }
                     toast('เมนูนี้กำลังพัฒนา — ยังไม่เก็บข้อมูลจริง');
                 });
@@ -2858,14 +2943,17 @@
                 const d = await res.json();
                 const total = d.total || 0;
                 const newCount = d.new_count || 0;
-                const ci = document.getElementById('count-inquiry');
-                const ct = document.getElementById('count-total');
-                const ciMobile = document.getElementById('count-inquiry-mobile');
-                const ctMobile = document.getElementById('count-total-mobile');
-                if (ci) ci.textContent = newCount;
-                if (ct) ct.textContent = total;
-                if (ciMobile) ciMobile.textContent = newCount;
-                if (ctMobile) ctMobile.textContent = total;
+                // แยกนับตามชนิด: "ติดต่อสอบถาม" (ไม่นับ recruit) vs "สนใจเป็นตัวแทน" (recruit)
+                const inq = d.inquiries || [];
+                const newInquiry = inq.filter(r => r.kind !== 'recruit' && r.contacted_at == null).length;
+                const newRecruit = inq.filter(r => r.kind === 'recruit' && r.contacted_at == null).length;
+                const setText = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+                setText('count-inquiry', newInquiry);
+                setText('count-inquiry-mobile', newInquiry);
+                setText('count-agent', newRecruit);
+                setText('count-agent-mobile', newRecruit);
+                setText('count-total', total);
+                setText('count-total-mobile', total);
                 // จุดแดงบนปุ่มฟันเฟือง เมื่อมีรายการใหม่
                 const btn = document.getElementById('settings-btn');
                 if (btn && newCount > 0 && !btn.querySelector('.settings-dot')) {
