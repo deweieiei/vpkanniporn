@@ -96,6 +96,7 @@ app.use('/api/admin', require('./routes/admin')); // /api/admin/users (จัด
 app.use('/api', require('./routes/userpages')); // /api/pages (ปุ่ม/หน้าที่ตัวแทนสร้างเอง)
 app.use('/api', require('./routes/contact')); // /api/contact (ฟอร์มติดต่อสอบถามจากผู้สนใจ)
 app.use('/api', require('./routes/track')); // /api/track (สถิติการเข้าชม)
+app.use('/api', require('./routes/posts')); // /api/posts (โพสต์/ข่าวสารของตัวแทน)
 
 // ===== HTML Pages =====
 app.use('/', require('./routes/pages'));
