@@ -391,7 +391,7 @@
         </div>
     </div>
 
-    <!-- ===== ปุ่มติดต่อสอบถาม (ลอยมุมขวาล่าง) — เฉพาะหน้า Rich Text ===== -->
+    <!-- ===== ปุ่มติดต่อสอบถาม (ลอยมุมขวาล่าง) — แสดงทุกหน้า ===== -->
     <div id="contact-fab-wrap" class="hidden fixed bottom-5 right-5 z-40 flex-col items-end gap-3">
         <div id="contact-menu" class="flex-col gap-2" style="display:none;">
             <a id="fab-call" href="#"
@@ -489,6 +489,13 @@
             document.addEventListener('click', () => { menu.style.display = 'none'; });
 
             wrap.style.display = 'flex';   // โชว์ปุ่ม (ทับ class hidden)
+
+            // ตั้งปุ่ม "โทรหาตัวแทน" — ดึงเบอร์ของตัวแทนเจ้าของหน้า
+            // (หน้าการ์ดไม่ได้เรียก loadAgentCard จึงต้องดึงเบอร์เองตรงนี้)
+            fetch('/api/users/' + pageData.user_id, { credentials: 'same-origin' })
+                .then(r => r.ok ? r.json() : null)
+                .then(d => { if (d && d.user) setContactPhone(d.user.phone); })
+                .catch(() => { /* เงียบไว้ */ });
         }
 
         // ตั้งลิงก์โทร — ถ้าตัวแทนไม่มีเบอร์ก็ซ่อนตัวเลือก "โทร"
@@ -560,8 +567,8 @@
                     document.getElementById('view').classList.remove('hidden');
                     if (isOwner) document.getElementById('toolbar').classList.remove('hidden');
                     loadAgentCard();   // การ์ด "ตัวแทนผู้ดูแล" ใต้เนื้อหา
-                    setupContactFab(); // ปุ่มติดต่อสอบถามลอย (เฉพาะหน้า Rich Text)
                 }
+                setupContactFab(); // ปุ่มติดต่อสอบถามลอย (โทรหาตัวแทน + สร้างรายการติดต่อ) — แสดงทุกหน้า
             } catch (e) { showNotFound(); }
         }
         function showNotFound() {
