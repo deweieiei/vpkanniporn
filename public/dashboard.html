@@ -1589,6 +1589,21 @@
         .post-tool-btn:hover { background: #f3f4f6; }
         .post-tool-btn.danger { color: #b91c1c; border-color: #fecaca; background: #fef2f2; }
         .post-empty { text-align: center; color: #9ca3af; font-size: 14px; padding: 24px 0; }
+
+        /* ===== จัดลำดับตัวเลือกเมนู "รับคำปรึกษาฟรี" ===== */
+        .consult-order-list { display: flex; flex-direction: column; gap: 8px; }
+        .consult-order-row {
+            display: flex; align-items: center; gap: 10px; background: #f9fafb; border: 1px solid #e5e7eb;
+            border-radius: 10px; padding: 10px 12px; font-size: 14px; font-weight: 600; color: #374151;
+        }
+        .consult-order-row .co-label { flex: 1; }
+        .consult-order-row .co-btns { display: flex; gap: 4px; }
+        .consult-order-row .co-btn {
+            width: 30px; height: 30px; border: 1px solid #e5e7eb; background: #fff; border-radius: 8px;
+            cursor: pointer; font-size: 14px; color: #444; display: flex; align-items: center; justify-content: center;
+        }
+        .consult-order-row .co-btn:hover:not(:disabled) { background: var(--primary-orange); color: #fff; border-color: var(--primary-orange); }
+        .consult-order-row .co-btn:disabled { opacity: .35; cursor: not-allowed; }
     </style>
 </head>
 
@@ -1903,6 +1918,14 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- จัดลำดับตัวเลือกในเมนูปุ่ม "รับคำปรึกษาฟรี" -->
+                <div class="field" style="border-top:1px dashed #e5e7eb; padding-top:14px;">
+                    <label>🔀 ลำดับตัวเลือกในปุ่ม "รับคำปรึกษาฟรี" (กด ▲▼ เพื่อจัดเรียง)</label>
+                    <div id="consult-order-list" class="consult-order-list"></div>
+                    <p class="help" style="margin:6px 0 0;">ตัวที่อยู่บนสุด = ขึ้นก่อนในเมนู</p>
+                </div>
+
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
                     <button type="submit" class="btn btn-save">💾 บันทึก</button>
@@ -2441,6 +2464,15 @@
             if (call) { if (phone) { call.href = 'tel:' + phone; call.style.display = 'flex'; } else call.style.display = 'none'; }
             if (lineA) { if (lineHref) { lineA.href = lineHref; lineA.style.display = 'flex'; } else lineA.style.display = 'none'; }
 
+            // จัดลำดับตัวเลือกในเมนูตามที่เจ้าของตั้งไว้ (consult_order)
+            const menu = document.getElementById('hero-consult-menu');
+            if (menu) {
+                const map = { call: call, contact: contactLink, line: lineA };
+                parseConsultOrder(currentUser.consult_order).forEach(key => {
+                    if (map[key]) menu.appendChild(map[key]); // appendChild = ย้ายไปท้ายตามลำดับ
+                });
+            }
+
             // ปุ่ม "ปรึกษาเคลม" → เมนู โทร/LINE
             const claimCall = document.getElementById('hclaim-call');
             const claimLine = document.getElementById('hclaim-line');
@@ -2454,6 +2486,39 @@
         //   xxx  (id ส่วนตัว)           → https://line.me/ti/p/~xxx
         // แปลง line_id → ลิงก์เปิดแอป LINE (add friend by id)
         //   @xxx (บัญชีทางการ) → line.me/R/ti/p/@xxx  •  xxx (id ส่วนตัว) → line.me/ti/p/~xxx
+        // ลำดับตัวเลือกในเมนู "รับคำปรึกษาฟรี" — คืน array ที่ครบและถูกต้องเสมอ
+        const CONSULT_KEYS = ['call', 'contact', 'line'];
+        const CONSULT_LABELS = { call: '📞 โทร', contact: '📝 สร้างรายการติดต่อ', line: '💬 LINE' };
+        function parseConsultOrder(v) {
+            const parts = String(v || '').split(',').map(s => s.trim()).filter(s => CONSULT_KEYS.includes(s));
+            const uniq = [...new Set(parts)];
+            CONSULT_KEYS.forEach(k => { if (!uniq.includes(k)) uniq.push(k); });
+            return uniq;
+        }
+
+        // UI จัดลำดับในโมดัล Hero (ปุ่ม ▲▼)
+        let consultOrderState = ['call', 'contact', 'line'];
+        function renderConsultOrder() {
+            const box = document.getElementById('consult-order-list');
+            if (!box) return;
+            box.innerHTML = consultOrderState.map((key, i) => `
+                <div class="consult-order-row">
+                    <span class="co-label">${CONSULT_LABELS[key] || key}</span>
+                    <span class="co-btns">
+                        <button type="button" class="co-btn" data-co-up="${i}" ${i === 0 ? 'disabled' : ''} title="เลื่อนขึ้น">▲</button>
+                        <button type="button" class="co-btn" data-co-down="${i}" ${i === consultOrderState.length - 1 ? 'disabled' : ''} title="เลื่อนลง">▼</button>
+                    </span>
+                </div>`).join('');
+            box.querySelectorAll('[data-co-up]').forEach(b => b.addEventListener('click', () => moveConsult(Number(b.dataset.coUp), -1)));
+            box.querySelectorAll('[data-co-down]').forEach(b => b.addEventListener('click', () => moveConsult(Number(b.dataset.coDown), 1)));
+        }
+        function moveConsult(i, dir) {
+            const j = i + dir;
+            if (j < 0 || j >= consultOrderState.length) return;
+            [consultOrderState[i], consultOrderState[j]] = [consultOrderState[j], consultOrderState[i]];
+            renderConsultOrder();
+        }
+
         function lineHrefFrom(raw) {
             raw = (raw || '').trim();
             if (!raw) return null;
@@ -2503,6 +2568,8 @@
                 parseJsonArray(currentUser.cover_images).forEach(p => coverState.push({ type: 'existing', path: p }));
                 renderCoverPreviews();
                 resetDeviceCovers();
+                consultOrderState = parseConsultOrder(currentUser.consult_order);
+                renderConsultOrder();
             } else if (name === 'profile') {
                 form.elements.first_name.value = currentUser.first_name || '';
                 form.elements.last_name.value = currentUser.last_name || '';
@@ -2715,7 +2782,7 @@
             try {
                 const keptCovers = coverState.filter(c => c.type === 'existing').map(c => c.path);
                 const newCoverFiles = coverState.filter(c => c.type === 'new').map(c => c.file);
-                await saveProfile({}, {
+                await saveProfile({ consult_order: consultOrderState.join(',') }, {
                     cover_images: newCoverFiles,
                     cover_images_keep: keptCovers,
                     cover_image_tablet: pendingTabletFile || undefined,

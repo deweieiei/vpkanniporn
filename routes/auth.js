@@ -111,7 +111,7 @@ const FULL_USER_COLUMNS = `
   phone, position, company, branch, license_number, license_number_2,
   bio, quote, facebook_url, line_id, instagram_url, awards, awards_visible, cover_images,
   cover_image_tablet, cover_image_mobile,
-  hero_heading, hero_tagline, hero_sub, hero_image, recruit_visible
+  hero_heading, hero_tagline, hero_sub, hero_image, recruit_visible, consult_order
 `;
 
 function requireAuth(req, res, next) {
@@ -283,6 +283,16 @@ router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
     if ('recruit_visible' in req.body) {
       const v = req.body.recruit_visible;
       updates.recruit_visible = (v === '1' || v === 1 || v === true || v === 'true') ? 1 : 0;
+    }
+
+    // ลำดับตัวเลือกในเมนู "รับคำปรึกษาฟรี" — เก็บเฉพาะคีย์ที่อนุญาต + เติมที่ขาดให้ครบเสมอ
+    if ('consult_order' in req.body) {
+      const ALLOWED_CONSULT = ['call', 'contact', 'line'];
+      const parts = String(req.body.consult_order || '')
+        .split(',').map(s => s.trim()).filter(s => ALLOWED_CONSULT.includes(s));
+      const uniq = [...new Set(parts)];
+      ALLOWED_CONSULT.forEach(k => { if (!uniq.includes(k)) uniq.push(k); });
+      updates.consult_order = uniq.join(',');
     }
 
     // ไฟล์ที่ต้องลบหลัง update สำเร็จ
