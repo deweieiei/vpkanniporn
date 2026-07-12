@@ -1,0 +1,32 @@
+/* ============================================================
+   ไอคอนของผู้ใช้ (จาก /assets/icon) — ย่อขนาดแล้ว: badge วงกลมสีส้ม 128px
+   ต้นฉบับ ~1.8MB/ไฟล์ → ย่อเหลือ ~25KB/ไฟล์ (PNG ใน /assets/icon/small)
+   ใช้งาน:  <i class="ic ic-edit"></i>   (ขนาดปรับด้วย font-size ของ element รอบข้าง)
+   ============================================================ */
+.ic {
+  display: inline-block;
+  width: 1.35em; height: 1.35em;
+  vertical-align: -0.32em;
+  flex-shrink: 0;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.ic-edit      { background-image: url('/assets/icon/small/edit.png'); }
+.ic-phone     { background-image: url('/assets/icon/small/phone.png'); }
+.ic-contact   { background-image: url('/assets/icon/small/contact.png'); }
+.ic-line      { background-image: url('/assets/icon/small/line.png'); }
+.ic-stats     { background-image: url('/assets/icon/small/stats.png'); }
+.ic-recruit   { background-image: url('/assets/icon/small/recruit.png'); }
+.ic-trash     { background-image: url('/assets/icon/small/trash.png'); }
+.ic-back      { background-image: url('/assets/icon/small/back.png'); }
+.ic-home      { background-image: url('/assets/icon/small/home.png'); }
+.ic-logout    { background-image: url('/assets/icon/small/logout.png'); }
+.ic-bell      { background-image: url('/assets/icon/small/notification.png'); }
+.ic-copy      { background-image: url('/assets/icon/small/copy.png'); }
+.ic-at        { background-image: url('/assets/icon/small/at.png'); }
+.ic-gmail     { background-image: url('/assets/icon/small/gmail.png'); }
+.ic-facebook  { background-image: url('/assets/icon/small/facebook.png'); }
+.ic-instagram { background-image: url('/assets/icon/small/instagram.png'); }
+.ic-tiktok    { background-image: url('/assets/icon/small/tiktok.png'); }
+.ic-x         { background-image: url('/assets/icon/small/x.png'); }
