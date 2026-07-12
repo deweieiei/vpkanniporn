@@ -55,6 +55,11 @@ router.get('/inquiries', requireAuth, (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'inquiries.html'));
 });
 
+// หน้ารายชื่อผู้สนใจสมัครเป็นตัวแทน (แยกจาก /inquiries — เฉพาะเจ้าของที่ล็อกอิน)
+router.get('/recruit-inquiries', requireAuth, (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'recruit-inquiries.html'));
+});
+
 // หน้าสถิติการเข้าชมเว็บไซต์ (เฉพาะเจ้าของที่ล็อกอิน)
 router.get('/traffic', requireAuth, (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'traffic.html'));

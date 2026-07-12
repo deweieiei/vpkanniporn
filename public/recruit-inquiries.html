@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รายการผู้ติดต่อสอบถาม — VP Kanniporn FWD</title>
+    <title>ผู้สนใจเป็นตัวแทน — VP Kanniporn FWD</title>
     <link rel="icon" type="image/svg+xml" href="/assets/Logo.svg">
     <link rel="shortcut icon" href="/assets/Logo.svg">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -36,14 +36,14 @@
                         เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
                 </div>
             </a>
-            <a href="/recruit-inquiries" class="text-xs font-semibold text-gray-500 hover:text-orange-600">🤝 ผู้สนใจเป็นตัวแทน →</a>
+            <a href="/inquiries" class="text-xs font-semibold text-gray-500 hover:text-orange-600">📩 ติดต่อสอบถาม →</a>
         </div>
     </header>
 
     <main class="max-w-3xl mx-auto px-4 py-8">
         <div class="flex items-end justify-between flex-wrap gap-2 mb-5">
             <div>
-                <h1 class="text-2xl font-extrabold text-gray-800">รายการผู้ติดต่อสอบถาม</h1>
+                <h1 class="text-2xl font-extrabold text-gray-800">🤝 ผู้สนใจเป็นตัวแทน</h1>
                 <p id="summary" class="text-sm text-gray-500 mt-1">กำลังโหลด…</p>
             </div>
         </div>
@@ -52,8 +52,8 @@
 
         <div id="empty" class="hidden text-center py-16">
             <p class="text-4xl mb-3">📭</p>
-            <p class="font-bold text-lg text-gray-700">ยังไม่มีผู้ติดต่อเข้ามา</p>
-            <p class="text-sm text-gray-400 mt-1">เมื่อมีลูกค้ากรอกฟอร์มติดต่อ รายการจะแสดงที่นี่</p>
+            <p class="font-bold text-lg text-gray-700">ยังไม่มีผู้สนใจสมัคร</p>
+            <p class="text-sm text-gray-400 mt-1">เมื่อมีผู้กรอกฟอร์ม "สนใจเป็นตัวแทนประกัน" รายการจะแสดงที่นี่</p>
         </div>
 
         <div id="list" class="space-y-3"></div>
@@ -64,7 +64,7 @@
         <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
             <div
                 class="flex items-center justify-between p-5 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl">
-                <h2 class="text-lg font-bold">รายละเอียดผู้ติดต่อ</h2>
+                <h2 class="text-lg font-bold">รายละเอียดผู้สมัคร</h2>
                 <button id="detail-close"
                     class="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-500 text-xl">✕</button>
             </div>
@@ -95,24 +95,6 @@
             if (isNaN(d)) return '-';
             return d.toLocaleString('th-TH', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
         }
-        function fmtDate(v) {
-            if (!v) return '-';
-            const d = new Date(v);
-            if (isNaN(d)) return String(v);
-            return d.toLocaleDateString('th-TH', { day: '2-digit', month: 'long', year: 'numeric' });
-        }
-        // วันเวลานัดหมาย — โชว์วัน (มีชื่อวัน) ให้เด่น
-        function fmtAppt(v) {
-            if (!v) return '-';
-            const d = new Date(v);
-            if (isNaN(d)) return '-';
-            return d.toLocaleString('th-TH', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' น.';
-        }
-        function purposesArr(p) {
-            if (Array.isArray(p)) return p;
-            if (typeof p === 'string') { try { const a = JSON.parse(p); return Array.isArray(a) ? a : []; } catch { return []; } }
-            return [];
-        }
         function telHref(phone) { return 'tel:' + String(phone || '').replace(/[^0-9+]/g, ''); }
 
         async function load() {
@@ -121,49 +103,43 @@
                 if (res.status === 401) { window.location.href = '/login'; return; }
                 const d = await res.json();
                 if (!res.ok) throw new Error(d.error || 'โหลดไม่สำเร็จ');
-                // ไม่รวมผู้สมัครเป็นตัวแทน (kind='recruit') — แยกไปหน้า /recruit-inquiries
-                inquiries = (d.inquiries || []).filter(q => q.kind !== 'recruit');
-                render(inquiries.length, inquiries.filter(x => x.contacted_at == null).length);
+                // เฉพาะผู้สมัครเป็นตัวแทน (kind = 'recruit') — แยกจากหน้า "ติดต่อสอบถาม"
+                inquiries = (d.inquiries || []).filter(q => q.kind === 'recruit');
+                render();
             } catch (e) {
                 document.getElementById('loading').classList.add('hidden');
                 toast('โหลดข้อมูลไม่สำเร็จ', false);
             }
         }
 
-        function render(total, newCount) {
+        function render() {
             document.getElementById('loading').classList.add('hidden');
-            document.getElementById('summary').textContent = `ทั้งหมด ${total} รายการ` + (newCount > 0 ? ` • ใหม่ ${newCount} รายการ` : '');
+            const total = inquiries.length;
+            const newCount = inquiries.filter(x => x.contacted_at == null).length;
+            document.getElementById('summary').textContent = `ทั้งหมด ${total} คน` + (newCount > 0 ? ` • ใหม่ ${newCount} คน` : '');
             const list = document.getElementById('list');
-            if (inquiries.length === 0) { document.getElementById('empty').classList.remove('hidden'); list.innerHTML = ''; return; }
+            if (total === 0) { document.getElementById('empty').classList.remove('hidden'); list.innerHTML = ''; return; }
             document.getElementById('empty').classList.add('hidden');
             list.innerHTML = inquiries.map(rowHtml).join('');
         }
 
         function rowHtml(q) {
             const isNew = q.contacted_at == null;
-            const isAppt = q.kind === 'appointment' && q.appointment_at;
             const badge = isNew
                 ? '<span class="text-[11px] font-bold text-white bg-red-500 px-2 py-0.5 rounded-full">ใหม่</span>'
                 : '<span class="text-[11px] font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">ติดต่อกลับแล้ว</span>';
-            const apptBadge = isAppt ? '<span class="text-[11px] font-bold text-white bg-indigo-500 px-2 py-0.5 rounded-full">📅 นัดหมาย</span>' : '';
-            const recruitBadge = q.kind === 'recruit' ? '<span class="text-[11px] font-bold text-white bg-amber-500 px-2 py-0.5 rounded-full">🤝 สมัครตัวแทน</span>' : '';
-            const apptLine = isAppt
-                ? `<p class="text-sm font-extrabold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg px-3 py-1.5 mt-1.5">📅 ให้ติดต่อกลับ: ${fmtAppt(q.appointment_at)}</p>` : '';
-            const purposes = purposesArr(q.purposes).slice(0, 3).map(p => {
-                const label = (p === 'อื่นๆ' && q.purpose_other) ? ('อื่นๆ: ' + q.purpose_other) : p;
-                return `<span class="text-[11px] bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full">${escapeHtml(label)}</span>`;
-            }).join(' ');
+            const noteLine = q.note
+                ? `<p class="text-xs text-gray-600 mt-1 line-clamp-2">📝 ${escapeHtml(q.note)}</p>` : '';
             return `
-                <div class="bg-white rounded-xl border ${isAppt ? 'border-indigo-300' : (isNew ? 'border-red-200' : 'border-gray-100')} shadow-sm p-4 flex items-center gap-3 cursor-pointer hover:shadow-md transition" data-id="${q.id}">
-                    <div class="w-11 h-11 rounded-full ${isAppt ? 'bg-indigo-50 text-indigo-500' : 'bg-orange-50 text-orange-500'} flex items-center justify-center font-bold flex-shrink-0">${escapeHtml((q.full_name || '?').trim().charAt(0) || '?')}</div>
+                <div class="bg-white rounded-xl border ${isNew ? 'border-amber-200' : 'border-gray-100'} shadow-sm p-4 flex items-center gap-3 cursor-pointer hover:shadow-md transition" data-id="${q.id}">
+                    <div class="w-11 h-11 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center font-bold flex-shrink-0">${escapeHtml((q.full_name || '?').trim().charAt(0) || '?')}</div>
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-2 flex-wrap">
                             <p class="font-bold text-gray-800 truncate">${escapeHtml(q.full_name)}</p>
-                            ${recruitBadge}${apptBadge}${badge}
+                            ${badge}
                         </div>
-                        <p class="text-xs text-gray-500 mt-0.5">📞 ${escapeHtml(q.phone)} • ส่งเมื่อ ${fmtDateTime(q.created_at)}</p>
-                        ${apptLine}
-                        <div class="flex flex-wrap gap-1 mt-1.5">${purposes}</div>
+                        <p class="text-xs text-gray-500 mt-0.5">📞 ${escapeHtml(q.phone)}${q.line_id ? ' • 💬 ' + escapeHtml(q.line_id) : ''} • สมัครเมื่อ ${fmtDateTime(q.created_at)}</p>
+                        ${noteLine}
                     </div>
                     <span class="text-gray-300 text-xl flex-shrink-0">›</span>
                 </div>`;
@@ -184,33 +160,17 @@
             const q = inquiries.find(x => x.id === id);
             if (!q) return;
             const isNew = q.contacted_at == null;
-            const purposes = purposesArr(q.purposes).map(p => {
-                const label = (p === 'อื่นๆ' && q.purpose_other) ? ('อื่นๆ: ' + q.purpose_other) : p;
-                return `<span class="text-xs bg-orange-50 text-orange-700 px-2.5 py-1 rounded-full">${escapeHtml(label)}</span>`;
-            }).join(' ') || '<span class="text-sm text-gray-400">-</span>';
             const contactedLine = q.contacted_at
                 ? `<p class="text-xs text-green-700 mt-1">✔ ติดต่อกลับแล้วเมื่อ ${fmtDateTime(q.contacted_at)}</p>` : '';
-            const isAppt = q.kind === 'appointment';
-            const apptBox = (isAppt && q.appointment_at)
-                ? `<div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 text-center">
-                       <p class="text-xs font-bold text-indigo-500">📅 นัดหมาย (${escapeHtml(q.channel || '')})</p>
-                       <p class="text-lg font-extrabold text-indigo-800 mt-0.5">${fmtAppt(q.appointment_at)}</p>
-                   </div>` : '';
-            // ฟิลด์กลาง: โหมดนัดหมาย vs โหมดติดต่อ
-            const midFields = isAppt
-                ? `${q.line_id ? detailRow('LINE ID', escapeHtml(q.line_id)) : ''}
-                   ${detailRow('ช่วงเวลาที่เลือก', escapeHtml(q.time_slot) || '-')}
-                   ${detailRow('ช่องทางการนัดหมาย', escapeHtml(q.channel) || '-')}`
-                : `${detailRow('วันเดือนปีเกิด', fmtDate(q.birthdate))}
-                   <div><p class="text-xs font-bold text-gray-400 mb-1.5">วัตถุประสงค์ในการทำประกัน</p><div class="flex flex-wrap gap-1.5">${purposes}</div></div>
-                   ${detailRow('งบประมาณเบี้ยประกัน', escapeHtml(q.budget) || '<span class="text-gray-400">ไม่ได้ระบุ</span>')}
-                   ${detailRow('รายละเอียดเพิ่มเติม', q.note ? escapeHtml(q.note) : '<span class="text-gray-400">ไม่มี</span>')}`;
             document.getElementById('detail-body').innerHTML = `
-                ${apptBox}
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
+                    <p class="text-xs font-bold text-amber-600">🤝 สนใจสมัครเป็นตัวแทนประกัน</p>
+                </div>
                 ${detailRow('ชื่อ-นามสกุล', escapeHtml(q.full_name))}
                 ${detailRow('เบอร์โทรศัพท์', `<a href="${telHref(q.phone)}" class="text-orange-600 font-semibold">${escapeHtml(q.phone)}</a>`)}
-                ${midFields}
-                ${detailRow(isAppt ? 'เวลาที่ขอนัด' : 'เวลาที่ติดต่อเข้ามา', fmtDateTime(q.created_at))}
+                ${detailRow('LINE ID', q.line_id ? escapeHtml(q.line_id) : '<span class="text-gray-400">ไม่ได้ระบุ</span>')}
+                ${detailRow('ข้อมูลเพิ่มเติม / อาชีพ', q.note ? escapeHtml(q.note) : '<span class="text-gray-400">ไม่มี</span>')}
+                ${detailRow('สมัครเข้ามาเมื่อ', fmtDateTime(q.created_at))}
                 ${detailRow('ความยินยอม', q.consent ? '<span class="text-green-700">✔ ยินยอมให้ติดต่อกลับและเก็บข้อมูล</span>' : '<span class="text-gray-400">-</span>')}
                 <div class="pt-3 border-t border-gray-100">
                     ${contactedLine}
@@ -242,7 +202,7 @@
                 if (q) q.contacted_at = d.contacted_at || null;
                 toast(undo ? 'ยกเลิกแล้ว' : 'บันทึกว่าติดต่อกลับแล้ว');
                 closeModal();
-                render(inquiries.length, inquiries.filter(x => x.contacted_at == null).length);
+                render();
             } catch (err) {
                 toast(err.message, false);
                 btn.disabled = false;
@@ -256,7 +216,6 @@
 
         load();
     </script>
-    <script src="/i18n.js"></script>
 </body>
 
 </html>
