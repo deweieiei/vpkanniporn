@@ -109,7 +109,7 @@ const FULL_USER_COLUMNS = `
   id, email, first_name, last_name, birthdate, gender, province, avatar_path,
   role, is_active, created_at, updated_at,
   phone, position, company, branch, license_number, license_number_2,
-  bio, quote, facebook_url, line_id, instagram_url, awards, awards_visible, cover_images,
+  bio, quote, facebook_url, line_id, instagram_url, tiktok_url, x_url, awards, awards_visible, cover_images,
   cover_image_tablet, cover_image_mobile,
   hero_heading, hero_tagline, hero_sub, hero_image, recruit_visible, consult_order
 `;
@@ -250,7 +250,7 @@ router.put('/profile', requireAuth, profileUpload, async (req, res, next) => {
       'phone', 'position', 'company', 'branch',
       'license_number', 'license_number_2',
       'bio', 'quote',
-      'facebook_url', 'line_id', 'instagram_url',
+      'facebook_url', 'line_id', 'instagram_url', 'tiktok_url', 'x_url',
       'hero_heading', 'hero_tagline', 'hero_sub',
     ];
     const updates = {};

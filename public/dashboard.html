@@ -2010,6 +2010,16 @@
                         <input type="url" name="instagram_url" placeholder="https://...">
                     </div>
                 </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label>🎵 TikTok URL</label>
+                        <input type="url" name="tiktok_url" placeholder="https://www.tiktok.com/@username">
+                    </div>
+                    <div class="field">
+                        <label>✖️ X (Twitter) URL</label>
+                        <input type="url" name="x_url" placeholder="https://x.com/username">
+                    </div>
+                </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
                     <button type="submit" class="btn btn-save">💾 บันทึก</button>
@@ -2583,6 +2593,8 @@
                 form.elements.line_id.value = currentUser.line_id || '';
                 form.elements.facebook_url.value = currentUser.facebook_url || '';
                 form.elements.instagram_url.value = currentUser.instagram_url || '';
+                form.elements.tiktok_url.value = currentUser.tiktok_url || '';
+                form.elements.x_url.value = currentUser.x_url || '';
 
                 // Avatar preview
                 const avPrev = document.getElementById('avatar-preview');
@@ -2820,6 +2832,8 @@
                     line_id: f.elements.line_id.value.trim(),
                     facebook_url: f.elements.facebook_url.value.trim(),
                     instagram_url: f.elements.instagram_url.value.trim(),
+                    tiktok_url: f.elements.tiktok_url.value.trim(),
+                    x_url: f.elements.x_url.value.trim(),
                 }, {
                     avatar: pendingAvatarFile,
                 });
