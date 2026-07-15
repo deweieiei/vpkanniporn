@@ -496,34 +496,37 @@
             background-color: rgba(255, 107, 0, 0.02);
         }
 
+        /* ปุ่มแก้ไข — โชว์แค่ไอคอน ไม่มีกล่องครอบ */
         .edit-btn {
             position: absolute;
-            top: 14px;
-            right: 14px;
-            background: var(--primary-orange);
-            color: var(--white);
+            top: 12px;
+            right: 12px;
+            background: none;
             border: none;
+            padding: 0;
+            font-size: 15px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            line-height: 0;
+            z-index: 5;
+            font-family: inherit;
+            transition: transform 0.15s;
+        }
+
+        .edit-btn:hover {
+            transform: translateY(-1px) scale(1.08);
+        }
+
+        /* ปุ่มที่ยังมีข้อความ (เช่น "รอเปิด") คงหน้าตาแบบกล่องไว้ */
+        .edit-btn.disabled {
+            background: #9ca3af;
+            color: #fff;
             padding: 7px 14px;
             border-radius: 999px;
             font-size: 12px;
             font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.35);
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            z-index: 5;
-            font-family: inherit;
-            transition: background 0.2s, transform 0.15s;
-        }
-
-        .edit-btn:hover {
-            background: var(--secondary-orange);
-            transform: translateY(-1px);
-        }
-
-        .edit-btn.disabled {
-            background: #9ca3af;
+            line-height: normal;
             cursor: not-allowed;
             box-shadow: none;
         }
@@ -1749,16 +1752,16 @@
             <div class="hero-inner">
                 <div class="hero-cta">
                     <div class="hero-consult-wrap">
-                        <button type="button" id="hero-consult-btn" class="hero-btn primary">💬 รับคำปรึกษาฟรี</button>
+                        <button type="button" id="hero-consult-btn" class="hero-btn primary"><i class="ic ic-line"></i> รับคำปรึกษาฟรี</button>
                         <div id="hero-consult-menu" class="hero-consult-menu">
                             <a id="hc-call" href="#"><i class="ic ic-phone"></i>โทร</a>
                             <a id="hc-contact" href="#"><i class="ic ic-contact"></i>สร้างรายการติดต่อ</a>
                             <a id="hc-line" href="#" target="_blank" rel="noopener"><i class="ic ic-line"></i> LINE</a>
                         </div>
                     </div>
-                    <a id="hero-appt-btn" href="#" class="hero-btn outline">📅 นัดหมายออนไลน์</a>
+                    <a id="hero-appt-btn" href="#" class="hero-btn outline"><i class="ic ic-contact"></i> นัดหมายออนไลน์</a>
                     <div class="hero-consult-wrap">
-                        <button type="button" id="hero-claim-btn" class="hero-btn outline">🛡️ ปรึกษาเคลม</button>
+                        <button type="button" id="hero-claim-btn" class="hero-btn outline"><i class="ic ic-phone"></i> ปรึกษาเคลม</button>
                         <div id="hero-claim-menu" class="hero-consult-menu">
                             <a id="hclaim-call" href="#"><i class="ic ic-phone"></i>โทร</a>
                             <a id="hclaim-line" href="#" target="_blank" rel="noopener"><i class="ic ic-line"></i> LINE</a>
@@ -1855,7 +1858,7 @@
             <p class="section-subtitle">สอบถามหรือปรึกษาได้โดยตรง เพิ่มเพื่อนแล้วทักได้เลย</p>
             <div class="line-contact-inner">
                 <a id="line-add-btn" href="#" target="_blank" rel="noopener" class="line-add-btn">
-                    <span class="line-ic">💬</span>
+                    <span class="line-ic"><i class="ic ic-line"></i></span>
                     <span>เพิ่มเพื่อนทางไลน์</span>
                     <span id="line-id-text" class="line-id-text"></span>
                 </a>
