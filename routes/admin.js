@@ -152,4 +152,44 @@ router.put('/settings', requireAdmin, express.json(), async (req, res, next) => 
   } catch (err) { next(err); }
 });
 
+// ===== โหมดแก้ไขหน้า Home =====
+// แอดมินสวมสิทธิ์บัญชีหน้า Home ชั่วคราว เพื่อกดแก้ไข/เพิ่ม/ลบ เนื้อหาในหน้า dashboard ได้เหมือนเจ้าของ
+// เก็บ adminId ไว้ใน session เพื่อกลับมาเป็นแอดมินได้
+
+// POST /api/admin/impersonate/stop — ออกจากโหมดแก้ไข กลับเป็นแอดมิน (ต้องมาก่อน /:id)
+router.post('/impersonate/stop', async (req, res, next) => {
+  try {
+    if (!req.session || !req.session.adminId) return res.status(400).json({ error: 'ไม่ได้อยู่ในโหมดแก้ไขหน้า Home' });
+    const [rows] = await pool.query(
+      "SELECT id, email FROM users WHERE id = ? AND role = 'admin' AND is_active = 1 LIMIT 1",
+      [req.session.adminId]
+    );
+    if (rows.length === 0) {
+      return req.session.destroy(() => { res.clearCookie('fwd.sid'); res.status(403).json({ error: 'บัญชีแอดมินใช้งานไม่ได้แล้ว' }); });
+    }
+    req.session.userId = rows[0].id;
+    req.session.email = rows[0].email;
+    req.session.role = 'admin';
+    delete req.session.adminId;
+    delete req.session.adminEmail;
+    res.json({ ok: true });
+  } catch (err) { next(err); }
+});
+
+// POST /api/admin/impersonate/:id — เข้าโหมดแก้ไขในนามบัญชี :id (เฉพาะแอดมิน)
+router.post('/impersonate/:id', requireAdmin, async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ error: 'id ไม่ถูกต้อง' });
+    const [rows] = await pool.query('SELECT id, email, role FROM users WHERE id = ? LIMIT 1', [id]);
+    if (rows.length === 0) return res.status(404).json({ error: 'ไม่พบบัญชีนี้' });
+    req.session.adminId = req.session.userId;   // จำตัวตนแอดมินไว้
+    req.session.adminEmail = req.session.email;
+    req.session.userId = rows[0].id;
+    req.session.email = rows[0].email;
+    req.session.role = rows[0].role;
+    res.json({ ok: true });
+  } catch (err) { next(err); }
+});
+
 module.exports = router;

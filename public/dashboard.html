@@ -2325,10 +2325,36 @@
                 }
                 currentUser = data.user;
                 renderAll();
+                if (data.impersonating) showEditHomeBar();
                 document.getElementById('loading-screen').style.display = 'none';
             } catch (e) {
                 if (!isViewingOther) window.location.href = '/login';
             }
+        }
+
+        // แถบแจ้งเตือน "โหมดแก้ไขหน้า Home" (ตอนแอดมินสวมสิทธิ์บัญชีหน้า Home มาแก้)
+        function showEditHomeBar() {
+            if (document.getElementById('edit-home-bar')) return;
+            const bar = document.createElement('div');
+            bar.id = 'edit-home-bar';
+            bar.style.cssText = 'position:fixed; bottom:0; left:0; right:0; z-index:9999; background:#b91c1c; color:#fff;' +
+                'display:flex; align-items:center; justify-content:center; gap:14px; padding:10px 16px;' +
+                'font-size:14px; font-weight:600; box-shadow:0 -3px 12px rgba(0,0,0,0.25); flex-wrap:wrap;';
+            const label = document.createElement('span');
+            label.textContent = '✏️ โหมดแก้ไขหน้า Home — กดปุ่มแก้ไขในแต่ละส่วนเพื่อแก้/เพิ่ม/ลบ';
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = '← กลับหน้าแอดมิน';
+            btn.style.cssText = 'background:#fff; color:#b91c1c; border:none; border-radius:8px; padding:7px 16px;' +
+                'font-size:13px; font-weight:700; font-family:inherit; cursor:pointer;';
+            btn.addEventListener('click', async () => {
+                btn.disabled = true;
+                try { await fetch('/api/admin/impersonate/stop', { method: 'POST', credentials: 'same-origin' }); } catch (e) { /* ignore */ }
+                window.location.href = '/support-admin/users';
+            });
+            bar.appendChild(label); bar.appendChild(btn);
+            document.body.appendChild(bar);
+            document.body.style.paddingBottom = '64px';
         }
 
         // ===== Render =====

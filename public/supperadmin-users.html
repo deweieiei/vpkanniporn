@@ -328,20 +328,23 @@
   </header>
 
   <div class="wrap">
-    <!-- ตั้งค่าหน้า Home -->
+    <!-- ตั้งค่า + แก้ไขหน้า Home -->
     <div class="card">
-      <div class="card-head">🏠 ตั้งค่าหน้า Home — ตัวแทนที่โชว์ในส่วน "รู้จักที่ปรึกษาของคุณ"</div>
+      <div class="card-head">🏠 หน้า Home (vpkanniporn.com) — เลือกบัญชี + แก้ไขเนื้อหา</div>
       <div class="card-body">
         <div class="grid">
           <div class="field">
-            <label>เลือกตัวแทนที่จะโชว์ในหน้าแรก (vpkanniporn.com)</label>
+            <label>เลือกบัญชีที่เป็นหน้า Home</label>
             <select id="featured-agent"><option value="">— ใช้ข้อมูลค่าเริ่มต้นในไฟล์ (ไม่เลือก) —</option></select>
           </div>
           <div class="field" style="display:flex; align-items:flex-end;">
-            <button type="button" class="btn" id="save-featured">บันทึกการตั้งค่า</button>
+            <button type="button" class="btn btn-ghost" id="save-featured">บันทึกบัญชี</button>
           </div>
         </div>
-        <p class="muted" style="margin-top:4px;">ชื่อ / รูป / คำแนะนำตัว / ช่องทางติดต่อ จะดึงจากโปรไฟล์ตัวแทนที่เลือกมาแสดงในหน้า Home อัตโนมัติ</p>
+        <div style="border-top:1px dashed #e5e7eb; margin-top:6px; padding-top:12px;">
+          <button type="button" class="btn" id="edit-home-btn">✏️ เข้าไปแก้ไขหน้า Home (แก้/เพิ่ม/ลบ ได้ทุกส่วน)</button>
+          <p class="muted" style="margin-top:6px;">กดแล้วจะเปิดหน้า Home ในโหมดแก้ไข — กดปุ่มแก้ไขในแต่ละส่วน (Hero / โปรไฟล์ / แผน / รางวัล / โพสต์ ฯลฯ) เพิ่ม-ลบได้ เสร็จแล้วกด "กลับหน้าแอดมิน" บนแถบด้านบน</p>
+        </div>
       </div>
     </div>
 
@@ -555,6 +558,23 @@
         currentFeatured = sel.value || '';
         toast('บันทึกการตั้งค่าหน้า Home แล้ว', 'ok');
       } catch (e) { toast('บันทึกไม่สำเร็จ', 'err'); }
+      finally { btn.disabled = false; }
+    });
+
+    // เข้าโหมดแก้ไขหน้า Home (สวมสิทธิ์บัญชีหน้า Home ชั่วคราว → ไปหน้า / แล้วกดแก้ได้เลย)
+    document.getElementById('edit-home-btn').addEventListener('click', async () => {
+      const sel = document.getElementById('featured-agent');
+      const id = sel.value || currentFeatured;
+      if (!id) { toast('เลือกบัญชีหน้า Home ก่อน แล้วกด "บันทึกบัญชี"', 'err'); return; }
+      const btn = document.getElementById('edit-home-btn');
+      btn.disabled = true;
+      try {
+        const res = await fetch('/api/admin/impersonate/' + id, { method: 'POST', credentials: 'same-origin' });
+        if (authFail(res)) return;
+        const d = await res.json();
+        if (!res.ok) { toast(d.error || 'เข้าโหมดแก้ไขไม่สำเร็จ', 'err'); return; }
+        window.location.href = '/';
+      } catch (e) { toast('เข้าโหมดแก้ไขไม่สำเร็จ', 'err'); }
       finally { btn.disabled = false; }
     });
 

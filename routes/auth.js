@@ -221,7 +221,7 @@ router.get('/me', async (req, res, next) => {
       req.session.destroy(() => {});
       return res.json({ authenticated: false });
     }
-    res.json({ authenticated: true, user: rows[0] });
+    res.json({ authenticated: true, user: rows[0], impersonating: !!(req.session && req.session.adminId) });
   } catch (err) {
     next(err);
   }
