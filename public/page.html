@@ -279,7 +279,7 @@
                 <button id="btn-edit" class="bg-orange-500 hover:bg-orange-600 px-4 py-1.5 rounded-full font-bold"><i class="ic ic-edit"></i>
                     แก้ไข</button>
                 <button id="btn-save"
-                    class="hidden bg-green-500 hover:bg-green-600 px-4 py-1.5 rounded-full font-bold">💾 บันทึก</button>
+                    class="hidden bg-green-500 hover:bg-green-600 px-4 py-1.5 rounded-full font-bold"><i class="ic ic-save"></i> บันทึก</button>
                 <button id="btn-cancel"
                     class="hidden bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded-full font-bold">ยกเลิก</button>
             </div>
@@ -385,7 +385,7 @@
                     <button type="button" id="block-cancel"
                         class="px-5 py-2.5 rounded-full font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200">ยกเลิก</button>
                     <button type="submit"
-                        class="px-5 py-2.5 rounded-full font-bold text-sm bg-orange-500 text-white hover:bg-orange-600">💾
+                        class="px-5 py-2.5 rounded-full font-bold text-sm bg-orange-500 text-white hover:bg-orange-600"><i class="ic ic-save"></i>
                         บันทึก</button>
                 </div>
             </form>
@@ -788,7 +788,7 @@
                     prev.src = p.button_image; prev.classList.remove('hidden');
                     document.getElementById('block-ph').classList.add('hidden');
                 }
-                document.getElementById('block-modal-title').textContent = '<i class="ic ic-edit"></i> แก้ไขรายการ';
+                document.getElementById('block-modal-title').innerHTML = '<i class="ic ic-edit"></i> แก้ไขรายการ';
                 openBlockModal();
             } catch (err) { toast(err.message, false); }
         }

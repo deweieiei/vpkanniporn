@@ -1788,7 +1788,7 @@
                     <div class="profile-contact">
                         <p><span class="label"><i class="ic ic-phone"></i></span> <span id="agent-phone">062-239-7362</span></p>
                         <p><span class="label"><i class="ic ic-gmail"></i></span> <span id="agent-email">kavisara.fwd@gmail.com</span></p>
-                        <p><span class="label">💬</span> <span id="agent-line">@kavisara.fwd</span></p>
+                        <p><span class="label"><i class="ic ic-line"></i></span> <span id="agent-line">@kavisara.fwd</span></p>
                     </div>
                     <div class="license-box" id="license-box">
                         🛡️ <b>ใบอนุญาตตัวแทน/นายหน้าประกันชีวิต</b><br>
@@ -1949,7 +1949,7 @@
 
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
-                    <button type="submit" class="btn btn-save">💾 บันทึก</button>
+                    <button type="submit" class="btn btn-save"><i class="ic ic-save"></i> บันทึก</button>
                 </div>
             </form>
         </div>
@@ -2043,7 +2043,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
-                    <button type="submit" class="btn btn-save">💾 บันทึก</button>
+                    <button type="submit" class="btn btn-save"><i class="ic ic-save"></i> บันทึก</button>
                 </div>
             </form>
         </div>
@@ -2073,7 +2073,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
-                    <button type="submit" class="btn btn-save">💾 บันทึก</button>
+                    <button type="submit" class="btn btn-save"><i class="ic ic-save"></i> บันทึก</button>
                 </div>
             </form>
         </div>
@@ -2109,7 +2109,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
-                    <button type="submit" class="btn btn-save">💾 บันทึก</button>
+                    <button type="submit" class="btn btn-save"><i class="ic ic-save"></i> บันทึก</button>
                 </div>
             </form>
         </div>
@@ -2131,7 +2131,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
-                    <button type="submit" class="btn btn-save">💾 บันทึก</button>
+                    <button type="submit" class="btn btn-save"><i class="ic ic-save"></i> บันทึก</button>
                 </div>
             </form>
         </div>
@@ -2169,7 +2169,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
-                    <button type="submit" class="btn btn-save">💾 บันทึก</button>
+                    <button type="submit" class="btn btn-save"><i class="ic ic-save"></i> บันทึก</button>
                 </div>
             </form>
         </div>
@@ -2994,12 +2994,12 @@
             postExistingImage = null;
             if (id) {
                 const p = postsData.find(x => x.id === id);
-                document.getElementById('post-modal-title').textContent = '<i class="ic ic-edit"></i>แก้ไขโพสต์';
+                document.getElementById('post-modal-title').innerHTML = '<i class="ic ic-edit"></i> แก้ไขโพสต์';
                 form.elements.content.value = (p && p.content) || '';
                 form.elements.is_visible.checked = !p || p.is_visible != 0;
                 postExistingImage = (p && p.image_path) || null;
             } else {
-                document.getElementById('post-modal-title').textContent = '<i class="ic ic-edit"></i>เขียนโพสต์ใหม่';
+                document.getElementById('post-modal-title').innerHTML = '<i class="ic ic-edit"></i> เขียนโพสต์ใหม่';
                 form.reset();
                 form.elements.is_visible.checked = true;
             }
@@ -3212,7 +3212,7 @@
                     prev.src = p.button_image; prev.style.display = 'block';
                     document.getElementById('lfedit-ph').style.display = 'none';
                 }
-                document.getElementById('lfedit-title').textContent = '<i class="ic ic-edit"></i>แก้ไขหัวข้อ';
+                document.getElementById('lfedit-title').innerHTML = '<i class="ic ic-edit"></i> แก้ไขหัวข้อ';
                 document.querySelector('[data-modal="lookfor-edit"]').classList.add('open');
             } catch (err) { toast(err.message, 'error'); }
         }
