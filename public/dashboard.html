@@ -1949,7 +1949,7 @@
 
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
-                    <button type="submit" class="btn btn-save"><i class="ic ic-save"></i> บันทึก</button>
+                    <button type="submit" class="btn btn-save" title="บันทึก"><i class="ic ic-save"></i></button>
                 </div>
             </form>
         </div>
@@ -2043,7 +2043,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
-                    <button type="submit" class="btn btn-save"><i class="ic ic-save"></i> บันทึก</button>
+                    <button type="submit" class="btn btn-save" title="บันทึก"><i class="ic ic-save"></i></button>
                 </div>
             </form>
         </div>
@@ -2073,7 +2073,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
-                    <button type="submit" class="btn btn-save"><i class="ic ic-save"></i> บันทึก</button>
+                    <button type="submit" class="btn btn-save" title="บันทึก"><i class="ic ic-save"></i></button>
                 </div>
             </form>
         </div>
@@ -2109,7 +2109,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
-                    <button type="submit" class="btn btn-save"><i class="ic ic-save"></i> บันทึก</button>
+                    <button type="submit" class="btn btn-save" title="บันทึก"><i class="ic ic-save"></i></button>
                 </div>
             </form>
         </div>
@@ -2131,7 +2131,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
-                    <button type="submit" class="btn btn-save"><i class="ic ic-save"></i> บันทึก</button>
+                    <button type="submit" class="btn btn-save" title="บันทึก"><i class="ic ic-save"></i></button>
                 </div>
             </form>
         </div>
@@ -2169,7 +2169,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-cancel" data-close>ยกเลิก</button>
-                    <button type="submit" class="btn btn-save"><i class="ic ic-save"></i> บันทึก</button>
+                    <button type="submit" class="btn btn-save" title="บันทึก"><i class="ic ic-save"></i></button>
                 </div>
             </form>
         </div>
@@ -3427,7 +3427,7 @@
 
         // ===== คัดลอกลิงก์ (ไว้ส่งให้คนอื่นเข้ามาเยี่ยมชม) =====
         function copyLink(url) {
-            const done = () => toast('✓ คัดลอกลิงก์แล้ว');
+            const done = () => toast('✓ คัดลอกแล้ว: ' + url.replace(/^https?:\/\//, ''));
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(url).then(done).catch(() => fallbackCopy(url, done));
             } else { fallbackCopy(url, done); }

@@ -276,10 +276,9 @@
             <span class="font-bold text-orange-400">🛠️ โหมดเจ้าของ</span>
             <span class="text-white/50">— แก้ไขเนื้อหาหน้านี้ได้</span>
             <div class="ml-auto flex gap-2">
-                <button id="btn-edit" class="bg-orange-500 hover:bg-orange-600 px-4 py-1.5 rounded-full font-bold"><i class="ic ic-edit"></i>
-                    แก้ไข</button>
-                <button id="btn-save"
-                    class="hidden bg-green-500 hover:bg-green-600 px-4 py-1.5 rounded-full font-bold"><i class="ic ic-save"></i> บันทึก</button>
+                <button id="btn-edit" title="แก้ไข" class="p-1 leading-none"><i class="ic ic-edit"></i></button>
+                <button id="btn-save" title="บันทึก"
+                    class="hidden bg-green-500 hover:bg-green-600 px-4 py-1.5 rounded-full font-bold"><i class="ic ic-save"></i></button>
                 <button id="btn-cancel"
                     class="hidden bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded-full font-bold">ยกเลิก</button>
             </div>
@@ -315,6 +314,13 @@
                 <button type="button" class="rt-btn" data-block="h2" title="หัวข้อใหญ่">H2</button>
                 <button type="button" class="rt-btn" data-block="h3" title="หัวข้อรอง">H3</button>
                 <button type="button" class="rt-btn" data-block="p" title="ข้อความปกติ">ข้อความ</button>
+                <span class="rt-sep"></span>
+                <span class="inline-flex items-center gap-1" title="เลือกข้อความก่อน แล้วพิมพ์ขนาด (px)">
+                    <span class="text-[11px] text-gray-500">ขนาด</span>
+                    <input type="number" id="rt-fontsize" min="8" max="120" placeholder="เช่น 24"
+                        class="w-16 h-8 px-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-500">
+                    <button type="button" class="rt-btn" id="rt-fontsize-apply" title="ตั้งขนาดตัวอักษร">ตั้ง</button>
+                </span>
                 <span class="rt-sep"></span>
                 <button type="button" class="rt-btn" data-cmd="insertUnorderedList" title="รายการหัวข้อ">•
                     รายการ</button>
@@ -386,7 +392,7 @@
                         class="px-5 py-2.5 rounded-full font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200">ยกเลิก</button>
                     <button type="submit"
                         class="px-5 py-2.5 rounded-full font-bold text-sm bg-orange-500 text-white hover:bg-orange-600"><i class="ic ic-save"></i>
-                        บันทึก</button>
+                       </button>
                 </div>
             </form>
         </div>
@@ -406,6 +412,15 @@
         </div>
         <button id="contact-fab" title="ติดต่อสอบถาม"
             class="w-16 h-16 flex items-center justify-center bg-green-500 hover:bg-green-600 text-white rounded-full shadow-xl shadow-green-500/40 transition text-2xl">💬</button>
+    </div>
+
+    <!-- แถบลอยใต้ภาพ (ตอนแก้ไข): ใส่/แก้/ลบ ลิงก์ให้ภาพ -->
+    <div id="img-link-bar"
+        style="position:fixed; display:none; z-index:60; gap:6px; background:#1f2937; border-radius:10px; padding:6px; box-shadow:0 8px 24px rgba(0,0,0,0.3);">
+        <button type="button" id="img-link-btn"
+            style="background:#f97316; color:#fff; border:none; border-radius:7px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;">🔗 ใส่/แก้ลิงก์ให้ภาพ</button>
+        <button type="button" id="img-unlink-btn"
+            style="display:none; background:#374151; color:#fff; border:none; border-radius:7px; padding:6px 12px; font-size:12px; cursor:pointer; font-family:inherit;">ลบลิงก์</button>
     </div>
 
     <div id="toast"
@@ -522,7 +537,7 @@
             const contact = [
                 u.phone ? `<p class="flex items-center gap-2 justify-center sm:justify-start"><span class="text-orange-600"><i class="ic ic-phone"></i></span> <span>${escapeHtml(u.phone)}</span></p>` : '',
                 u.email ? `<p class="flex items-center gap-2 justify-center sm:justify-start"><span class="text-orange-600"><i class="ic ic-gmail"></i></span> <span>${escapeHtml(u.email)}</span></p>` : '',
-                line ? `<p class="flex items-center gap-2 justify-center sm:justify-start"><span class="text-orange-600">💬</span> <span>${escapeHtml(line)}</span></p>` : '',
+                line ? `<p class="flex items-center gap-2 justify-center sm:justify-start"><span class="text-orange-600"><i class="ic ic-line"></i></span> <span>${escapeHtml(line)}</span></p>` : '',
             ].join('');
             let license = '';
             if (u.license_number) {
@@ -663,6 +678,81 @@
             } catch (err) { toast('อัปโหลดไม่สำเร็จ', false); }
             finally { e.target.value = ''; }
         });
+
+        // ===== ปรับขนาดตัวอักษร (ใส่ตัวเลข px) =====
+        function applyFontSize(px) {
+            const p = parseInt(px, 10);
+            if (!p || p < 6 || p > 200) { toast('ใส่ตัวเลขขนาด 6–200', false); return; }
+            restoreSel();
+            const sel = window.getSelection();
+            if (!sel.rangeCount || sel.isCollapsed) { toast('เลือกข้อความที่จะปรับขนาดก่อน', false); return; }
+            // ใช้ fontSize=7 เป็นตัวจับ แล้วแปลง <font size=7> เป็น <span style="font-size:...">
+            document.execCommand('styleWithCSS', false, false);
+            document.execCommand('fontSize', false, '7');
+            editor.querySelectorAll('font[size="7"]').forEach(f => {
+                const span = document.createElement('span');
+                span.style.fontSize = p + 'px';
+                while (f.firstChild) span.appendChild(f.firstChild);
+                f.replaceWith(span);
+            });
+            editor.focus();
+            saveSel();
+            toast('ตั้งขนาด ' + p + 'px แล้ว');
+        }
+        document.getElementById('rt-fontsize-apply').addEventListener('click', () => {
+            applyFontSize(document.getElementById('rt-fontsize').value);
+        });
+        document.getElementById('rt-fontsize').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); applyFontSize(e.target.value); }
+        });
+
+        // ===== ใส่ลิงก์ให้ภาพ — คลิกที่ภาพในตัวแก้ไข จะมีแถบปุ่มโผล่ใต้ภาพ =====
+        const imgLinkBar = document.getElementById('img-link-bar');
+        let linkTargetImg = null;
+        function imgParentAnchor(img) {
+            return (img && img.parentElement && img.parentElement.tagName === 'A') ? img.parentElement : null;
+        }
+        function showImgLinkBar(img) {
+            linkTargetImg = img;
+            document.getElementById('img-unlink-btn').style.display = imgParentAnchor(img) ? '' : 'none';
+            const r = img.getBoundingClientRect();
+            imgLinkBar.style.display = 'flex';
+            const barW = imgLinkBar.offsetWidth || 220;
+            let left = r.left; if (left + barW > window.innerWidth - 8) left = window.innerWidth - barW - 8;
+            imgLinkBar.style.left = Math.max(8, left) + 'px';
+            imgLinkBar.style.top = (r.bottom + 6) + 'px';
+        }
+        function hideImgLinkBar() { imgLinkBar.style.display = 'none'; linkTargetImg = null; }
+        editor.addEventListener('click', (e) => {
+            if (e.target && e.target.tagName === 'IMG') showImgLinkBar(e.target);
+            else hideImgLinkBar();
+        });
+        document.getElementById('img-link-btn').addEventListener('click', () => {
+            if (!linkTargetImg) return;
+            const a = imgParentAnchor(linkTargetImg);
+            const url = prompt('ใส่ลิงก์ให้ภาพนี้ (เช่น https://...):', (a && a.getAttribute('href')) || 'https://');
+            if (url === null) return;
+            const clean = url.trim();
+            if (!clean || clean === 'https://') return;
+            if (a) { a.setAttribute('href', clean); }
+            else {
+                const link = document.createElement('a');
+                link.href = clean; link.target = '_blank'; link.rel = 'noopener';
+                linkTargetImg.replaceWith(link); link.appendChild(linkTargetImg);
+            }
+            saveSel(); toast('ใส่ลิงก์ให้ภาพแล้ว'); hideImgLinkBar();
+        });
+        document.getElementById('img-unlink-btn').addEventListener('click', () => {
+            const a = imgParentAnchor(linkTargetImg);
+            if (a) { a.replaceWith(linkTargetImg); saveSel(); toast('เอาลิงก์ออกแล้ว'); }
+            hideImgLinkBar();
+        });
+        // ซ่อนแถบเมื่อคลิกที่อื่น (ไม่ใช่ภาพ/ไม่ใช่แถบ) หรือเลื่อนหน้า
+        document.addEventListener('click', (e) => {
+            if (e.target.tagName === 'IMG' || e.target.closest('#img-link-bar')) return;
+            hideImgLinkBar();
+        });
+        window.addEventListener('scroll', hideImgLinkBar, true);
 
         btnSave.addEventListener('click', async () => {
             btnSave.disabled = true;
