@@ -14,9 +14,10 @@ function requireSupportAdmin(req, res, next) {
   return res.redirect('/support-admin');
 }
 
-// หน้าแรก (/) = หน้า Home (ค้นหาตัวแทน) — ให้ index ชี้มาที่ home
+// หน้าแรก (/) = หน้า Home = โปรไฟล์ของบัญชีที่แอดมินตั้งไว้ (dashboard.html จัดการโหมดเอง:
+// เจ้าของบัญชีที่ล็อกอินอยู่ → แก้ไขได้ทุกส่วน / ผู้เข้าชม → ดูอย่างเดียว)
 router.get('/', (_req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, 'home.html'));
+  res.sendFile(path.join(PUBLIC_DIR, 'dashboard.html'));
 });
 
 router.get('/login', (req, res) => {

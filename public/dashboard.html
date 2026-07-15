@@ -2222,22 +2222,28 @@
             setTimeout(() => { t.className = 'toast'; }, 3000);
         }
 
-        // ===== โหมดหน้า: /agent/:id = ดูคนอื่น (public) / /profile,/dashboard = ตัวเอง (ต้อง login) =====
+        // ===== โหมดหน้า =====
+        //   /agent/:id       = ดูคนอื่น (public, read-only)
+        //   /profile,/dashboard = ตัวเอง (ต้อง login, แก้ไขได้)
+        //   /                = Home = โปรไฟล์บัญชีที่แอดมินตั้งไว้ (เจ้าของแก้ได้ / ผู้เข้าชมดูอย่างเดียว) — resolve ใน boot()
         const pathMatch = window.location.pathname.match(/^\/agent\/(\d+)/);
-        const viewingAgentId = pathMatch ? Number(pathMatch[1]) : null;
-        const isViewingOther = viewingAgentId !== null;
+        const isHome = window.location.pathname === '/';
+        let viewingAgentId = pathMatch ? Number(pathMatch[1]) : null;
+        let isViewingOther = viewingAgentId !== null;
 
-        if (isViewingOther) {
+        // ตั้งค่า UI โหมด "ดูอย่างเดียว" (ผู้เข้าชม) — ซ่อนปุ่มจัดการ/แก้ไข
+        function applyViewOtherUI() {
             document.title = 'โปรไฟล์ตัวแทน — VP Kanniporn';
             document.getElementById('loading-text').textContent = 'กำลังโหลดโปรไฟล์...';
-            // โหมดดูคนอื่น: ซ่อนปุ่มจัดการ (ตั้งค่า/ผู้ใช้/ออกจากระบบ) + ปุ่มแก้ไขทุกจุด, เปลี่ยน label เป็นลิงก์กลับ
             const ownerControls = document.getElementById('owner-controls');
             if (ownerControls) ownerControls.style.display = 'none';
-            document.getElementById('header-mode-label').innerHTML = '<a href="/home" style="color:var(--primary-orange); font-weight:600;">← กลับหน้าหลัก</a>';
+            const label = isHome ? '<a href="/home" style="color:var(--primary-orange); font-weight:600;">🔍 ค้นหาตัวแทน</a>'
+                : '<a href="/home" style="color:var(--primary-orange); font-weight:600;">← กลับหน้าหลัก</a>';
+            document.getElementById('header-mode-label').innerHTML = label;
             document.querySelectorAll('.edit-btn').forEach(b => b.style.display = 'none');
-            // นับการเข้าชมหน้าโปรไฟล์ (เฉพาะผู้ชม ไม่นับตอนเจ้าของดูเองที่ /profile)
-            if (window.trackView) window.trackView(viewingAgentId, 'profile', 'หน้าโปรไฟล์');
+            if (window.trackView && viewingAgentId) window.trackView(viewingAgentId, 'profile', 'หน้าโปรไฟล์');
         }
+        if (isViewingOther) applyViewOtherUI();
 
         // ===== Cover Slideshow (ย้ายมาจาก profile.html เดิม) =====
         let slideshowInterval = null;
@@ -3500,7 +3506,35 @@
         });
 
         // ===== Init =====
-        loadUser();
+        async function boot() {
+            if (isHome) {
+                try {
+                    const [meRes, featRes] = await Promise.all([
+                        fetch('/api/auth/me', { credentials: 'same-origin' }),
+                        fetch('/api/users/home-featured'),
+                    ]);
+                    const me = await meRes.json();
+                    const feat = await featRes.json();
+                    const homeAgent = feat && feat.agent;
+                    if (homeAgent) {
+                        if (me.authenticated && me.user && me.user.id === homeAgent.id) {
+                            // เจ้าของ Home ล็อกอินอยู่ → โหมดแก้ไข (เหมือน /profile)
+                            isViewingOther = false; viewingAgentId = null;
+                        } else {
+                            // ผู้เข้าชม/คนอื่น → โหมดดูอย่างเดียว (เหมือน /agent/:id)
+                            isViewingOther = true; viewingAgentId = homeAgent.id;
+                            applyViewOtherUI();
+                        }
+                    } else {
+                        // แอดมินยังไม่ได้ตั้งบัญชีหน้า Home
+                        if (!me.authenticated) { window.location.href = '/home'; return; } // ไปหน้า landing/ค้นหา
+                        isViewingOther = false; viewingAgentId = null; // ล็อกอินอยู่ → โชว์โปรไฟล์ตัวเอง
+                    }
+                } catch (e) { window.location.href = '/home'; return; }
+            }
+            loadUser();
+        }
+        boot();
     </script>
 
 </body>
