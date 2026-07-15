@@ -14,10 +14,9 @@ function requireSupportAdmin(req, res, next) {
   return res.redirect('/support-admin');
 }
 
-// หน้าแรก (/) = หน้า login (ถ้าล็อกอินอยู่แล้วไปหน้าโปรไฟล์ตัวเอง)
-router.get('/', (req, res) => {
-  if (req.session && req.session.userId) return res.redirect('/profile');
-  res.sendFile(path.join(PUBLIC_DIR, 'login.html'));
+// หน้าแรก (/) = หน้า Home (ค้นหาตัวแทน) — ให้ index ชี้มาที่ home
+router.get('/', (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'home.html'));
 });
 
 router.get('/login', (req, res) => {
