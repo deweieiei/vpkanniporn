@@ -5,8 +5,8 @@
    ============================================================ */
 .ic {
   display: inline-block;
-  width: 1.35em; height: 1.35em;
-  vertical-align: -0.32em;
+  width: 2.16em; height: 2.16em;
+  vertical-align: -0.62em;
   flex-shrink: 0;
   background-position: center;
   background-size: contain;

@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ผู้สนใจเป็นตัวแทน — VP Kanniporn FWD</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/Logo.svg">
-    <link rel="shortcut icon" href="/assets/Logo.svg">
+    <link rel="icon" type="image/svg+xml" href="/assets/Logo2.svg">
+    <link rel="shortcut icon" href="/assets/Logo2.svg">
     <link rel="stylesheet" href="/assets/icons.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap"
@@ -29,7 +29,7 @@
     <header class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
         <div class="max-w-3xl mx-auto px-4 py-2.5 flex justify-between items-center">
             <a href="/profile" class="flex items-center gap-3">
-                <img src="/assets/Logo.svg" alt="VP Kanniporn FWD" class="h-10 w-auto">
+                <img src="/assets/Logo.png" alt="VP Kanniporn FWD" class="h-10 w-auto">
                 <div class="border-l-2 border-gray-200 pl-3 hidden sm:block">
                     <p style="font-size:13px; font-weight:700; color:#E66D18; line-height:1.2;">Agent VP Kanniporn FWD
                     </p>
@@ -37,14 +37,14 @@
                         เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
                 </div>
             </a>
-            <a href="/inquiries" class="text-xs font-semibold text-gray-500 hover:text-orange-600">📩 ติดต่อสอบถาม →</a>
+            <a href="/inquiries" class="text-xs font-semibold text-gray-500 hover:text-orange-600"><i class="ic ic-contact"></i> ติดต่อสอบถาม →</a>
         </div>
     </header>
 
     <main class="max-w-3xl mx-auto px-4 py-8">
         <div class="flex items-end justify-between flex-wrap gap-2 mb-5">
             <div>
-                <h1 class="text-2xl font-extrabold text-gray-800">🤝 ผู้สนใจเป็นตัวแทน</h1>
+                <h1 class="text-2xl font-extrabold text-gray-800"><i class="ic ic-recruit"></i> ผู้สนใจเป็นตัวแทน</h1>
                 <p id="summary" class="text-sm text-gray-500 mt-1">กำลังโหลด…</p>
             </div>
         </div>
@@ -130,7 +130,7 @@
                 ? '<span class="text-[11px] font-bold text-white bg-red-500 px-2 py-0.5 rounded-full">ใหม่</span>'
                 : '<span class="text-[11px] font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">ติดต่อกลับแล้ว</span>';
             const noteLine = q.note
-                ? `<p class="text-xs text-gray-600 mt-1 line-clamp-2">📝 ${escapeHtml(q.note)}</p>` : '';
+                ? `<p class="text-xs text-gray-600 mt-1 line-clamp-2"><i class="ic ic-contact"></i> ${escapeHtml(q.note)}</p>` : '';
             return `
                 <div class="bg-white rounded-xl border ${isNew ? 'border-amber-200' : 'border-gray-100'} shadow-sm p-4 flex items-center gap-3 cursor-pointer hover:shadow-md transition" data-id="${q.id}">
                     <div class="w-11 h-11 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center font-bold flex-shrink-0">${escapeHtml((q.full_name || '?').trim().charAt(0) || '?')}</div>
@@ -139,7 +139,7 @@
                             <p class="font-bold text-gray-800 truncate">${escapeHtml(q.full_name)}</p>
                             ${badge}
                         </div>
-                        <p class="text-xs text-gray-500 mt-0.5">📞 ${escapeHtml(q.phone)}${q.line_id ? ' • 💬 ' + escapeHtml(q.line_id) : ''} • สมัครเมื่อ ${fmtDateTime(q.created_at)}</p>
+                        <p class="text-xs text-gray-500 mt-0.5"><i class="ic ic-phone"></i> ${escapeHtml(q.phone)}${q.line_id ? ' • <i class="ic ic-line"></i> ' + escapeHtml(q.line_id) : ''} • สมัครเมื่อ ${fmtDateTime(q.created_at)}</p>
                         ${noteLine}
                     </div>
                     <span class="text-gray-300 text-xl flex-shrink-0">›</span>
@@ -165,7 +165,7 @@
                 ? `<p class="text-xs text-green-700 mt-1">✔ ติดต่อกลับแล้วเมื่อ ${fmtDateTime(q.contacted_at)}</p>` : '';
             document.getElementById('detail-body').innerHTML = `
                 <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
-                    <p class="text-xs font-bold text-amber-600">🤝 สนใจสมัครเป็นตัวแทนประกัน</p>
+                    <p class="text-xs font-bold text-amber-600"><i class="ic ic-recruit"></i> สนใจสมัครเป็นตัวแทนประกัน</p>
                 </div>
                 ${detailRow('ชื่อ-นามสกุล', escapeHtml(q.full_name))}
                 ${detailRow('เบอร์โทรศัพท์', `<a href="${telHref(q.phone)}" class="text-orange-600 font-semibold">${escapeHtml(q.phone)}</a>`)}
@@ -176,7 +176,7 @@
                 <div class="pt-3 border-t border-gray-100">
                     ${contactedLine}
                     <div class="flex gap-2 mt-2">
-                        <a href="${telHref(q.phone)}" class="flex-1 text-center bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 rounded-full text-sm">📞 โทรหา</a>
+                        <a href="${telHref(q.phone)}" class="flex-1 text-center bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 rounded-full text-sm"><i class="ic ic-phone"></i> โทรหา</a>
                         <button id="mark-btn" data-id="${q.id}" data-undo="${isNew ? '0' : '1'}"
                             class="flex-1 ${isNew ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'} font-bold py-2.5 rounded-full text-sm">
                             ${isNew ? '✔ ทำเครื่องหมายว่าติดต่อกลับแล้ว' : 'ยกเลิกการติดต่อกลับ'}

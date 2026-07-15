@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>หน้าจัดการ — VP Kanniporn Office</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/Logo.svg">
-    <link rel="shortcut icon" href="/assets/Logo.svg">
+    <link rel="icon" type="image/svg+xml" href="/assets/Logo2.svg">
+    <link rel="shortcut icon" href="/assets/Logo2.svg">
     <link rel="stylesheet" href="/assets/icons.css">
 
     <link
@@ -219,6 +219,17 @@
             background: #e5e7eb;
         }
 
+        /* ปุ่มออกจากระบบแบบไอคอนล้วน — โชว์ข้างหน้าปุ่มขีดสามขีด เฉพาะจอแคบ */
+        .logout-fab {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 0;
+            font-size: 20px;
+        }
+
         .mobile-menu {
             position: absolute;
             top: calc(100% + 8px);
@@ -410,6 +421,11 @@
 
             .hamburger-btn {
                 display: inline-block;
+            }
+
+            .logout-fab {
+                display: inline-flex;
+                align-items: center;
             }
 
             #copy-profile-btn,
@@ -1638,6 +1654,7 @@
         <div class="header-right">
             <div id="header-mode-label" style="font-size: 11px; color: #6b7280;">หน้าจัดการ</div>
             <div class="owner-controls" id="owner-controls">
+                <button type="button" class="logout-fab" id="logout-btn-icon" title="ออกจากระบบ" aria-label="ออกจากระบบ"><i class="ic ic-logout"></i></button>
                 <div style="position: relative; display: inline-block;" id="hamburger-wrap">
                     <button class="hamburger-btn" id="hamburger-btn" title="เมนู">☰</button>
                     <div class="mobile-menu" id="mobile-menu">
@@ -1646,7 +1663,7 @@
                                 รายการผู้ติดต่อ</div>
 
                             <div class="mobile-menu-user-section">
-                                <button type="button" class="copy-link-btn" id="copy-profile-btn-mobile">🔗
+                                <button type="button" class="copy-link-btn" id="copy-profile-btn-mobile"><i class="ic ic-copy"></i>
                                     คัดลอกลิงก์</button>
                                 <div class="mobile-user-info">
                                     <div class="avatar-mobile" id="user-avatar-mobile"></div>
@@ -1710,7 +1727,7 @@
                         </div>
                     </div>
                 </div>
-                <button class="admin-btn" id="copy-profile-btn" title="คัดลอกลิงก์โปรไฟล์ไว้ส่งให้ผู้อื่น">🔗
+                <button class="admin-btn" id="copy-profile-btn" title="คัดลอกลิงก์โปรไฟล์ไว้ส่งให้ผู้อื่น"><i class="ic ic-copy"></i>
                     คัดลอกลิงก์</button>
                 <div class="admin-user">
                     <div class="avatar" id="user-avatar"></div>
@@ -1766,8 +1783,8 @@
                         "การวางแผนการเงินที่ดี ไม่ใช่เรื่องของคนรวย แต่เป็นเรื่องของคนที่อยากให้อนาคตของตัวเองมั่นคง"
                     </blockquote>
                     <div class="profile-contact">
-                        <p><span class="label">📞</span> <span id="agent-phone">062-239-7362</span></p>
-                        <p><span class="label">✉️</span> <span id="agent-email">kavisara.fwd@gmail.com</span></p>
+                        <p><span class="label"><i class="ic ic-phone"></i></span> <span id="agent-phone">062-239-7362</span></p>
+                        <p><span class="label"><i class="ic ic-gmail"></i></span> <span id="agent-email">kavisara.fwd@gmail.com</span></p>
                         <p><span class="label">💬</span> <span id="agent-line">@kavisara.fwd</span></p>
                     </div>
                     <div class="license-box" id="license-box">
@@ -1854,7 +1871,7 @@
             <p class="section-subtitle">อยากมีอาชีพอิสระ รายได้ไม่จำกัด? ร่วมเป็นตัวแทนประกันกับเรา — ทิ้งข้อมูลไว้ เดี๋ยวติดต่อกลับ</p>
             <div class="line-contact-inner">
                 <a id="recruit-btn" href="#" class="line-add-btn">
-                    <span class="line-ic">🤝</span>
+                    <span class="line-ic"><i class="ic ic-recruit"></i></span>
                     <span>กรอกใบสมัคร / สนใจเป็นตัวแทน</span>
                 </a>
             </div>
@@ -2159,10 +2176,10 @@
     <div id="contact-fab-wrap" class="hidden" style="position:fixed; bottom:20px; right:20px; z-index:1500; flex-direction:column; align-items:flex-end; gap:12px;">
         <div id="contact-menu" style="display:none; flex-direction:column; gap:8px;">
             <a id="fab-call" href="#" style="display:none; align-items:center; gap:8px; background:#fff; color:#374151; font-weight:600; font-size:14px; padding:12px 20px 12px 16px; border-radius:999px; box-shadow:0 8px 24px rgba(0,0,0,0.15); text-decoration:none;">
-                <span style="font-size:18px;">📞</span> โทรหาตัวแทน
+                <span style="font-size:18px;"><i class="ic ic-phone"></i></span> โทรหาตัวแทน
             </a>
             <a id="fab-form" href="#" style="display:flex; align-items:center; gap:8px; background:#fff; color:#374151; font-weight:600; font-size:14px; padding:12px 20px 12px 16px; border-radius:999px; box-shadow:0 8px 24px rgba(0,0,0,0.15); text-decoration:none;">
-                <span style="font-size:18px;">📝</span> สร้างรายการติดต่อ
+                <span style="font-size:18px;"><i class="ic ic-contact"></i></span> สร้างรายการติดต่อ
             </a>
         </div>
         <button id="contact-fab" title="ติดต่อสอบถาม" type="button"
@@ -2174,6 +2191,7 @@
 
     <script src="/i18n.js"></script>
     <script src="/track.js"></script>
+    <script src="/img-compress.js"></script>
     <script>
         let currentUser = null;
 
@@ -2239,18 +2257,20 @@
             }, 4500);
         }
 
-        // เลือกภาพพื้นหลัง hero ตามความกว้างจอ:
-        //   มือถือ (<=640px)  → cover_image_mobile ถ้ามี
-        //   iPad (641–1024px) → cover_image_tablet ถ้ามี
-        //   คอม (>1024px) หรือไม่มีรูปเฉพาะอุปกรณ์ → สไลด์ cover_images (desktop)
+        // เลือกภาพพื้นหลัง hero ตาม "ความกว้างจอ" เป็นหลัก (ไม่ใช่ชนิดอุปกรณ์):
+        //   จอแคบมาก (<=640px)     → รูปมือถือ ถ้ามี / ไม่มี → ใช้ของเว็บ
+        //   จอกลาง iPad แนวตั้ง (641–900px) → รูป iPad ถ้ามี / ไม่มี → ใช้ของเว็บ
+        //   จอกว้าง (>900px) รวม iPad แนวนอน + คอม + เว็บย่อไม่มาก → สไลด์ของเว็บเสมอ
+        //   *แต่ละช่วง fallback ไป "ของเว็บ" ตรงๆ (ไม่ข้ามไปใช้รูปอุปกรณ์อื่น)
         function pickCoverForViewport() {
             const w = window.innerWidth;
             const u = currentUser || {};
-            if (w <= 640 && u.cover_image_mobile) return [u.cover_image_mobile];
-            if (w <= 1024 && u.cover_image_tablet) return [u.cover_image_tablet];
-            return parseJsonArray(u.cover_images);
+            const web = parseJsonArray(u.cover_images);
+            if (w <= 640) return u.cover_image_mobile ? [u.cover_image_mobile] : web;
+            if (w <= 900) return u.cover_image_tablet ? [u.cover_image_tablet] : web;
+            return web;
         }
-        function coverBucket(w) { return w <= 640 ? 'mobile' : (w <= 1024 ? 'tablet' : 'desktop'); }
+        function coverBucket(w) { return w <= 640 ? 'mobile' : (w <= 900 ? 'tablet' : 'desktop'); }
         let lastCoverBucket = null;
         function applyHeroBackground() {
             lastCoverBucket = coverBucket(window.innerWidth);
@@ -3015,6 +3035,8 @@
                 if (!content && !postImageFile && !postExistingImage) {
                     throw new Error('กรุณาใส่ข้อความหรือรูปอย่างน้อยหนึ่งอย่าง');
                 }
+                // บีบอัดรูปก่อนอัปโหลด (เล็กลง โหลดไวขึ้นสำหรับผู้เข้าชม)
+                const imgFile = postImageFile ? await compressImage(postImageFile) : null;
                 if (editingPostId) {
                     const res = await fetch('/api/posts/' + editingPostId, {
                         method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
@@ -3022,8 +3044,8 @@
                     });
                     const d = await res.json();
                     if (!res.ok) throw new Error(d.error || 'บันทึกไม่สำเร็จ');
-                    if (postImageFile) {
-                        const fd = new FormData(); fd.append('image', postImageFile);
+                    if (imgFile) {
+                        const fd = new FormData(); fd.append('image', imgFile);
                         const r2 = await fetch('/api/posts/' + editingPostId + '/image', { method: 'POST', credentials: 'same-origin', body: fd });
                         const d2 = await r2.json();
                         if (!r2.ok) throw new Error(d2.error || 'อัปโหลดรูปไม่สำเร็จ');
@@ -3032,7 +3054,7 @@
                     const fd = new FormData();
                     fd.append('content', content);
                     fd.append('is_visible', String(isVisible));
-                    if (postImageFile) fd.append('image', postImageFile);
+                    if (imgFile) fd.append('image', imgFile);
                     const res = await fetch('/api/posts', { method: 'POST', credentials: 'same-origin', body: fd });
                     const d = await res.json();
                     if (!res.ok) throw new Error(d.error || 'บันทึกไม่สำเร็จ');
@@ -3075,7 +3097,7 @@
 
         // ===== หัวข้อ "คุณกำลังมองหาอะไรอยู่?" (user_pages / popcard) =====
         // การ์ด 1 ใบ = 1 หน้าเนื้อหา; กดแล้วไปหน้า /page/:id (แสดงข้อมูลจาก DB)
-        // เจ้าของ (ไม่ใช่โหมดดูคนอื่น) จะเห็นปุ่มลบ 🗑️ และการ์ด "＋ เพิ่มหัวข้อใหม่"
+        // เจ้าของ (ไม่ใช่โหมดดูคนอื่น) จะเห็นปุ่มลบ <i class="ic ic-trash"></i> และการ์ด "＋ เพิ่มหัวข้อใหม่"
         function lookforCard(p) {
             const hasImg = !!p.button_image;
             const style = hasImg ? ` style="background-image:url('${escapeHtml(p.button_image)}')"` : '';
@@ -3084,8 +3106,8 @@
                 ? ' <span class="inactive-tag">ซ่อนอยู่</span>' : '';
             const tools = !isViewingOther
                 ? `<div class="lf-tools">
-                        <button type="button" class="lf-edit" data-edit-id="${p.id}" title="แก้ไข">✏️</button>
-                        <button type="button" class="lf-del" data-del="${p.id}" title="ลบหัวข้อนี้">🗑️</button>
+                        <button type="button" class="lf-edit" data-edit-id="${p.id}" title="แก้ไข"><i class="ic ic-edit"></i></button>
+                        <button type="button" class="lf-del" data-del="${p.id}" title="ลบหัวข้อนี้"><i class="ic ic-trash"></i></button>
                    </div>` : '';
             return `
                 <div class="lf-card${noimg}" data-page-id="${p.id}"${style}>
@@ -3329,6 +3351,14 @@
             if (logoutMobile) {
                 logoutMobile.addEventListener('click', () => {
                     menu.classList.remove('open');
+                    const btn = document.getElementById('logout-btn');
+                    if (btn) btn.click();
+                });
+            }
+            // ปุ่มออกจากระบบแบบไอคอน (ข้างหน้าขีดสามขีด บนจอแคบ)
+            const logoutIcon = document.getElementById('logout-btn-icon');
+            if (logoutIcon) {
+                logoutIcon.addEventListener('click', () => {
                     const btn = document.getElementById('logout-btn');
                     if (btn) btn.click();
                 });

@@ -5,8 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>จัดการตัวแทน — SupperAdmin</title>
-  <link rel="icon" type="image/svg+xml" href="/assets/Logo.svg">
-  <link rel="shortcut icon" href="/assets/Logo.svg">
+  <link rel="icon" type="image/svg+xml" href="/assets/Logo2.svg">
+  <link rel="shortcut icon" href="/assets/Logo2.svg">
     <link rel="stylesheet" href="/assets/icons.css">
   <meta name="robots" content="noindex" />
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap"
@@ -438,7 +438,7 @@
         <td>${visits}</td>
         <td>${status}</td>
         <td><div class="row-actions">
-          ${clickable ? `<button class="btn btn-sm" data-view="${u.id}" title="ดูสถิติการเข้าชมของผู้ใช้คนนี้">📊 ดูสถิติ</button>` : ''}
+          ${clickable ? `<button class="btn btn-sm" data-view="${u.id}" title="ดูสถิติการเข้าชมของผู้ใช้คนนี้"><i class="ic ic-stats"></i> ดูสถิติ</button>` : ''}
           <button class="btn btn-sm btn-ghost" data-toggle="${u.id}" data-active="${u.is_active ? 1 : 0}">${u.is_active ? 'ปิดใช้งาน' : 'เปิดใช้งาน'}</button>
           <button class="btn btn-sm btn-danger" data-del="${u.id}" data-name="${esc(name)}">ลบ</button>
         </div></td>
