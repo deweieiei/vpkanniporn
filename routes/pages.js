@@ -50,6 +50,11 @@ router.get('/recruit/:id', (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'recruit.html'));
 });
 
+// หน้าโพสต์เดี่ยว (ฟีดตัวแทน) — สาธารณะ ดูรูปได้เยอะ
+router.get('/post/:id', (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'post-detail.html'));
+});
+
 // หน้ารายการผู้ติดต่อเข้ามา (เฉพาะเจ้าของที่ล็อกอิน)
 router.get('/inquiries', requireAuth, (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'inquiries.html'));

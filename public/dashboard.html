@@ -1601,6 +1601,15 @@
         }
         .post-body:empty { display: none; }
         .post-image { width: 100%; display: block; max-height: 560px; object-fit: cover; background: #f3f4f6; }
+        /* ตารางรูปแบบ Facebook */
+        .post-grid { display: grid; gap: 3px; grid-template-columns: 1fr 1fr; background: #f3f4f6; }
+        .post-grid .pg-cell { position: relative; overflow: hidden; aspect-ratio: 1 / 1; }
+        .post-grid .pg-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .post-grid.n1 { display: block; }
+        .post-grid.n1 .pg-cell { aspect-ratio: auto; }
+        .post-grid.n1 .pg-cell img { height: auto; max-height: 640px; }
+        .post-grid.n3 .pg-cell:first-child { grid-column: 1 / -1; aspect-ratio: 16 / 9; }
+        .pg-more { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.5); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 700; }
         .post-tools { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 16px; border-top: 1px solid #f3f4f6; }
         .post-tool-btn {
             font-family: inherit; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 8px;
@@ -2090,16 +2099,13 @@
                     <textarea name="content" rows="5" placeholder="เขียนอะไรสักหน่อย... เช่น ข่าวสาร โปรโมชั่น หรือเกร็ดความรู้"></textarea>
                 </div>
                 <div class="field">
-                    <label>รูปประกอบ (ไม่บังคับ — 1 รูป)</label>
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <div id="post-img-preview" style="width:84px; height:84px; border-radius:10px; background:#f3f4f6 center/cover no-repeat; flex-shrink:0; border:1px solid #e5e7eb;"></div>
-                        <div>
-                            <label for="post-image-input" class="add-cover-btn">เลือกรูป</label>
-                            <button type="button" id="post-img-clear" class="add-cover-btn" style="display:none; background:#fee2e2; color:#b91c1c;">เอารูปออก</button>
-                            <input type="file" id="post-image-input" accept="image/*" style="display:none;">
-                            <p class="help" style="margin:4px 0 0;">jpg/png/webp สูงสุด 5MB</p>
-                        </div>
+                    <label>รูปประกอบ (ไม่บังคับ — ใส่ได้หลายรูป)</label>
+                    <div id="post-images-grid" class="cover-previews-grid"></div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+                        <label for="post-image-input" class="add-cover-btn">+ เพิ่มรูป</label>
+                        <input type="file" id="post-image-input" accept="image/*" multiple style="display:none;">
                     </div>
+                    <p class="help" style="margin:6px 0 0;">เพิ่มได้เรื่อยๆ · กด × บนรูปเพื่อเอาออก · jpg/png/webp สูงสุด 5MB/รูป</p>
                 </div>
                 <div class="field">
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:400;">
@@ -2912,8 +2918,8 @@
         // ===== โพสต์ / ข่าวสาร (ฟีดแบบ Facebook — ไม่มีไลก์/คอมเมนต์) =====
         let postsData = [];
         let editingPostId = null;
-        let postImageFile = null;      // ไฟล์รูปใหม่ที่เพิ่งเลือก (ยังไม่อัปโหลด)
-        let postExistingImage = null;  // รูปเดิมของโพสต์ (ตอนแก้ไข)
+        // รูปในโพสต์ (หลายรูป): [{ type:'existing', path } | { type:'new', file, url }]
+        let postImagesState = [];
 
         async function loadPosts() {
             const section = document.getElementById('posts-section');
@@ -2952,6 +2958,13 @@
                 ? `<div class="post-avatar" style="background-image:url('${currentUser.avatar_path}')"></div>`
                 : '<div class="post-avatar">👤</div>';
             feed.innerHTML = postsData.map(p => postCard(p, authorName, avatar)).join('');
+            // กดที่การ์ด (ยกเว้นปุ่มเครื่องมือ) → เปิดหน้าโพสต์เต็ม /post/:id
+            feed.querySelectorAll('.post-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('button') || e.target.closest('.post-tools')) return;
+                    if (card.dataset.postId) window.location.href = '/post/' + card.dataset.postId;
+                });
+            });
             if (!isViewingOther) {
                 feed.querySelectorAll('[data-post-toggle]').forEach(b => b.addEventListener('click', () => togglePost(Number(b.dataset.postToggle))));
                 feed.querySelectorAll('[data-post-edit]').forEach(b => b.addEventListener('click', () => openPostModal(Number(b.dataset.postEdit))));
@@ -2959,11 +2972,25 @@
             }
         }
 
+        // ตารางรูปแบบ Facebook: 1 เต็ม / 2 คอลัมน์ / 3 (บนเต็ม+ล่าง2) / 4 ตาราง / 5+ โชว์ 4 + "+N"
+        function postImagesHtml(images) {
+            const imgs = images || [];
+            if (imgs.length === 0) return '';
+            const show = Math.min(imgs.length, 4);
+            const cls = 'post-grid n' + (imgs.length === 3 ? 3 : show);
+            let cells = '';
+            for (let i = 0; i < show; i++) {
+                const more = (i === 3 && imgs.length > 4) ? `<div class="pg-more">+${imgs.length - 4}</div>` : '';
+                cells += `<div class="pg-cell"><img src="${escapeHtml(imgs[i])}" alt="" loading="lazy">${more}</div>`;
+            }
+            return `<div class="${cls}">${cells}</div>`;
+        }
+
         function postCard(p, authorName, avatar) {
             const hidden = !isViewingOther && p.is_visible == 0;
             const hiddenTag = hidden ? ' <span class="inactive-tag">ซ่อนอยู่</span>' : '';
-            const img = p.image_path ? `<img class="post-image" src="${escapeHtml(p.image_path)}" alt="">` : '';
             const body = p.content ? `<div class="post-body">${escapeHtml(p.content)}</div>` : '';
+            const imgsHtml = postImagesHtml(p.images);
             const tools = isViewingOther ? '' : `
                 <div class="post-tools">
                     <button class="post-tool-btn" data-post-toggle="${p.id}">${p.is_visible == 0 ? '👁 แสดง' : '🙈 ซ่อน'}</button>
@@ -2971,7 +2998,7 @@
                     <button class="post-tool-btn danger" data-post-del="${p.id}"><i class="ic ic-trash"></i>ลบ</button>
                 </div>`;
             return `
-                <div class="post-card${hidden ? ' is-hidden' : ''}">
+                <div class="post-card${hidden ? ' is-hidden' : ''}" data-post-id="${p.id}" style="cursor:pointer;">
                     <div class="post-head">
                         ${avatar}
                         <div>
@@ -2980,31 +3007,49 @@
                         </div>
                     </div>
                     ${body}
-                    ${img}
+                    ${imgsHtml}
                     ${tools}
                 </div>`;
         }
 
+        function renderPostImages() {
+            const grid = document.getElementById('post-images-grid');
+            if (!grid) return;
+            if (postImagesState.length === 0) {
+                grid.innerHTML = '<p style="grid-column:1/-1; font-size:11px; color:#9ca3af; margin:0;">ยังไม่มีรูป กด "+ เพิ่มรูป"</p>';
+            } else {
+                grid.innerHTML = postImagesState.map((c, i) => {
+                    const src = c.type === 'existing' ? c.path : c.url;
+                    return `<div class="cover-preview-item"><img src="${src}"><button type="button" class="cover-preview-remove" data-post-img-remove="${i}" title="ลบ">×</button></div>`;
+                }).join('');
+                grid.querySelectorAll('[data-post-img-remove]').forEach(b => b.addEventListener('click', () => {
+                    const idx = Number(b.dataset.postImgRemove);
+                    const c = postImagesState[idx];
+                    if (c && c.type === 'new' && c.url) URL.revokeObjectURL(c.url);
+                    postImagesState.splice(idx, 1);
+                    renderPostImages();
+                }));
+            }
+        }
+
         function openPostModal(id) {
             const form = document.querySelector('[data-form="post"]');
-            const preview = document.getElementById('post-img-preview');
-            const clearBtn = document.getElementById('post-img-clear');
+            // ล้าง object URL ของรูปใหม่เดิม (กันหน่วยความจำรั่ว)
+            postImagesState.forEach(c => { if (c.type === 'new' && c.url) URL.revokeObjectURL(c.url); });
             editingPostId = id || null;
-            postImageFile = null;
-            postExistingImage = null;
+            postImagesState = [];
             if (id) {
                 const p = postsData.find(x => x.id === id);
                 document.getElementById('post-modal-title').innerHTML = '<i class="ic ic-edit"></i> แก้ไขโพสต์';
                 form.elements.content.value = (p && p.content) || '';
                 form.elements.is_visible.checked = !p || p.is_visible != 0;
-                postExistingImage = (p && p.image_path) || null;
+                (p && p.images ? p.images : []).forEach(path => postImagesState.push({ type: 'existing', path }));
             } else {
                 document.getElementById('post-modal-title').innerHTML = '<i class="ic ic-edit"></i> เขียนโพสต์ใหม่';
                 form.reset();
                 form.elements.is_visible.checked = true;
             }
-            preview.style.backgroundImage = postExistingImage ? `url('${postExistingImage}')` : '';
-            clearBtn.style.display = 'none';
+            renderPostImages();
             document.querySelector('[data-modal="post"]').classList.add('open');
         }
 
@@ -3012,20 +3057,12 @@
         if (createPostBtn) createPostBtn.addEventListener('click', () => openPostModal(null));
 
         document.getElementById('post-image-input').addEventListener('change', (e) => {
-            const f = e.target.files[0];
-            if (!f) return;
-            if (f.size > 5 * 1024 * 1024) { alert('ไฟล์ใหญ่เกิน 5MB'); e.target.value = ''; return; }
-            postImageFile = f;
-            const reader = new FileReader();
-            reader.onload = ev => { document.getElementById('post-img-preview').style.backgroundImage = `url('${ev.target.result}')`; };
-            reader.readAsDataURL(f);
-            document.getElementById('post-img-clear').style.display = '';
+            Array.from(e.target.files).forEach(f => {
+                if (f.size > 5 * 1024 * 1024) { alert(`ไฟล์ "${f.name}" ใหญ่เกิน 5MB ข้ามไป`); return; }
+                postImagesState.push({ type: 'new', file: f, url: URL.createObjectURL(f) });
+            });
             e.target.value = '';
-        });
-        document.getElementById('post-img-clear').addEventListener('click', () => {
-            postImageFile = null;
-            document.getElementById('post-img-preview').style.backgroundImage = postExistingImage ? `url('${postExistingImage}')` : '';
-            document.getElementById('post-img-clear').style.display = 'none';
+            renderPostImages();
         });
 
         document.querySelector('[data-form="post"]').addEventListener('submit', async e => {
@@ -3035,11 +3072,15 @@
             try {
                 const content = e.target.elements.content.value.trim();
                 const isVisible = e.target.elements.is_visible.checked ? 1 : 0;
-                if (!content && !postImageFile && !postExistingImage) {
+                const keep = postImagesState.filter(c => c.type === 'existing').map(c => c.path);
+                const newFiles = postImagesState.filter(c => c.type === 'new').map(c => c.file);
+                if (!content && postImagesState.length === 0) {
                     throw new Error('กรุณาใส่ข้อความหรือรูปอย่างน้อยหนึ่งอย่าง');
                 }
-                // บีบอัดรูปก่อนอัปโหลด (เล็กลง โหลดไวขึ้นสำหรับผู้เข้าชม)
-                const imgFile = postImageFile ? await compressImage(postImageFile) : null;
+                // บีบอัดรูปใหม่ทุกรูปก่อนอัปโหลด (โหลดไวขึ้นสำหรับผู้เข้าชม)
+                const compressed = [];
+                for (const f of newFiles) compressed.push(await compressImage(f));
+
                 if (editingPostId) {
                     const res = await fetch('/api/posts/' + editingPostId, {
                         method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
@@ -3047,17 +3088,18 @@
                     });
                     const d = await res.json();
                     if (!res.ok) throw new Error(d.error || 'บันทึกไม่สำเร็จ');
-                    if (imgFile) {
-                        const fd = new FormData(); fd.append('image', imgFile);
-                        const r2 = await fetch('/api/posts/' + editingPostId + '/image', { method: 'POST', credentials: 'same-origin', body: fd });
-                        const d2 = await r2.json();
-                        if (!r2.ok) throw new Error(d2.error || 'อัปโหลดรูปไม่สำเร็จ');
-                    }
+                    // อัปเดตชุดรูป: เก็บที่เหลือ + เพิ่มรูปใหม่
+                    const fd = new FormData();
+                    fd.append('images_keep', JSON.stringify(keep));
+                    compressed.forEach(f => fd.append('images', f));
+                    const r2 = await fetch('/api/posts/' + editingPostId + '/images', { method: 'POST', credentials: 'same-origin', body: fd });
+                    const d2 = await r2.json();
+                    if (!r2.ok) throw new Error(d2.error || 'บันทึกรูปไม่สำเร็จ');
                 } else {
                     const fd = new FormData();
                     fd.append('content', content);
                     fd.append('is_visible', String(isVisible));
-                    if (imgFile) fd.append('image', imgFile);
+                    compressed.forEach(f => fd.append('images', f));
                     const res = await fetch('/api/posts', { method: 'POST', credentials: 'same-origin', body: fd });
                     const d = await res.json();
                     if (!res.ok) throw new Error(d.error || 'บันทึกไม่สำเร็จ');

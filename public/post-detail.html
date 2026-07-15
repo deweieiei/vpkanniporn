@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โพสต์ — VP Kanniporn FWD</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/Logo2.svg">
+    <link rel="shortcut icon" href="/assets/Logo2.svg">
+    <link rel="stylesheet" href="/assets/icons.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        html { font-size: clamp(13px, 0.5vw + 11px, 16px); }
+        body { font-family: 'Prompt', sans-serif; }
+        .post-text { white-space: pre-wrap; word-break: break-word; line-height: 1.7; }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 antialiased min-h-screen">
+
+    <!-- HEADER -->
+    <header class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
+        <div class="max-w-2xl mx-auto px-4 py-2.5 flex justify-between items-center">
+            <a href="/home" class="flex items-center gap-3">
+                <img src="/assets/Logo.png" alt="VP Kanniporn FWD" class="h-10 w-auto">
+                <div class="border-l-2 border-gray-200 pl-3 hidden sm:block">
+                    <p style="font-size:13px; font-weight:700; color:#E66D18; line-height:1.2;">Agent VP Kanniporn FWD</p>
+                    <p style="font-size:11px; color:#6b7280; line-height:1.2; margin-top:2px;">สำนักงานตัวแทนดิจิทัล เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
+                </div>
+            </a>
+            <a id="back-link" href="/home" class="text-xs font-semibold text-gray-500 hover:text-orange-600"><i class="ic ic-back"></i> กลับ</a>
+        </div>
+    </header>
+
+    <main class="max-w-2xl mx-auto px-4 py-6">
+        <div id="loading" class="text-center text-gray-400 py-20 text-sm">⏳ กำลังโหลด…</div>
+
+        <div id="notfound" class="hidden text-center py-20">
+            <p class="text-4xl mb-3">😔</p>
+            <p class="font-bold text-lg text-gray-700">ไม่พบโพสต์นี้</p>
+            <a href="/home" class="text-orange-600 text-sm mt-3 inline-block">← กลับหน้าหลัก</a>
+        </div>
+
+        <article id="post" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="flex items-center gap-3 p-4 pb-0">
+                <div id="author-avatar" class="w-12 h-12 rounded-full bg-amber-50 bg-center bg-cover flex items-center justify-center text-2xl flex-shrink-0">👤</div>
+                <div>
+                    <p id="author-name" class="font-bold text-gray-800 leading-tight"></p>
+                    <p id="post-date" class="text-xs text-gray-400"></p>
+                </div>
+            </div>
+            <div id="post-text" class="post-text px-4 py-3 text-[15px] text-gray-700"></div>
+            <div id="post-images"></div>
+            <div class="p-4 border-t border-gray-100">
+                <a id="agent-link" href="#" class="inline-flex items-center gap-2 text-sm font-semibold text-orange-600 hover:text-orange-700">
+                    ดูโปรไฟล์ตัวแทน →
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <div id="lightbox" class="fixed inset-0 bg-black/90 z-[9000] items-center justify-center p-4" style="display:none;">
+        <img id="lightbox-img" src="" alt="" class="max-w-full max-h-full object-contain rounded">
+        <button id="lightbox-close" class="absolute top-4 right-5 text-white text-3xl">✕</button>
+    </div>
+
+    <script>
+        const m = location.pathname.match(/^\/post\/(\d+)/);
+        const postId = m ? Number(m[1]) : null;
+
+        function escapeHtml(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+                ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+        function fmtDateTime(v) {
+            if (!v) return '';
+            const d = new Date(v);
+            if (isNaN(d)) return '';
+            return d.toLocaleString('th-TH', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' น.';
+        }
+
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').style.display = 'flex';
+        }
+        document.getElementById('lightbox-close').addEventListener('click', () => { document.getElementById('lightbox').style.display = 'none'; });
+        document.getElementById('lightbox').addEventListener('click', (e) => { if (e.target.id === 'lightbox') e.currentTarget.style.display = 'none'; });
+
+        async function load() {
+            if (!postId) return showNotFound();
+            try {
+                const res = await fetch('/api/posts/' + postId, { credentials: 'same-origin' });
+                if (!res.ok) return showNotFound();
+                const d = await res.json();
+                render(d.post);
+            } catch (e) { showNotFound(); }
+        }
+        function showNotFound() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('notfound').classList.remove('hidden');
+        }
+
+        function render(p) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('post').classList.remove('hidden');
+
+            const name = `${p.author.first_name || ''} ${p.author.last_name || ''}`.trim() || 'ตัวแทน';
+            document.getElementById('author-name').textContent = name;
+            document.getElementById('post-date').textContent = fmtDateTime(p.created_at);
+            document.title = name + ' — โพสต์ | VP Kanniporn FWD';
+            if (p.author.avatar_path) {
+                const av = document.getElementById('author-avatar');
+                av.textContent = ''; av.style.backgroundImage = `url('${p.author.avatar_path}')`;
+            }
+            const txt = document.getElementById('post-text');
+            if (p.content) txt.textContent = p.content; else txt.style.display = 'none';
+
+            const imgs = p.images || [];
+            const box = document.getElementById('post-images');
+            box.innerHTML = imgs.map(src =>
+                `<img src="${escapeHtml(src)}" alt="" loading="lazy" class="w-full block cursor-zoom-in" data-full="${escapeHtml(src)}">`
+            ).join('');
+            box.querySelectorAll('img').forEach(im => im.addEventListener('click', () => openLightbox(im.dataset.full)));
+
+            document.getElementById('agent-link').href = '/agent/' + p.user_id;
+            document.getElementById('back-link').href = '/agent/' + p.user_id;
+        }
+
+        load();
+    </script>
+</body>
+
+</html>
