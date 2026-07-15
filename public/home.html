@@ -4,273 +4,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ค้นหาตัวแทน — VP Kanniporn | FWD Insurance</title>
-    <meta name="description"
-        content="ค้นหาตัวแทนประกัน FWD สำนักงาน VP Kanniporn — ค้นด้วยชื่อ รหัสตัวแทน จังหวัด หรือสาขา">
+    <title>VP Kanniporn — FWD Insurance | วางแผนวันนี้ เพื่ออนาคตที่คุณเลือกได้</title>
+    <meta name="description" content="สำนักงานตัวแทน FWD — วางแผนประกันชีวิต สุขภาพ ออมทรัพย์ บำนาญ และมรดก โดยที่ปรึกษามืออาชีพ กวิสรา จงเจริญ">
     <link rel="icon" type="image/svg+xml" href="/assets/Logo2.svg">
     <link rel="shortcut icon" href="/assets/Logo2.svg">
     <link rel="stylesheet" href="/assets/icons.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
     <style>
-        /* ย่อ-ขยายทุกอย่างสมส่วนตามจอ (มือถือ→iPad→คอม) ผ่าน root font-size — Tailwind ใช้หน่วย rem จึงปรับตามอัตโนมัติ */
-        html {
-            font-size: clamp(13px, 0.5vw + 11px, 16px);
-        }
-
-        body {
-            font-family: 'Prompt', sans-serif;
-        }
-
-        .fwd-orange {
-            color: #FF6B00;
-        }
-
-        .fwd-bg-orange {
-            background-color: #FF6B00;
-        }
-
-        .hero-band {
+        html { font-size: clamp(13px, 0.5vw + 11px, 16px); scroll-behavior: smooth; }
+        body { font-family: 'Prompt', sans-serif; }
+        .script { font-family: 'Dancing Script', cursive; }
+        .hero-bg {
             background:
-                linear-gradient(135deg, rgba(255, 107, 0, 0.92) 0%, rgba(214, 85, 0, 0.95) 100%),
-                url('/assets/background.svg') center center / cover no-repeat;
+                linear-gradient(105deg, rgba(255,247,237,0.97) 0%, rgba(255,237,213,0.85) 42%, rgba(255,140,60,0.25) 70%, rgba(255,107,0,0.1) 100%),
+                radial-gradient(circle at 78% 30%, rgba(255,183,94,0.35), transparent 55%),
+                linear-gradient(135deg, #fff 0%, #fff7ee 55%, #ffe8cf 100%);
         }
-
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+        .gold-band {
+            background:
+                radial-gradient(circle at 15% 20%, rgba(212,175,55,0.10), transparent 40%),
+                radial-gradient(circle at 85% 80%, rgba(212,175,55,0.10), transparent 40%),
+                linear-gradient(135deg, #fffdf8, #fdf4e3);
         }
+        .plan-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(255,107,0,0.16); }
+        .nav-link { display:flex; flex-direction:column; align-items:center; gap:2px; color:#4b5563; font-size:12px; font-weight:600; white-space:nowrap; transition:color .15s; }
+        .nav-link:hover { color:#FF6B00; }
+        .nav-link .ic, .nav-link .emo { font-size:17px; }
+        .no-scrollbar::-webkit-scrollbar { display:none; }
+        .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
     </style>
 </head>
 
-<body class="bg-gray-50 text-gray-800 antialiased">
+<body class="bg-white text-gray-800 antialiased">
 
-    <!-- ===== HEADER ===== -->
-    <header class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
-        <div class="max-w-6xl mx-auto px-4 py-2.5 flex justify-between items-center">
-            <a href="/home" class="flex items-center gap-3">
-                <img src="/assets/Logo.png" alt="VP Kanniporn FWD" class="h-11 w-auto">
-                <div class="border-l-2 border-gray-200 pl-3 hidden sm:block">
-                    <p style="font-size:13px; font-weight:700; color:#E66D18; line-height:1.2;">Agent VP Kanniporn FWD
-                    </p>
-                    <p style="font-size:11px; color:#6b7280; line-height:1.2; margin-top:2px;">สำนักงานตัวแทนดิจิทัล
-                        เสนอโดย ตัวแทนทีมVP กัลณิภรณ์ เอฟ ดับบลิว ดี</p>
-                </div>
+    <!-- ===== NAV ===== -->
+    <header class="bg-white/95 backdrop-blur shadow-sm sticky top-0 z-50 border-b border-orange-100">
+        <div class="max-w-6xl mx-auto px-3 h-16 flex items-center gap-3">
+            <a href="/" class="flex items-center gap-2 flex-shrink-0">
+                <img src="/assets/Logo.png" alt="FWD" class="h-9 w-auto">
             </a>
-            <a href="/login" class="fwd-bg-orange text-white text-xs font-bold px-4 py-2 rounded-full shadow-md hover:bg-orange-600 transition inline-flex items-center gap-1.5" title="เข้าสู่ระบบตัวแทน">
-                🔑 เข้าสู่ระบบ
-            </a>
+            <nav class="flex-1 flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar px-1">
+                <a href="#hero" class="nav-link"><i class="ic ic-home"></i><span>หน้าแรก</span></a>
+                <a href="#plans" class="nav-link"><span class="emo">💵</span><span>วางแผนการเงิน</span></a>
+                <a href="#plans" class="nav-link"><span class="emo">❤️</span><span>ประกันสุขภาพ</span></a>
+                <a href="#plans" class="nav-link"><span class="emo">🐷</span><span>ออมเงินและมรดก</span></a>
+                <a href="#reviews" class="nav-link"><i class="ic ic-stats"></i><span>ผลงานและรีวิว</span></a>
+                <a href="#recruit" class="nav-link"><i class="ic ic-recruit"></i><span>ร่วมงานกับเรา</span></a>
+                <a href="#contact" class="nav-link"><i class="ic ic-phone"></i><span>ติดต่อเรา</span></a>
+            </nav>
+            <a href="/login" class="hidden sm:inline-flex items-center text-xs font-bold text-gray-500 hover:text-orange-600 flex-shrink-0" title="เข้าสู่ระบบตัวแทน">🔑 เข้าสู่ระบบ</a>
+            <a href="#contact" class="flex-shrink-0 inline-flex items-center gap-1.5 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-full shadow-md hover:shadow-lg transition"><i class="ic ic-phone"></i> ติดต่อเรา</a>
         </div>
     </header>
 
-    <!-- ===== HERO + SEARCH ===== -->
-    <section class="hero-band text-white pt-10 pb-24 px-4 text-center relative">
-        <div class="max-w-3xl mx-auto">
-            <h1 class="text-2xl md:text-4xl font-extrabold drop-shadow-sm" data-i18n="search.title">ค้นหาตัวแทนประกัน
-                FWD</h1>
-            <p class="text-sm md:text-base text-white/90 mt-3" data-i18n="search.subtitle">พิมพ์ชื่อ รหัสตัวแทน จังหวัด
-                หรือสาขา เพื่อค้นหาตัวแทนที่ดูแลคุณ</p>
+    <!-- ===== HERO ===== -->
+    <section id="hero" class="hero-bg relative overflow-hidden">
+        <div class="max-w-6xl mx-auto px-4 py-10 md:py-16 grid md:grid-cols-2 gap-8 items-center">
+            <div class="relative z-10">
+                <p class="script text-3xl md:text-4xl text-orange-500 mb-1">Plan Today, Live Your Future</p>
+                <h1 class="text-3xl md:text-5xl font-extrabold leading-tight text-gray-800">
+                    วางแผนวันนี้<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700">เพื่ออนาคตที่<br>คุณเลือกได้</span>
+                </h1>
+                <p class="text-gray-600 mt-4 text-sm md:text-base leading-relaxed">
+                    เพราะทุกเป้าหมายในชีวิต<br>ควรมีแผนที่มั่นคงรองรับ
+                </p>
+                <div class="flex flex-wrap gap-2 mt-6">
+                    <span class="inline-flex items-center gap-1.5 bg-white border border-orange-200 rounded-full px-3.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm">❤️ ประกันชีวิต</span>
+                    <span class="inline-flex items-center gap-1.5 bg-white border border-orange-200 rounded-full px-3.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm">➕ สุขภาพ</span>
+                    <span class="inline-flex items-center gap-1.5 bg-white border border-orange-200 rounded-full px-3.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm">🐷 การออม</span>
+                    <span class="inline-flex items-center gap-1.5 bg-white border border-orange-200 rounded-full px-3.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm">🎁 มรดก</span>
+                </div>
+                <div class="flex flex-wrap gap-3 mt-7">
+                    <a href="https://line.me/R/ti/p/@kavisara.fwd" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-6 py-3 rounded-full shadow-lg shadow-orange-500/30 hover:shadow-xl transition">
+                        <span class="text-lg">🤝</span> รับคำปรึกษาฟรี
+                    </a>
+                    <a href="#contact" class="inline-flex items-center gap-2 bg-white border-2 border-orange-400 text-orange-600 font-bold px-6 py-3 rounded-full hover:bg-orange-50 transition">
+                        <i class="ic ic-contact"></i> นัดหมายออนไลน์
+                    </a>
+                </div>
+            </div>
+            <div class="relative flex justify-center md:justify-end">
+                <img src="/src/S__12566769.jpg" alt="ที่ปรึกษาการเงิน" class="w-64 md:w-full max-w-sm rounded-3xl shadow-2xl object-cover" style="aspect-ratio:3/4;">
+            </div>
         </div>
     </section>
 
-    <!-- Search card (ลอยทับ hero) -->
-    <section class="max-w-5xl mx-auto px-4 -mt-16 relative z-10">
-        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-5 md:p-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <input type="text" id="search-name" placeholder="รหัสตัวแทน / ชื่อ-นามสกุล" data-i18n-ph="search.name"
-                    class="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition">
-                <select id="search-province"
-                    class="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition bg-white">
-                    <option value="" data-i18n="search.province">เลือกจังหวัด</option>
-                </select>
-                <select id="search-branch"
-                    class="px-4 py-2.5 rounded-lg border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm transition bg-white">
-                    <option value="" data-i18n="search.branch">สาขา</option>
-                </select>
-            </div>
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-2 mt-4">
-                <button id="search-btn"
-                    class="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-8 py-2.5 rounded-full text-sm shadow-md transition">
-                    🔍 <span data-i18n="search.button">ค้นหา</span>
-                </button>
-                <button id="search-reset"
-                    class="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold px-6 py-2.5 rounded-full text-sm transition">
-                    <span data-i18n="search.reset">ล้างค้นหา</span>
-                </button>
-            </div>
-            <p class="text-xs text-gray-500 mt-5 text-center font-medium">
-                <span data-i18n="search.found">พบตัวแทน</span> <span id="result-count-num"
-                    class="text-orange-600 font-bold">0</span> <span data-i18n="search.items">รายการ</span>
-            </p>
+    <!-- ===== PLANS ===== -->
+    <section id="plans" class="max-w-6xl mx-auto px-4 py-12">
+        <div class="text-center mb-8">
+            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800">เลือกแผนที่<span class="text-orange-600">เหมาะกับคุณ</span></h2>
+            <p class="text-gray-500 mt-1">คุณกำลังมองหาอะไรอยู่?</p>
         </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="plans-grid"></div>
+    </section>
 
-        <!-- Agent Cards Grid -->
-        <div class="mt-6 mb-14">
-            <div id="agents-loading" class="text-center text-xs text-gray-400 py-10">
-                <span class="inline-block animate-pulse">⏳ กำลังโหลดรายชื่อตัวแทน…</span>
+    <!-- ===== WHY US (สถิติ) ===== -->
+    <section class="gold-band border-y border-amber-100">
+        <div class="max-w-5xl mx-auto px-4 py-12">
+            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800 text-center mb-8">ทำไมต้องวางแผน<span class="text-orange-600">กับเรา</span></h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-4 text-center">
+                <div class="relative">
+                    <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center text-3xl">👥</div>
+                    <p class="text-3xl font-extrabold text-orange-600">1,000+</p>
+                    <p class="text-sm text-gray-500 mt-0.5">ลูกค้าที่ดูแล</p>
+                </div>
+                <div>
+                    <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center text-3xl">🏅</div>
+                    <p class="text-3xl font-extrabold text-orange-600">6+</p>
+                    <p class="text-sm text-gray-500 mt-0.5">ปีประสบการณ์</p>
+                </div>
+                <div>
+                    <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center text-3xl">🏆</div>
+                    <p class="text-2xl font-extrabold text-gray-800">MDRT</p>
+                    <p class="text-sm text-gray-500 mt-0.5">มาตรฐานระดับโลก</p>
+                </div>
+                <div>
+                    <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center text-3xl">🎓</div>
+                    <p class="text-xl font-extrabold text-gray-800">Professional</p>
+                    <p class="text-sm text-gray-500 mt-0.5">Financial Consultant</p>
+                </div>
             </div>
-            <div id="agents-empty" class="hidden text-center text-sm text-gray-400 py-10">
-                😔 ไม่พบตัวแทนที่ตรงกับเงื่อนไข
+        </div>
+    </section>
+
+    <!-- ===== ABOUT ADVISOR ===== -->
+    <section id="about" class="max-w-6xl mx-auto px-4 py-12">
+        <div class="grid md:grid-cols-2 gap-8 items-start">
+            <div class="flex gap-5">
+                <img src="/src/S__12566769.jpg" alt="กวิสรา จงเจริญ" class="w-32 sm:w-40 rounded-2xl shadow-lg object-cover flex-shrink-0" style="aspect-ratio:3/4;">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-600">รู้จักที่ปรึกษาของคุณ</h2>
+                    <p class="text-2xl font-extrabold text-orange-600 mt-1">กวิสรา จงเจริญ</p>
+                    <p class="text-sm text-gray-500">Unit Manager | Financial Consultant</p>
+                    <blockquote class="text-sm italic text-gray-600 border-l-4 border-orange-400 pl-3 my-3">
+                        "การวางแผนทางการเงินที่ดี ไม่ใช่เรื่องของคนรวย แต่เป็นเรื่องของคนที่อยากให้อนาคตของตัวเองมั่นคง"
+                    </blockquote>
+                    <div class="space-y-1.5 text-sm font-semibold text-gray-700">
+                        <p class="flex items-center gap-2"><i class="ic ic-phone text-orange-600"></i> 062-2397362</p>
+                        <p class="flex items-center gap-2"><i class="ic ic-gmail text-orange-600"></i> kavisara.fwd@gmail.com</p>
+                        <p class="flex items-center gap-2"><i class="ic ic-line text-orange-600"></i> @kavisara.fwd</p>
+                    </div>
+                </div>
             </div>
-            <div id="agents-grid" class="hidden grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-gradient-to-br from-orange-50 to-white border border-orange-100 rounded-2xl p-4">
+                    <div class="text-2xl mb-1">🩺</div>
+                    <p class="font-bold text-gray-800">Health Protection</p>
+                    <p class="text-xs text-gray-500">ดูแลค่ารักษาพยาบาล</p>
+                    <a href="#plans" class="inline-block mt-2 text-[11px] font-bold text-white bg-orange-500 px-3 py-1 rounded-full">ดูรายละเอียด</a>
+                </div>
+                <div class="bg-gradient-to-br from-orange-50 to-white border border-orange-100 rounded-2xl p-4">
+                    <div class="text-2xl mb-1">🐷</div>
+                    <p class="font-bold text-gray-800">Wealth Builder</p>
+                    <p class="text-xs text-gray-500">ออมเงินสร้างอนาคต</p>
+                    <a href="#plans" class="inline-block mt-2 text-[11px] font-bold text-white bg-orange-500 px-3 py-1 rounded-full">ดูรายละเอียด</a>
+                </div>
+                <div class="bg-gradient-to-br from-orange-50 to-white border border-orange-100 rounded-2xl p-4">
+                    <div class="text-2xl mb-1">🏠</div>
+                    <p class="font-bold text-gray-800">Legacy Planning</p>
+                    <p class="text-xs text-gray-500">ส่งต่อมรดกให้คนรัก</p>
+                    <a href="#plans" class="inline-block mt-2 text-[11px] font-bold text-white bg-orange-500 px-3 py-1 rounded-full">ดูรายละเอียด</a>
+                </div>
+                <div class="bg-gradient-to-br from-orange-50 to-white border border-orange-100 rounded-2xl p-4">
+                    <div class="text-2xl mb-1">👴</div>
+                    <p class="font-bold text-gray-800">Retirement Income</p>
+                    <p class="text-xs text-gray-500">รายได้หลังเกษียณ</p>
+                    <a href="#plans" class="inline-block mt-2 text-[11px] font-bold text-white bg-orange-500 px-3 py-1 rounded-full">ดูรายละเอียด</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== REVIEWS + AWARDS ===== -->
+    <section id="reviews" class="max-w-6xl mx-auto px-4 py-6 grid md:grid-cols-2 gap-6">
+        <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white">
+            <h3 class="text-xl font-extrabold text-center">เรื่องราวจากลูกค้าของเรา</h3>
+            <p class="text-center text-white/80 text-sm mb-4">★★★★★</p>
+            <div class="space-y-3">
+                <div class="bg-white/15 rounded-xl p-3 text-sm">"อธิบายเข้าใจง่าย ไม่ยัดเยียดการขาย แนะนำสิ่งที่เหมาะกับเราจริงๆ ค่ะ"</div>
+                <div class="bg-white/15 rounded-xl p-3 text-sm">"ช่วยวางแผนให้บรรลุเป้าหมาย ทำให้ครอบครัวมั่นคงและอุ่นใจ"</div>
+                <div class="bg-white/15 rounded-xl p-3 text-sm">"ดูแลดีมาก แม้หลังทำสัญญาแล้วก็ยังติดตามและให้คำแนะนำเสมอ"</div>
+            </div>
+        </div>
+        <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+            <h3 class="text-xl font-extrabold text-gray-800 text-center mb-5">ความสำเร็จและรางวัล</h3>
+            <div class="grid grid-cols-4 gap-2 text-center">
+                <div><div class="text-3xl">🥇</div><p class="font-bold text-orange-600 text-sm mt-1">2022</p><p class="text-[11px] text-gray-500">MDRT Qualifier</p></div>
+                <div><div class="text-3xl">🏆</div><p class="font-bold text-orange-600 text-sm mt-1">2023</p><p class="text-[11px] text-gray-500">Top Unit Manager</p></div>
+                <div><div class="text-3xl">🎖️</div><p class="font-bold text-orange-600 text-sm mt-1">2024</p><p class="text-[11px] text-gray-500">Financial Advisor Award</p></div>
+                <div><div class="text-3xl">👑</div><p class="font-bold text-orange-600 text-sm mt-1">2025</p><p class="text-[11px] text-gray-500">Leadership Achievement</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== RECRUIT ===== -->
+    <section id="recruit" class="bg-slate-900 text-white mt-10">
+        <div class="max-w-6xl mx-auto px-4 py-12">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-extrabold leading-tight">กำลังมองหาอาชีพ<br>ที่เติบโตไปพร้อมกับคุณอยู่หรือไม่?</h2>
+                    <div class="flex gap-6 mt-6">
+                        <div class="text-center"><div class="text-3xl">📈</div><p class="text-xs mt-1 text-white/80">สร้างรายได้</p></div>
+                        <div class="text-center"><div class="text-3xl">👥</div><p class="text-xs mt-1 text-white/80">สร้างทีมงาน</p></div>
+                        <div class="text-center"><div class="text-3xl">💼</div><p class="text-xs mt-1 text-white/80">สร้างธุรกิจของตัวเอง</p></div>
+                    </div>
+                    <a href="https://line.me/R/ti/p/@kavisara.fwd" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-7 py-3 rounded-full shadow-lg mt-7"><i class="ic ic-recruit"></i> สมัครเป็นตัวแทน FWD</a>
+                </div>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-center gap-2"><span class="text-orange-400">●</span> ระบบสอนงานมืออาชีพ</li>
+                    <li class="flex items-center gap-2"><span class="text-orange-400">●</span> สนับสนุนทุกขั้นตอน</li>
+                    <li class="flex items-center gap-2"><span class="text-orange-400">●</span> โอกาสเติบโตไร้ขีดจำกัด</li>
+                    <li class="flex items-center gap-2"><span class="text-orange-400">●</span> ทริปท่องเที่ยวและรางวัลมากมาย</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CONTACT CTA ===== -->
+    <section id="contact" class="gold-band">
+        <div class="max-w-5xl mx-auto px-4 py-12">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800">พร้อมเริ่มต้นวางแผนกับเราไหม?</h2>
+                <p class="text-gray-500 text-sm mt-1">อนาคตที่ดี เริ่มต้นจากการตัดสินใจในวันนี้ — ให้เราช่วยออกแบบแผนที่เหมาะกับชีวิตของคุณ</p>
+            </div>
+            <div class="grid sm:grid-cols-3 gap-4">
+                <a href="https://line.me/R/ti/p/@kavisara.fwd" target="_blank" rel="noopener" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-3 hover:shadow-md transition">
+                    <span class="w-11 h-11 rounded-full bg-green-500 text-white flex items-center justify-center text-xl">💬</span>
+                    <div><p class="font-bold text-gray-800">LINE Official</p><p class="text-xs text-gray-500">@kavisara.fwd</p></div>
+                </a>
+                <a href="tel:0622397362" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-3 hover:shadow-md transition">
+                    <span class="w-11 h-11 rounded-full bg-orange-500 text-white flex items-center justify-center text-lg"><i class="ic ic-phone"></i></span>
+                    <div><p class="font-bold text-gray-800">โทรหาเรา</p><p class="text-xs text-gray-500">062-2397362</p></div>
+                </a>
+                <a href="https://line.me/R/ti/p/@kavisara.fwd" target="_blank" rel="noopener" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-3 hover:shadow-md transition">
+                    <span class="w-11 h-11 rounded-full bg-orange-500 text-white flex items-center justify-center text-lg"><i class="ic ic-contact"></i></span>
+                    <div><p class="font-bold text-gray-800">นัดหมายปรึกษา</p><p class="text-xs text-gray-500">ฟรี ไม่มีค่าใช้จ่าย</p></div>
+                </a>
+            </div>
         </div>
     </section>
 
     <!-- ===== FOOTER ===== -->
-    <footer class="bg-slate-900 text-gray-400 text-center py-6 text-xs border-t-4 border-orange-500">
-        <p data-i18n="common.footer">© 2026 VP Kanniporn Office | สำนักงานตัวแทน FWD Insurance</p>
+    <footer class="bg-slate-900 text-gray-300">
+        <div class="max-w-6xl mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <img src="/assets/Logo.png" alt="FWD" class="h-10 w-auto brightness-0 invert opacity-90">
+            <div class="text-center md:text-left">
+                <p class="font-bold"><span class="text-orange-400">Beyond</span> Protection • <span class="text-orange-400">Beyond</span> Wealth • <span class="text-orange-400">Beyond</span> Possibilities</p>
+                <p class="text-xs text-gray-400 mt-1">FWD Elite Financial Consultant | กวิสรา จงเจริญ Unit Manager</p>
+            </div>
+            <div class="flex gap-3 text-xl">
+                <span>📘</span><span>💬</span><span>📸</span><span>▶️</span>
+            </div>
+        </div>
+        <div class="text-center text-[11px] text-gray-500 pb-5">© 2026 VP Kanniporn Office · สำนักงานตัวแทน FWD Insurance</div>
     </footer>
 
     <script>
-        const PROVINCES = [
-            'กรุงเทพมหานคร', 'กระบี่', 'กาญจนบุรี', 'กาฬสินธุ์', 'กำแพงเพชร', 'ขอนแก่น', 'จันทบุรี', 'ฉะเชิงเทรา',
-            'ชลบุรี', 'ชัยนาท', 'ชัยภูมิ', 'ชุมพร', 'เชียงราย', 'เชียงใหม่', 'ตรัง', 'ตราด', 'ตาก', 'นครนายก',
-            'นครปฐม', 'นครพนม', 'นครราชสีมา', 'นครศรีธรรมราช', 'นครสวรรค์', 'นนทบุรี', 'นราธิวาส', 'น่าน',
-            'บึงกาฬ', 'บุรีรัมย์', 'ปทุมธานี', 'ประจวบคีรีขันธ์', 'ปราจีนบุรี', 'ปัตตานี', 'พระนครศรีอยุธยา',
-            'พังงา', 'พัทลุง', 'พิจิตร', 'พิษณุโลก', 'เพชรบุรี', 'เพชรบูรณ์', 'แพร่', 'พะเยา', 'ภูเก็ต',
-            'มหาสารคาม', 'มุกดาหาร', 'แม่ฮ่องสอน', 'ยะลา', 'ยโสธร', 'ร้อยเอ็ด', 'ระนอง', 'ระยอง', 'ราชบุรี',
-            'ลพบุรี', 'ลำปาง', 'ลำพูน', 'เลย', 'ศรีสะเกษ', 'สกลนคร', 'สงขลา', 'สตูล', 'สมุทรปราการ',
-            'สมุทรสงคราม', 'สมุทรสาคร', 'สระแก้ว', 'สระบุรี', 'สิงห์บุรี', 'สุโขทัย', 'สุพรรณบุรี',
-            'สุราษฎร์ธานี', 'สุรินทร์', 'หนองคาย', 'หนองบัวลำภู', 'อ่างทอง', 'อำนาจเจริญ', 'อุดรธานี',
-            'อุตรดิตถ์', 'อุทัยธานี', 'อุบลราชธานี'
+        // การ์ดแผนประกัน 6 อัน
+        const PLANS = [
+            { emo: '❤️', color: 'from-red-400 to-red-500', th: 'ประกันสุขภาพ', en: 'Health Insurance', desc: 'คุ้มครองค่ารักษาพยาบาล โรคร้ายแรง และอุบัติเหตุ', btn: 'ดูแผนสุขภาพ' },
+            { emo: '🛡️', color: 'from-orange-400 to-orange-500', th: 'ประกันชีวิต', en: 'Life Insurance', desc: 'สร้างหลักประกันให้ครอบครัวและคนที่คุณรัก', btn: 'ดูแผนประกันชีวิต' },
+            { emo: '🐷', color: 'from-amber-400 to-amber-500', th: 'ประกันสะสมทรัพย์', en: 'Savings Insurance', desc: 'ออมเงินอย่างมีวินัย พร้อมความคุ้มครอง', btn: 'ดูแผนออมเงิน' },
+            { emo: '🏖️', color: 'from-orange-400 to-amber-500', th: 'ประกันบำนาญ', en: 'Retirement Planning', desc: 'เตรียมบำนาญหลังเกษียณอย่างมั่นคง', btn: 'ดูแผนบำนาญ' },
+            { emo: '👥', color: 'from-orange-500 to-orange-600', th: 'ประกันกลุ่ม', en: 'Group Insurance', desc: 'ดูแลพนักงานในองค์กร เพิ่มสวัสดิการมืออาชีพ', btn: 'ดูประกันกลุ่ม' },
+            { emo: '👪', color: 'from-purple-400 to-purple-500', th: 'วางแผนมรดก', en: 'Legacy Planning', desc: 'ส่งต่อความมั่งคั่งให้คนที่คุณรัก', btn: 'ดูรายละเอียด' },
         ];
-
-        const provinceSelect = document.getElementById('search-province');
-        PROVINCES.forEach(p => {
-            const opt = document.createElement('option');
-            opt.value = p; opt.textContent = p;
-            provinceSelect.appendChild(opt);
-        });
-
-        function escapeHtml(s) {
-            return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
-                ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-        }
-        function initials(first, last) {
-            const a = (first || '').trim().charAt(0);
-            const b = (last || '').trim().charAt(0);
-            return (a + b).toUpperCase() || '?';
-        }
-
-        function agentCard(u) {
-            const fullName = escapeHtml(`${u.first_name || ''} ${u.last_name || ''}`.trim() || '—');
-            const position = escapeHtml(u.position || 'ตัวแทน FWD');
-            const branch = u.branch ? `<span class="text-[10px] text-gray-400">📍 ${escapeHtml(u.branch)}</span>` : '';
-            const province = u.province ? `<span class="text-[10px] text-gray-400">${escapeHtml(u.province)}</span>` : '';
-            const phone = u.phone ? `<span class="text-[10px] text-orange-500 font-medium"><i class="ic ic-phone"></i> ${escapeHtml(u.phone)}</span>` : '';
-            const quote = u.quote ? `<p class="text-[10px] text-gray-400 italic line-clamp-2 mt-1">"${escapeHtml(u.quote)}"</p>` : '';
-            const avatar = u.avatar_path
-                ? `<img src="${escapeHtml(u.avatar_path)}" alt="${fullName}" class="w-full h-full object-cover">`
-                : `<span class="text-2xl font-bold text-orange-500">${initials(u.first_name, u.last_name)}</span>`;
-
-            return `
-                <a href="/agent/${u.id}" class="group bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center text-center relative overflow-hidden">
-                    <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-orange-600"></div>
-                    <div class="w-20 h-20 rounded-full border-4 border-amber-300 bg-orange-50 overflow-hidden flex items-center justify-center mt-2 mb-3 shadow-md group-hover:scale-105 transition">
-                        ${avatar}
-                    </div>
-                    <h4 class="font-bold text-sm text-gray-800">${fullName}</h4>
-                    <p class="text-xs text-orange-500 font-semibold mt-0.5">${position}</p>
-                    <div class="flex flex-col items-center gap-1 mt-2">
-                        ${branch}
-                        ${province}
-                        ${phone}
-                    </div>
-                    ${quote}
-                    <div class="mt-3 text-[10px] font-bold text-orange-400 group-hover:text-orange-600 flex items-center gap-1">
-                        ${window.t ? window.t('agent.viewProfile') : 'ดูโปรไฟล์'} <span class="group-hover:translate-x-1 transition">➔</span>
-                    </div>
-                </a>
-            `;
-        }
-
-        let allAgents = [];
-
-        function renderResults(agents) {
-            const loading = document.getElementById('agents-loading');
-            const empty = document.getElementById('agents-empty');
-            const grid = document.getElementById('agents-grid');
-            const countEl = document.getElementById('result-count-num');
-
-            loading.classList.add('hidden');
-            countEl.textContent = agents.length;
-
-            if (agents.length === 0) {
-                grid.classList.add('hidden');
-                empty.classList.remove('hidden');
-            } else {
-                empty.classList.add('hidden');
-                grid.innerHTML = agents.map(agentCard).join('');
-                grid.classList.remove('hidden');
-            }
-        }
-
-        // Re-render agent cards when language changes
-        window.addEventListener('i18n:changed', function () { renderResults(allAgents); });
-
-        function applyFilters() {
-            const name = document.getElementById('search-name').value.trim().toLowerCase();
-            const province = document.getElementById('search-province').value;
-            const branch = document.getElementById('search-branch').value;
-
-            const filtered = allAgents.filter(u => {
-                if (province && u.province !== province) return false;
-                if (branch && u.branch !== branch) return false;
-                if (name) {
-                    const fullName = `${u.first_name || ''} ${u.last_name || ''}`.toLowerCase();
-                    const license = String(u.license_number || '').toLowerCase();
-                    const license2 = String(u.license_number_2 || '').toLowerCase();
-                    const id = String(u.id || '');
-                    if (!fullName.includes(name) &&
-                        !license.includes(name) &&
-                        !license2.includes(name) &&
-                        id !== name) return false;
-                }
-                return true;
-            });
-
-            renderResults(filtered);
-        }
-
-        async function loadAgents() {
-            const loading = document.getElementById('agents-loading');
-            try {
-                const res = await fetch('/api/users');
-                const data = await res.json();
-                allAgents = (data.users || []).filter(u => u.role !== 'admin');
-
-                const branchSelect = document.getElementById('search-branch');
-                const branches = [...new Set(allAgents.map(u => u.branch).filter(Boolean))].sort();
-                branches.forEach(b => {
-                    const opt = document.createElement('option');
-                    opt.value = b; opt.textContent = b;
-                    branchSelect.appendChild(opt);
-                });
-
-                renderResults(allAgents);
-            } catch (e) {
-                loading.textContent = 'โหลดรายชื่อตัวแทนไม่สำเร็จ';
-                console.error(e);
-            }
-        }
-        loadAgents();
-
-        document.getElementById('search-btn').addEventListener('click', applyFilters);
-        document.getElementById('search-reset').addEventListener('click', () => {
-            document.getElementById('search-name').value = '';
-            document.getElementById('search-province').value = '';
-            document.getElementById('search-branch').value = '';
-            renderResults(allAgents);
-        });
-        document.getElementById('search-name').addEventListener('keydown', e => {
-            if (e.key === 'Enter') { e.preventDefault(); applyFilters(); }
-        });
+        document.getElementById('plans-grid').innerHTML = PLANS.map(p => `
+            <div class="plan-card bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center transition flex flex-col">
+                <div class="w-14 h-14 mx-auto rounded-full bg-gradient-to-br ${p.color} text-white flex items-center justify-center text-2xl shadow-md">${p.emo}</div>
+                <p class="font-bold text-gray-800 mt-3">${p.th}</p>
+                <p class="text-[11px] text-orange-500 font-semibold">${p.en}</p>
+                <p class="text-[11px] text-gray-500 mt-1 flex-1">${p.desc}</p>
+                <a href="/plans" class="mt-3 inline-block text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-3 py-1.5 rounded-full">${p.btn}</a>
+            </div>`).join('');
     </script>
-    <script src="/i18n.js"></script>
-
 </body>
 
 </html>
