@@ -27,6 +27,25 @@ router.get('/', async (_req, res, next) => {
   }
 });
 
+// GET /api/users/home-featured — สาธารณะ: ตัวแทนที่แอดมินตั้งให้โชว์ในหน้า Home
+// (ต้องมาก่อน /:id ไม่งั้น "home-featured" จะถูกจับเป็น :id)
+router.get('/home-featured', async (_req, res, next) => {
+  try {
+    const [[s]] = await pool.query(
+      "SELECT setting_value FROM site_settings WHERE setting_key = 'home_featured_agent_id' LIMIT 1"
+    );
+    const id = s && s.setting_value ? Number(s.setting_value) : null;
+    if (!id || !Number.isInteger(id) || id <= 0) return res.json({ ok: true, agent: null });
+    const [rows] = await pool.query(
+      `SELECT ${PUBLIC_COLUMNS} FROM users WHERE id = ? AND is_active = 1 LIMIT 1`, [id]
+    );
+    res.json({ ok: true, agent: rows[0] || null });
+  } catch (err) {
+    // ตาราง site_settings อาจยังไม่ถูกสร้าง → ไม่ให้หน้า Home พัง
+    res.json({ ok: true, agent: null });
+  }
+});
+
 // GET /api/users/:id  — public profile info
 router.get('/:id', async (req, res, next) => {
   try {

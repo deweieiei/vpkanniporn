@@ -328,6 +328,23 @@
   </header>
 
   <div class="wrap">
+    <!-- ตั้งค่าหน้า Home -->
+    <div class="card">
+      <div class="card-head">🏠 ตั้งค่าหน้า Home — ตัวแทนที่โชว์ในส่วน "รู้จักที่ปรึกษาของคุณ"</div>
+      <div class="card-body">
+        <div class="grid">
+          <div class="field">
+            <label>เลือกตัวแทนที่จะโชว์ในหน้าแรก (vpkanniporn.com)</label>
+            <select id="featured-agent"><option value="">— ใช้ข้อมูลค่าเริ่มต้นในไฟล์ (ไม่เลือก) —</option></select>
+          </div>
+          <div class="field" style="display:flex; align-items:flex-end;">
+            <button type="button" class="btn" id="save-featured">บันทึกการตั้งค่า</button>
+          </div>
+        </div>
+        <p class="muted" style="margin-top:4px;">ชื่อ / รูป / คำแนะนำตัว / ช่องทางติดต่อ จะดึงจากโปรไฟล์ตัวแทนที่เลือกมาแสดงในหน้า Home อัตโนมัติ</p>
+      </div>
+    </div>
+
     <!-- เพิ่มผู้ใช้ -->
     <div class="card">
       <div class="card-head">➕ เพิ่มตัวแทน / ผู้ใช้ใหม่</div>
@@ -390,6 +407,7 @@
         if (!res.ok) throw new Error();
         const data = await res.json();
         const users = data.users || [];
+        populateFeatured(users);
 
         // ยอดผู้เข้าชมต่อ user (best-effort — ไม่ให้พังถ้ายังไม่มีตาราง page_views)
         window.__stats = {};
@@ -499,6 +517,48 @@
       window.location.href = '/support-admin';
     });
 
+    // ===== ตั้งค่าหน้า Home: เลือกตัวแทนที่โชว์ =====
+    let currentFeatured = '';
+    async function loadSettings() {
+      try {
+        const res = await fetch('/api/admin/settings', { credentials: 'same-origin' });
+        if (!res.ok) return;
+        const d = await res.json();
+        currentFeatured = (d.settings && d.settings.home_featured_agent_id) || '';
+        const sel = document.getElementById('featured-agent');
+        if (sel) sel.value = currentFeatured;
+      } catch (e) { /* ignore */ }
+    }
+    function populateFeatured(users) {
+      const sel = document.getElementById('featured-agent');
+      if (!sel) return;
+      const opts = ['<option value="">— ใช้ข้อมูลค่าเริ่มต้นในไฟล์ (ไม่เลือก) —</option>'];
+      users.forEach(u => {
+        const name = esc(`${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email);
+        opts.push(`<option value="${u.id}">${name} (${esc(u.email)})</option>`);
+      });
+      sel.innerHTML = opts.join('');
+      sel.value = currentFeatured;
+    }
+    document.getElementById('save-featured').addEventListener('click', async () => {
+      const sel = document.getElementById('featured-agent');
+      const btn = document.getElementById('save-featured');
+      btn.disabled = true;
+      try {
+        const res = await fetch('/api/admin/settings', {
+          method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+          body: JSON.stringify({ home_featured_agent_id: sel.value || '' }),
+        });
+        if (authFail(res)) return;
+        const d = await res.json();
+        if (!res.ok) { toast(d.error || 'บันทึกไม่สำเร็จ', 'err'); return; }
+        currentFeatured = sel.value || '';
+        toast('บันทึกการตั้งค่าหน้า Home แล้ว', 'ok');
+      } catch (e) { toast('บันทึกไม่สำเร็จ', 'err'); }
+      finally { btn.disabled = false; }
+    });
+
+    loadSettings();
     loadUsers();
   </script>
   <script src="/i18n.js"></script>

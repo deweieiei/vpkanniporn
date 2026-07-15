@@ -120,4 +120,36 @@ router.delete('/users/:id', requireAdmin, async (req, res, next) => {
   }
 });
 
+// ===== ตั้งค่าเว็บ (เฉพาะ SupperAdmin) — เช่น ตัวแทนที่โชว์หน้า Home =====
+router.get('/settings', requireAdmin, async (_req, res, next) => {
+  try {
+    const [rows] = await pool.query('SELECT setting_key, setting_value FROM site_settings');
+    const settings = {};
+    rows.forEach(r => { settings[r.setting_key] = r.setting_value; });
+    res.json({ ok: true, settings });
+  } catch (err) { next(err); }
+});
+
+router.put('/settings', requireAdmin, express.json(), async (req, res, next) => {
+  try {
+    const b = req.body || {};
+    const ALLOWED = ['home_featured_agent_id']; // อนุญาตเฉพาะคีย์ที่รู้จัก
+    const entries = Object.entries(b).filter(([k]) => ALLOWED.includes(k));
+    if (entries.length === 0) return res.status(400).json({ error: 'ไม่มีค่าที่ต้องบันทึก' });
+    for (const [k, v] of entries) {
+      let val = (v == null || v === '') ? null : String(v);
+      if (k === 'home_featured_agent_id' && val != null) {
+        const id = Number(val);
+        if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ error: 'id ตัวแทนไม่ถูกต้อง' });
+        val = String(id);
+      }
+      await pool.query(
+        'INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)',
+        [k, val]
+      );
+    }
+    res.json({ ok: true });
+  } catch (err) { next(err); }
+});
+
 module.exports = router;
