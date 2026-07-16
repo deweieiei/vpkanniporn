@@ -33,8 +33,15 @@ router.get('/home', (_req, res) => {
 });
 
 // หน้าเนื้อหาของปุ่ม (user_pages) — สาธารณะ; เจ้าของที่ล็อกอินจะเห็น toolbar แก้ไข
+// (ของหน้าโปรไฟล์ตัวแทน — คนละระบบกับ /b/:id ด้านล่าง)
 router.get('/page/:id', (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'page.html'));
+});
+
+// หน้าเนื้อหาของบลอค (page_blocks) — ระบบบลอคของหน้าตาเว็บ
+// กดปุ่มในส่วน "เลือกแผนที่เหมาะกับคุณ" → เข้ามาที่นี่ → ข้างในสร้างบลอคย่อยได้อีกไม่จำกัดชั้น
+router.get('/b/:id', (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'blockpage.html'));
 });
 
 // หน้าฟอร์มติดต่อสอบถาม (ผูกกับตัวแทน :id) — สาธารณะ

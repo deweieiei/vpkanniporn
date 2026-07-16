@@ -33,6 +33,51 @@
         .nav-link .ic, .nav-link .emo { font-size:17px; }
         .no-scrollbar::-webkit-scrollbar { display:none; }
         .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+
+        /* ===== รูปปกหัวเว็บ (hero) — สไลด์ 6 ภาพ ===== */
+        .hero-slides { position:absolute; inset:0; z-index:0; }
+        .hero-slide { position:absolute; inset:0; background-size:cover; background-position:center;
+                      opacity:0; transition:opacity 1.2s ease; }
+        .hero-slide.on { opacity:1; }
+
+        /* ===== โหมดแก้ไข (เฉพาะ SupperAdmin) ===== */
+        .adm .blk { position:relative; outline:1.5px dashed transparent; outline-offset:6px; transition:outline-color .15s; }
+        .adm .blk:hover { outline-color:#fdba74; }
+        .adm .blk.hid { opacity:.55; }
+        .blk-bar { position:absolute; top:6px; right:6px; z-index:30; display:none; gap:4px;
+                   background:rgba(255,255,255,.97); border:1px solid #fed7aa; border-radius:9px;
+                   padding:3px; box-shadow:0 4px 14px rgba(0,0,0,.13); }
+        .adm .blk:hover > .blk-bar { display:flex; }
+        .blk-bar button { width:26px; height:26px; border-radius:6px; font-size:13px; line-height:1;
+                          display:flex; align-items:center; justify-content:center; color:#6b7280; }
+        .blk-bar button:hover { background:#fff7ed; color:#ea580c; }
+        .adm .ed { outline:1.5px dotted #fdba74; outline-offset:3px; border-radius:4px; cursor:text; transition:background .15s; }
+        .adm .ed:hover { background:#fff7ed; }
+        .adm .ed:focus { outline:2px solid #f97316; background:#fffbf5; }
+        .adm-only { display:none; }
+        .adm .adm-only { display:block; }
+        .adm .adm-only-f { display:flex; }
+        .hid-tag { display:none; }
+        .adm .blk.hid .hid-tag { display:inline-block; }
+        #adm-bar { position:fixed; bottom:14px; left:50%; transform:translateX(-50%); z-index:60;
+                   background:#1f2937; color:#fff; border-radius:999px; padding:9px 18px; font-size:12.5px;
+                   font-weight:600; box-shadow:0 8px 26px rgba(0,0,0,.3); display:none; align-items:center; gap:12px; }
+        .adm #adm-bar { display:flex; }
+        #toast { position:fixed; bottom:70px; left:50%; transform:translateX(-50%); z-index:70;
+                 background:#16a34a; color:#fff; padding:8px 18px; border-radius:999px; font-size:12.5px;
+                 font-weight:600; opacity:0; transition:opacity .25s; pointer-events:none; }
+        #toast.on { opacity:1; }
+        #toast.err { background:#dc2626; }
+        .slot { position:relative; aspect-ratio:16/10; border-radius:10px; overflow:hidden;
+                border:2px dashed #fdba74; background:#fff7ed; cursor:pointer; }
+        .slot img { width:100%; height:100%; object-fit:cover; }
+        .slot .x { position:absolute; top:3px; right:3px; width:20px; height:20px; border-radius:50%;
+                   background:rgba(220,38,38,.92); color:#fff; font-size:12px; line-height:20px; text-align:center; }
+        .modal { position:fixed; inset:0; z-index:80; background:rgba(0,0,0,.5); display:none;
+                 align-items:center; justify-content:center; padding:16px; }
+        .modal.on { display:flex; }
+        .modal-card { background:#fff; border-radius:16px; padding:20px; max-width:640px; width:100%;
+                      max-height:86vh; overflow:auto; }
     </style>
 </head>
 
@@ -49,7 +94,7 @@
                 <a href="#plans" class="nav-link"><span class="emo">💵</span><span>วางแผนการเงิน</span></a>
                 <a href="#plans" class="nav-link"><span class="emo">❤️</span><span>ประกันสุขภาพ</span></a>
                 <a href="#plans" class="nav-link"><span class="emo">🐷</span><span>ออมเงินและมรดก</span></a>
-                <a href="#reviews" class="nav-link"><i class="ic ic-stats"></i><span>ผลงานและรีวิว</span></a>
+                <a href="#awards" class="nav-link"><i class="ic ic-stats"></i><span>ผลงานและรางวัล</span></a>
                 <a href="#recruit" class="nav-link"><i class="ic ic-recruit"></i><span>ร่วมงานกับเรา</span></a>
                 <a href="#contact" class="nav-link"><i class="ic ic-phone"></i><span>ติดต่อเรา</span></a>
             </nav>
@@ -58,193 +103,10 @@
         </div>
     </header>
 
-    <!-- ===== HERO ===== -->
-    <section id="hero" class="hero-bg relative overflow-hidden">
-        <div class="max-w-6xl mx-auto px-4 py-10 md:py-16 grid md:grid-cols-2 gap-8 items-center">
-            <div class="relative z-10">
-                <p class="script text-3xl md:text-4xl text-orange-500 mb-1">Plan Today, Live Your Future</p>
-                <h1 class="text-3xl md:text-5xl font-extrabold leading-tight text-gray-800">
-                    วางแผนวันนี้<br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700">เพื่ออนาคตที่<br>คุณเลือกได้</span>
-                </h1>
-                <p class="text-gray-600 mt-4 text-sm md:text-base leading-relaxed">
-                    เพราะทุกเป้าหมายในชีวิต<br>ควรมีแผนที่มั่นคงรองรับ
-                </p>
-                <div class="flex flex-wrap gap-2 mt-6">
-                    <span class="inline-flex items-center gap-1.5 bg-white border border-orange-200 rounded-full px-3.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm">❤️ ประกันชีวิต</span>
-                    <span class="inline-flex items-center gap-1.5 bg-white border border-orange-200 rounded-full px-3.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm">➕ สุขภาพ</span>
-                    <span class="inline-flex items-center gap-1.5 bg-white border border-orange-200 rounded-full px-3.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm">🐷 การออม</span>
-                    <span class="inline-flex items-center gap-1.5 bg-white border border-orange-200 rounded-full px-3.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm">🎁 มรดก</span>
-                </div>
-                <div class="flex flex-wrap gap-3 mt-7">
-                    <a id="cta-consult" href="https://line.me/R/ti/p/@kavisara.fwd" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-6 py-3 rounded-full shadow-lg shadow-orange-500/30 hover:shadow-xl transition">
-                        <span class="text-lg">🤝</span> รับคำปรึกษาฟรี
-                    </a>
-                    <a id="cta-appoint" href="#contact" class="inline-flex items-center gap-2 bg-white border-2 border-orange-400 text-orange-600 font-bold px-6 py-3 rounded-full hover:bg-orange-50 transition">
-                        <i class="ic ic-contact"></i> นัดหมายออนไลน์
-                    </a>
-                </div>
-            </div>
-            <div class="relative flex justify-center md:justify-end">
-                <img src="/src/S__12566769.jpg" alt="ที่ปรึกษาการเงิน" class="feat-photo w-64 md:w-full max-w-sm rounded-3xl shadow-2xl object-cover" style="aspect-ratio:3/4;">
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== PLANS ===== -->
-    <section id="plans" class="max-w-6xl mx-auto px-4 py-12">
-        <div class="text-center mb-8">
-            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800">เลือกแผนที่<span class="text-orange-600">เหมาะกับคุณ</span></h2>
-            <p class="text-gray-500 mt-1">คุณกำลังมองหาอะไรอยู่?</p>
-        </div>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="plans-grid"></div>
-    </section>
-
-    <!-- ===== WHY US (สถิติ) ===== -->
-    <section class="gold-band border-y border-amber-100">
-        <div class="max-w-5xl mx-auto px-4 py-12">
-            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800 text-center mb-8">ทำไมต้องวางแผน<span class="text-orange-600">กับเรา</span></h2>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-4 text-center">
-                <div class="relative">
-                    <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center text-3xl">👥</div>
-                    <p class="text-3xl font-extrabold text-orange-600">1,000+</p>
-                    <p class="text-sm text-gray-500 mt-0.5">ลูกค้าที่ดูแล</p>
-                </div>
-                <div>
-                    <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center text-3xl">🏅</div>
-                    <p class="text-3xl font-extrabold text-orange-600">6+</p>
-                    <p class="text-sm text-gray-500 mt-0.5">ปีประสบการณ์</p>
-                </div>
-                <div>
-                    <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center text-3xl">🏆</div>
-                    <p class="text-2xl font-extrabold text-gray-800">MDRT</p>
-                    <p class="text-sm text-gray-500 mt-0.5">มาตรฐานระดับโลก</p>
-                </div>
-                <div>
-                    <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center text-3xl">🎓</div>
-                    <p class="text-xl font-extrabold text-gray-800">Professional</p>
-                    <p class="text-sm text-gray-500 mt-0.5">Financial Consultant</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== ABOUT ADVISOR ===== -->
-    <section id="about" class="max-w-6xl mx-auto px-4 py-12">
-        <div class="grid md:grid-cols-2 gap-8 items-start">
-            <div class="flex gap-5">
-                <img src="/src/S__12566769.jpg" alt="กวิสรา จงเจริญ" class="feat-photo w-32 sm:w-40 rounded-2xl shadow-lg object-cover flex-shrink-0" style="aspect-ratio:3/4;">
-                <div>
-                    <h2 class="text-lg font-bold text-gray-600">รู้จักที่ปรึกษาของคุณ</h2>
-                    <p id="feat-name" class="text-2xl font-extrabold text-orange-600 mt-1">กวิสรา จงเจริญ</p>
-                    <p id="feat-position" class="text-sm text-gray-500">Unit Manager | Financial Consultant</p>
-                    <blockquote id="feat-quote" class="text-sm italic text-gray-600 border-l-4 border-orange-400 pl-3 my-3">
-                        "การวางแผนทางการเงินที่ดี ไม่ใช่เรื่องของคนรวย แต่เป็นเรื่องของคนที่อยากให้อนาคตของตัวเองมั่นคง"
-                    </blockquote>
-                    <div class="space-y-1.5 text-sm font-semibold text-gray-700">
-                        <p class="flex items-center gap-2"><i class="ic ic-phone text-orange-600"></i> <span id="feat-phone">062-2397362</span></p>
-                        <p class="flex items-center gap-2"><i class="ic ic-gmail text-orange-600"></i> <span id="feat-email">kavisara.fwd@gmail.com</span></p>
-                        <p class="flex items-center gap-2"><i class="ic ic-line text-orange-600"></i> <span id="feat-line">@kavisara.fwd</span></p>
-                    </div>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-gradient-to-br from-orange-50 to-white border border-orange-100 rounded-2xl p-4">
-                    <div class="text-2xl mb-1">🩺</div>
-                    <p class="font-bold text-gray-800">Health Protection</p>
-                    <p class="text-xs text-gray-500">ดูแลค่ารักษาพยาบาล</p>
-                    <a href="#plans" class="inline-block mt-2 text-[11px] font-bold text-white bg-orange-500 px-3 py-1 rounded-full">ดูรายละเอียด</a>
-                </div>
-                <div class="bg-gradient-to-br from-orange-50 to-white border border-orange-100 rounded-2xl p-4">
-                    <div class="text-2xl mb-1">🐷</div>
-                    <p class="font-bold text-gray-800">Wealth Builder</p>
-                    <p class="text-xs text-gray-500">ออมเงินสร้างอนาคต</p>
-                    <a href="#plans" class="inline-block mt-2 text-[11px] font-bold text-white bg-orange-500 px-3 py-1 rounded-full">ดูรายละเอียด</a>
-                </div>
-                <div class="bg-gradient-to-br from-orange-50 to-white border border-orange-100 rounded-2xl p-4">
-                    <div class="text-2xl mb-1">🏠</div>
-                    <p class="font-bold text-gray-800">Legacy Planning</p>
-                    <p class="text-xs text-gray-500">ส่งต่อมรดกให้คนรัก</p>
-                    <a href="#plans" class="inline-block mt-2 text-[11px] font-bold text-white bg-orange-500 px-3 py-1 rounded-full">ดูรายละเอียด</a>
-                </div>
-                <div class="bg-gradient-to-br from-orange-50 to-white border border-orange-100 rounded-2xl p-4">
-                    <div class="text-2xl mb-1">👴</div>
-                    <p class="font-bold text-gray-800">Retirement Income</p>
-                    <p class="text-xs text-gray-500">รายได้หลังเกษียณ</p>
-                    <a href="#plans" class="inline-block mt-2 text-[11px] font-bold text-white bg-orange-500 px-3 py-1 rounded-full">ดูรายละเอียด</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== REVIEWS + AWARDS ===== -->
-    <section id="reviews" class="max-w-6xl mx-auto px-4 py-6 grid md:grid-cols-2 gap-6">
-        <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white">
-            <h3 class="text-xl font-extrabold text-center">เรื่องราวจากลูกค้าของเรา</h3>
-            <p class="text-center text-white/80 text-sm mb-4">★★★★★</p>
-            <div class="space-y-3">
-                <div class="bg-white/15 rounded-xl p-3 text-sm">"อธิบายเข้าใจง่าย ไม่ยัดเยียดการขาย แนะนำสิ่งที่เหมาะกับเราจริงๆ ค่ะ"</div>
-                <div class="bg-white/15 rounded-xl p-3 text-sm">"ช่วยวางแผนให้บรรลุเป้าหมาย ทำให้ครอบครัวมั่นคงและอุ่นใจ"</div>
-                <div class="bg-white/15 rounded-xl p-3 text-sm">"ดูแลดีมาก แม้หลังทำสัญญาแล้วก็ยังติดตามและให้คำแนะนำเสมอ"</div>
-            </div>
-        </div>
-        <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-            <h3 class="text-xl font-extrabold text-gray-800 text-center mb-5">ความสำเร็จและรางวัล</h3>
-            <div class="grid grid-cols-4 gap-2 text-center">
-                <div><div class="text-3xl">🥇</div><p class="font-bold text-orange-600 text-sm mt-1">2022</p><p class="text-[11px] text-gray-500">MDRT Qualifier</p></div>
-                <div><div class="text-3xl">🏆</div><p class="font-bold text-orange-600 text-sm mt-1">2023</p><p class="text-[11px] text-gray-500">Top Unit Manager</p></div>
-                <div><div class="text-3xl">🎖️</div><p class="font-bold text-orange-600 text-sm mt-1">2024</p><p class="text-[11px] text-gray-500">Financial Advisor Award</p></div>
-                <div><div class="text-3xl">👑</div><p class="font-bold text-orange-600 text-sm mt-1">2025</p><p class="text-[11px] text-gray-500">Leadership Achievement</p></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== RECRUIT ===== -->
-    <section id="recruit" class="bg-slate-900 text-white mt-10">
-        <div class="max-w-6xl mx-auto px-4 py-12">
-            <div class="grid md:grid-cols-2 gap-8 items-center">
-                <div>
-                    <h2 class="text-2xl md:text-3xl font-extrabold leading-tight">กำลังมองหาอาชีพ<br>ที่เติบโตไปพร้อมกับคุณอยู่หรือไม่?</h2>
-                    <div class="flex gap-6 mt-6">
-                        <div class="text-center"><div class="text-3xl">📈</div><p class="text-xs mt-1 text-white/80">สร้างรายได้</p></div>
-                        <div class="text-center"><div class="text-3xl">👥</div><p class="text-xs mt-1 text-white/80">สร้างทีมงาน</p></div>
-                        <div class="text-center"><div class="text-3xl">💼</div><p class="text-xs mt-1 text-white/80">สร้างธุรกิจของตัวเอง</p></div>
-                    </div>
-                    <a id="cta-recruit" href="https://line.me/R/ti/p/@kavisara.fwd" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-7 py-3 rounded-full shadow-lg mt-7"><i class="ic ic-recruit"></i> สมัครเป็นตัวแทน FWD</a>
-                </div>
-                <ul class="space-y-3 text-sm">
-                    <li class="flex items-center gap-2"><span class="text-orange-400">●</span> ระบบสอนงานมืออาชีพ</li>
-                    <li class="flex items-center gap-2"><span class="text-orange-400">●</span> สนับสนุนทุกขั้นตอน</li>
-                    <li class="flex items-center gap-2"><span class="text-orange-400">●</span> โอกาสเติบโตไร้ขีดจำกัด</li>
-                    <li class="flex items-center gap-2"><span class="text-orange-400">●</span> ทริปท่องเที่ยวและรางวัลมากมาย</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== CONTACT CTA ===== -->
-    <section id="contact" class="gold-band">
-        <div class="max-w-5xl mx-auto px-4 py-12">
-            <div class="text-center mb-6">
-                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800">พร้อมเริ่มต้นวางแผนกับเราไหม?</h2>
-                <p class="text-gray-500 text-sm mt-1">อนาคตที่ดี เริ่มต้นจากการตัดสินใจในวันนี้ — ให้เราช่วยออกแบบแผนที่เหมาะกับชีวิตของคุณ</p>
-            </div>
-            <div class="grid sm:grid-cols-3 gap-4">
-                <a id="cta-line-1" href="https://line.me/R/ti/p/@kavisara.fwd" target="_blank" rel="noopener" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-3 hover:shadow-md transition">
-                    <span class="w-11 h-11 rounded-full bg-green-500 text-white flex items-center justify-center text-xl">💬</span>
-                    <div><p class="font-bold text-gray-800">LINE Official</p><p class="text-xs text-gray-500 feat-line-text">@kavisara.fwd</p></div>
-                </a>
-                <a id="cta-tel" href="tel:0622397362" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-3 hover:shadow-md transition">
-                    <span class="w-11 h-11 rounded-full bg-orange-500 text-white flex items-center justify-center text-lg"><i class="ic ic-phone"></i></span>
-                    <div><p class="font-bold text-gray-800">โทรหาเรา</p><p class="text-xs text-gray-500 feat-phone-text">062-2397362</p></div>
-                </a>
-                <a id="cta-appoint2" href="https://line.me/R/ti/p/@kavisara.fwd" target="_blank" rel="noopener" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-3 hover:shadow-md transition">
-                    <span class="w-11 h-11 rounded-full bg-orange-500 text-white flex items-center justify-center text-lg"><i class="ic ic-contact"></i></span>
-                    <div><p class="font-bold text-gray-800">นัดหมายปรึกษา</p><p class="text-xs text-gray-500">ฟรี ไม่มีค่าใช้จ่าย</p></div>
-                </a>
-            </div>
-        </div>
-    </section>
+    <!-- บลอคทั้งหมดถูก render ด้วย JS จาก /api/blocks -->
+    <main id="root">
+        <div class="max-w-6xl mx-auto px-4 py-20 text-center text-gray-400">กำลังโหลด…</div>
+    </main>
 
     <!-- ===== FOOTER ===== -->
     <footer class="bg-slate-900 text-gray-300">
@@ -261,64 +123,575 @@
         <div class="text-center text-[11px] text-gray-500 pb-5">© 2026 VP Kanniporn Office · สำนักงานตัวแทน FWD Insurance</div>
     </footer>
 
-    <script>
-        // การ์ดแผนประกัน 6 อัน
-        const PLANS = [
-            { emo: '❤️', color: 'from-red-400 to-red-500', th: 'ประกันสุขภาพ', en: 'Health Insurance', desc: 'คุ้มครองค่ารักษาพยาบาล โรคร้ายแรง และอุบัติเหตุ', btn: 'ดูแผนสุขภาพ' },
-            { emo: '🛡️', color: 'from-orange-400 to-orange-500', th: 'ประกันชีวิต', en: 'Life Insurance', desc: 'สร้างหลักประกันให้ครอบครัวและคนที่คุณรัก', btn: 'ดูแผนประกันชีวิต' },
-            { emo: '🐷', color: 'from-amber-400 to-amber-500', th: 'ประกันสะสมทรัพย์', en: 'Savings Insurance', desc: 'ออมเงินอย่างมีวินัย พร้อมความคุ้มครอง', btn: 'ดูแผนออมเงิน' },
-            { emo: '🏖️', color: 'from-orange-400 to-amber-500', th: 'ประกันบำนาญ', en: 'Retirement Planning', desc: 'เตรียมบำนาญหลังเกษียณอย่างมั่นคง', btn: 'ดูแผนบำนาญ' },
-            { emo: '👥', color: 'from-orange-500 to-orange-600', th: 'ประกันกลุ่ม', en: 'Group Insurance', desc: 'ดูแลพนักงานในองค์กร เพิ่มสวัสดิการมืออาชีพ', btn: 'ดูประกันกลุ่ม' },
-            { emo: '👪', color: 'from-purple-400 to-purple-500', th: 'วางแผนมรดก', en: 'Legacy Planning', desc: 'ส่งต่อความมั่งคั่งให้คนที่คุณรัก', btn: 'ดูรายละเอียด' },
-        ];
-        document.getElementById('plans-grid').innerHTML = PLANS.map(p => `
-            <div class="plan-card bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center transition flex flex-col">
-                <div class="w-14 h-14 mx-auto rounded-full bg-gradient-to-br ${p.color} text-white flex items-center justify-center text-2xl shadow-md">${p.emo}</div>
-                <p class="font-bold text-gray-800 mt-3">${p.th}</p>
-                <p class="text-[11px] text-orange-500 font-semibold">${p.en}</p>
-                <p class="text-[11px] text-gray-500 mt-1 flex-1">${p.desc}</p>
-                <a href="/plans" class="mt-3 inline-block text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-3 py-1.5 rounded-full">${p.btn}</a>
-            </div>`).join('');
+    <div id="adm-bar">
+        <span>✏️ โหมดแก้ไขหน้าเว็บ — คลิกที่ข้อความบนหน้าเพื่อแก้ได้เลย</span>
+        <a href="/support-admin/users" class="underline text-orange-300">จัดการตัวแทน</a>
+    </div>
+    <div id="toast"></div>
 
-        // ===== ดึงตัวแทนที่แอดมินตั้งให้โชว์ (ถ้ามี) มาแทนค่าเริ่มต้นในไฟล์ =====
+    <!-- โมดัลเลือกตัวแทน (ข้อ 4) -->
+    <div class="modal" id="pick-modal">
+        <div class="modal-card">
+            <h3 class="font-extrabold text-lg mb-1">เลือกตัวแทนที่จะโชว์บนหน้าแรก</h3>
+            <p class="text-xs text-gray-500 mb-4">เลือกได้สูงสุด <b id="pick-max">5</b> คน — ถ้าไม่เลือกเลย ระบบจะใช้ตัวแทนหลักที่ตั้งไว้</p>
+            <div id="pick-list" class="grid sm:grid-cols-2 gap-2 mb-4"></div>
+            <div class="flex justify-end gap-2">
+                <button id="pick-cancel" class="px-4 py-2 rounded-full text-sm font-bold text-gray-500 hover:bg-gray-100">ยกเลิก</button>
+                <button id="pick-save" class="px-5 py-2 rounded-full text-sm font-bold text-white bg-orange-500 hover:bg-orange-600">บันทึก</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        //  หน้าตาเว็บ = บลอคจาก /api/blocks
+        //  ผู้เข้าชม  → เห็นเฉยๆ
+        //  SupperAdmin → คลิกแก้บนหน้าได้ตรงๆ (contenteditable + toolbar)
+        // ============================================================
+        let BLOCKS = [], IS_ADMIN = false, AGENTS = [], FEATURED = null;
+
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+        const byType = t => BLOCKS.find(b => b.type === t);
+
+        function toast(msg, isErr) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.className = 'on' + (isErr ? ' err' : '');
+            clearTimeout(t._t); t._t = setTimeout(() => { t.className = ''; }, 2200);
+        }
+
+        // ===== ช่องแก้ข้อความตรงๆ =====
+        // ผู้เข้าชมได้ HTML ธรรมดา / แอดมินได้ contenteditable ที่เซฟตอนคลิกออก
+        function ed(bid, key, val, cls, tag) {
+            tag = tag || 'span';
+            const safe = esc(val || '');
+            if (!IS_ADMIN) return `<${tag} class="${cls}">${safe}</${tag}>`;
+            return `<${tag} class="${cls} ed" contenteditable="true" data-bid="${bid}" data-key="${key}"
+                      data-ph="${esc(key)}">${safe}</${tag}>`;
+        }
+
+        // ===== แถบเครื่องมือของบลอค (เลื่อนขึ้น/ลง/ซ่อน) =====
+        function bar(b) {
+            if (!IS_ADMIN) return '';
+            return `<div class="blk-bar">
+                <button data-act="up" data-bid="${b.id}" title="เลื่อนขึ้น">▲</button>
+                <button data-act="down" data-bid="${b.id}" title="เลื่อนลง">▼</button>
+                <button data-act="vis" data-bid="${b.id}" title="${b.is_visible ? 'ซ่อนบลอคนี้' : 'แสดงบลอคนี้'}">${b.is_visible ? '👁' : '🚫'}</button>
+            </div>`;
+        }
+        const hidTag = '<span class="hid-tag text-[10px] font-bold text-white bg-gray-500 px-2 py-0.5 rounded-full align-middle ml-2">ซ่อนอยู่</span>';
+        const wrap = (b, inner, extra) =>
+            `<section id="${b.type}" class="blk ${b.is_visible ? '' : 'hid'} ${extra || ''}">${bar(b)}${inner}</section>`;
+
+        // ============================================================
+        //  ข้อ 1 — HERO : 6 ภาพ × 3 อุปกรณ์
+        // ============================================================
+        function pickVariant() {
+            const w = window.innerWidth;
+            return w < 640 ? 'mobile' : (w < 1024 ? 'tablet' : 'web');
+        }
+        function heroSlides(b) {
+            const want = pickVariant();
+            const slides = [];
+            for (let s = 0; s <= 5; s++) {
+                // ไม่มีรูปของอุปกรณ์นี้ → ถอยไปใช้ web
+                const img = b.images.find(i => i.slot === s && i.variant === want)
+                    || b.images.find(i => i.slot === s && i.variant === 'web');
+                if (img) slides.push(img.path);
+            }
+            return slides;
+        }
+        function renderHero(b) {
+            const slides = heroSlides(b);
+            const bg = slides.map((p, i) =>
+                `<div class="hero-slide ${i === 0 ? 'on' : ''}" style="background-image:url('${esc(p)}')"></div>`).join('');
+            const tags = (b.data.tags || []).map(t =>
+                `<span class="inline-flex items-center gap-1.5 bg-white border border-orange-200 rounded-full px-3.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm">${esc(t)}</span>`).join('');
+
+            // แอดมิน: ตาราง 6 ช่อง × 3 อุปกรณ์
+            let uploader = '';
+            if (IS_ADMIN) {
+                const tabs = [['web', '🖥️ คอม'], ['tablet', '📱 iPad'], ['mobile', '📲 โทรศัพท์']].map(([v, label]) => {
+                    const cells = [0, 1, 2, 3, 4, 5].map(s => {
+                        const img = b.images.find(i => i.slot === s && i.variant === v);
+                        return `<div class="slot" data-up="${b.id}" data-slot="${s}" data-variant="${v}" title="ภาพที่ ${s + 1} (${label})">
+                            ${img ? `<img src="${esc(img.path)}"><span class="x" data-del="${b.id}" data-slot="${s}" data-variant="${v}">×</span>`
+                                : `<div class="w-full h-full flex flex-col items-center justify-center text-orange-400">
+                                     <span class="text-lg">＋</span><span class="text-[10px] font-bold">ภาพ ${s + 1}</span></div>`}
+                        </div>`;
+                    }).join('');
+                    return `<div class="mb-3">
+                        <p class="text-[11px] font-bold text-gray-500 mb-1.5">${label}</p>
+                        <div class="grid grid-cols-6 gap-1.5">${cells}</div>
+                    </div>`;
+                }).join('');
+                uploader = `<div class="adm-only relative z-10 max-w-6xl mx-auto px-4 pb-6">
+                    <div class="bg-white/95 border border-orange-200 rounded-xl p-3 shadow-sm">
+                        <p class="text-xs font-extrabold text-gray-700 mb-2">🖼️ ภาพพื้นหลังหัวเว็บ — 6 ภาพ × 3 อุปกรณ์ (คลิกช่องเพื่ออัป)</p>
+                        ${tabs}
+                        <p class="text-[10px] text-gray-400">ช่องไหนไม่ใส่ ระบบจะใช้ภาพของ "คอม" แทนอัตโนมัติ · ไฟล์ไม่เกิน 5MB</p>
+                    </div>
+                </div>`;
+            }
+
+            return wrap(b, `
+                <div class="hero-bg relative overflow-hidden">
+                    <div class="hero-slides">${bg}</div>
+                    ${slides.length ? '<div class="absolute inset-0 bg-white/55 z-0"></div>' : ''}
+                    <div class="max-w-6xl mx-auto px-4 py-10 md:py-16 grid md:grid-cols-2 gap-8 items-center relative z-10">
+                        <div>
+                            ${ed(b.id, 'tagline', b.data.tagline, 'script text-3xl md:text-4xl text-orange-500 mb-1 block', 'p')}
+                            ${ed(b.id, 'heading', b.data.heading, 'text-3xl md:text-5xl font-extrabold leading-tight text-gray-800 block', 'h1')}
+                            ${ed(b.id, 'sub', b.data.sub, 'text-gray-600 mt-4 text-sm md:text-base leading-relaxed block', 'p')}
+                            <div class="flex flex-wrap gap-2 mt-6">${tags}</div>
+                            <div class="flex flex-wrap gap-3 mt-7">
+                                <a id="cta-consult" href="${esc(b.data.cta_line_url || '#contact')}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-6 py-3 rounded-full shadow-lg shadow-orange-500/30 hover:shadow-xl transition">
+                                    <span class="text-lg">🤝</span> รับคำปรึกษาฟรี
+                                </a>
+                                <a id="cta-appoint" href="${esc(b.data.cta_appoint_url || '#contact')}" class="inline-flex items-center gap-2 bg-white border-2 border-orange-400 text-orange-600 font-bold px-6 py-3 rounded-full hover:bg-orange-50 transition">
+                                    <i class="ic ic-contact"></i> นัดหมายออนไลน์
+                                </a>
+                            </div>
+                        </div>
+                        <div class="relative flex justify-center md:justify-end">
+                            <img src="/src/S__12566769.jpg" alt="ที่ปรึกษาการเงิน" class="feat-photo w-64 md:w-full max-w-sm rounded-3xl shadow-2xl object-cover" style="aspect-ratio:3/4;">
+                        </div>
+                    </div>
+                    ${uploader}
+                </div>`);
+        }
+
+        // ============================================================
+        //  ข้อ 2 — PLANS : ปุ่ม/บลอคซ้อนชั้น (กดเข้าไปมีบลอคย่อยอีก)
+        // ============================================================
+        function renderPlans(b) {
+            const cards = b.children.map(c => {
+                const img = c.images && c.images[0];
+                return `<a href="/b/${c.id}" class="plan-card bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center transition flex flex-col ${c.is_visible ? '' : 'opacity-50'}">
+                    <div class="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-orange-400 to-orange-500 text-white flex items-center justify-center text-2xl shadow-md overflow-hidden">
+                        ${img ? `<img src="${esc(img.path)}" class="w-full h-full object-cover">` : '📄'}
+                    </div>
+                    <p class="font-bold text-gray-800 mt-3 flex-1">${esc(c.data.button_text || 'ปุ่มใหม่')}</p>
+                    <span class="mt-3 inline-block text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-3 py-1.5 rounded-full">ดูรายละเอียด</span>
+                </a>`;
+            }).join('');
+            const addBtn = IS_ADMIN ? `<button data-addpage="${b.id}"
+                class="plan-card bg-orange-50 rounded-2xl border-2 border-dashed border-orange-300 p-4 text-center flex flex-col items-center justify-center text-orange-500 hover:bg-orange-100 transition min-h-[150px]">
+                <span class="text-3xl">＋</span><span class="font-bold text-sm mt-1">สร้างบลอค</span></button>` : '';
+            const empty = (!b.children.length && !IS_ADMIN)
+                ? '<p class="col-span-full text-center text-gray-400 text-sm py-6">ยังไม่มีรายการ</p>' : '';
+
+            return wrap(b, `
+                <div class="max-w-6xl mx-auto px-4 py-12">
+                    <div class="text-center mb-8">
+                        ${ed(b.id, 'title', b.data.title, 'text-2xl md:text-3xl font-extrabold text-gray-800 block', 'h2')}${hidTag}
+                        ${ed(b.id, 'subtitle', b.data.subtitle, 'text-gray-500 mt-1 block', 'p')}
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">${cards}${addBtn}${empty}</div>
+                </div>`);
+        }
+
+        // ============================================================
+        //  ข้อ 3 + ข้อ 5 — การ์ด: icon + ตัวหนังสือใหญ่ (เลือกสีได้) + คำอธิบาย
+        // ============================================================
+        function cardHtml(c) {
+            const color = c.data.color || '#ea580c';
+            const pick = IS_ADMIN
+                ? `<input type="color" value="${esc(color)}" data-color="${c.id}" title="เลือกสีตัวหนังสือ"
+                     class="adm-only w-6 h-6 rounded border border-gray-200 cursor-pointer mx-auto mt-1">`
+                : '';
+            const del = IS_ADMIN
+                ? `<button data-delcard="${c.id}" title="ลบการ์ดนี้"
+                     class="adm-only absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[11px] leading-5">×</button>`
+                : '';
+            return `<div class="relative ${c.is_visible ? '' : 'opacity-50'}">
+                ${del}
+                <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center text-3xl">
+                    ${ed(c.id, 'icon', c.data.icon, 'leading-none')}
+                </div>
+                ${ed(c.id, 'text', c.data.text, 'text-2xl font-extrabold block', 'p').replace('<p ', `<p style="color:${esc(color)}" `)}
+                ${pick}
+                ${ed(c.id, 'desc', c.data.desc, 'text-sm text-gray-500 mt-0.5 block', 'p')}
+            </div>`;
+        }
+        function renderCardBlock(b, band) {
+            const cards = b.children.map(cardHtml).join('');
+            const add = IS_ADMIN ? `<button data-addcard="${b.id}"
+                class="border-2 border-dashed border-orange-300 rounded-2xl text-orange-500 hover:bg-orange-50 py-6 font-bold text-sm">
+                ＋ เพิ่มการ์ด</button>` : '';
+            const inner = `
+                <div class="max-w-5xl mx-auto px-4 py-12">
+                    <div class="text-center mb-8">
+                        ${ed(b.id, 'title', b.data.title, 'text-2xl md:text-3xl font-extrabold text-gray-800 block', 'h2')}${hidTag}
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-4 text-center">${cards}${add}</div>
+                </div>`;
+            return wrap(b, band ? `<div class="gold-band border-y border-amber-100">${inner}</div>` : `<div class="bg-white">${inner}</div>`);
+        }
+
+        // ============================================================
+        //  ข้อ 4 — AGENTS : popcard ตัวแทน 3-5 คน (แบบหน้าค้นหา)
+        // ============================================================
+        function initials(f, l) { return ((f || '?')[0] + (l || '')[0] || '').toUpperCase(); }
+        function agentCard(u) {
+            const fullName = esc(`${u.first_name || ''} ${u.last_name || ''}`.trim() || '—');
+            const avatar = u.avatar_path
+                ? `<img src="${esc(u.avatar_path)}" alt="${fullName}" class="w-full h-full object-cover">`
+                : `<span class="text-2xl font-bold text-orange-500">${esc(initials(u.first_name, u.last_name))}</span>`;
+            return `<a href="/agent/${u.id}" class="group bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center text-center relative overflow-hidden">
+                <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-orange-600"></div>
+                <div class="w-20 h-20 rounded-full border-4 border-amber-300 bg-orange-50 overflow-hidden flex items-center justify-center mt-2 mb-3 shadow-md group-hover:scale-105 transition">${avatar}</div>
+                <h4 class="font-bold text-sm text-gray-800">${fullName}</h4>
+                <p class="text-xs text-orange-500 font-semibold mt-0.5">${esc(u.position || 'ตัวแทน FWD')}</p>
+                <div class="flex flex-col items-center gap-1 mt-2">
+                    ${u.branch ? `<span class="text-[10px] text-gray-400">📍 ${esc(u.branch)}</span>` : ''}
+                    ${u.province ? `<span class="text-[10px] text-gray-400">${esc(u.province)}</span>` : ''}
+                    ${u.phone ? `<span class="text-[10px] text-orange-500 font-medium"><i class="ic ic-phone"></i> ${esc(u.phone)}</span>` : ''}
+                </div>
+                ${u.quote ? `<p class="text-[10px] text-gray-400 italic line-clamp-2 mt-1">"${esc(u.quote)}"</p>` : ''}
+                <div class="mt-3 text-[10px] font-bold text-orange-400 group-hover:text-orange-600 flex items-center gap-1">
+                    ดูโปรไฟล์ <span class="group-hover:translate-x-1 transition">➔</span>
+                </div>
+            </a>`;
+        }
+        function shownAgents(b) {
+            const ids = b.data.agent_ids || [];
+            const max = Number(b.data.max_show || 5);
+            if (ids.length) {
+                // เรียงตามที่แอดมินเลือกไว้
+                return ids.map(id => AGENTS.find(a => a.id === id)).filter(Boolean).slice(0, max);
+            }
+            // ยังไม่เลือก → ใช้ตัวแทนหลักที่ตั้งไว้ (ของเดิม)
+            if (FEATURED) { const f = AGENTS.find(a => a.id === FEATURED.id); if (f) return [f]; }
+            return [];
+        }
+        function renderAgents(b) {
+            const list = shownAgents(b);
+            const cards = list.map(agentCard).join('');
+            const pickBtn = IS_ADMIN
+                ? `<button data-pick="${b.id}" class="adm-only mx-auto mt-5 px-5 py-2 rounded-full text-sm font-bold text-white bg-orange-500 hover:bg-orange-600">
+                     👥 เลือกตัวแทนที่จะโชว์ (${list.length} คน)</button>` : '';
+            const empty = (!list.length && !IS_ADMIN)
+                ? '<p class="col-span-full text-center text-gray-400 text-sm py-6">ยังไม่ได้เลือกตัวแทน</p>' : '';
+            return wrap(b, `
+                <div class="max-w-6xl mx-auto px-4 py-12">
+                    <div class="text-center mb-8">
+                        ${ed(b.id, 'title', b.data.title, 'text-2xl md:text-3xl font-extrabold text-gray-800 block', 'h2')}${hidTag}
+                        ${ed(b.id, 'subtitle', b.data.subtitle, 'text-gray-500 mt-1 block', 'p')}
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">${cards}${empty}</div>
+                    <div class="text-center">${pickBtn}</div>
+                </div>`, 'bg-white');
+        }
+
+        // ============================================================
+        //  ข้อ 7 — RECRUIT : ใส่ภาพอย่างเดียว
+        // ============================================================
+        function renderRecruit(b) {
+            const img = b.images.find(i => i.slot === 0 && i.variant === 'web');
+            const pic = img
+                ? `<img src="${esc(img.path)}" alt="" class="w-full rounded-2xl shadow-lg object-cover">`
+                : (IS_ADMIN ? '' : '');
+            const up = IS_ADMIN ? `<div class="adm-only mt-4">
+                    <div class="slot max-w-md mx-auto" data-up="${b.id}" data-slot="0" data-variant="web">
+                        ${img ? `<img src="${esc(img.path)}"><span class="x" data-del="${b.id}" data-slot="0" data-variant="web">×</span>`
+                            : `<div class="w-full h-full flex flex-col items-center justify-center text-orange-400">
+                                 <span class="text-2xl">＋</span><span class="text-xs font-bold mt-1">คลิกเพื่อใส่ภาพ</span></div>`}
+                    </div></div>` : '';
+            return wrap(b, `
+                <div class="bg-slate-900 text-white mt-10">
+                    <div class="max-w-6xl mx-auto px-4 py-12">
+                        ${ed(b.id, 'title', b.data.title, 'text-2xl md:text-3xl font-extrabold leading-tight text-center block', 'h2')}${hidTag}
+                        <div class="mt-6 max-w-3xl mx-auto">${pic}</div>
+                        ${up}
+                    </div>
+                </div>`);
+        }
+
+        // ============================================================
+        //  ข้อ 8 — CTA : LINE + โทร + นัดหมาย (แอดมินกรอกเบอร์/ไลน์เอง)
+        // ============================================================
         function lineHref(raw) {
             raw = (raw || '').trim();
-            if (!raw) return null;
+            if (!raw) return '#';
             const id = raw.replace(/^@+/, '');
             return raw.startsWith('@') ? 'https://line.me/R/ti/p/@' + id : 'https://line.me/ti/p/~' + id;
         }
-        function setTextIf(id, v) { const el = document.getElementById(id); if (el && v) el.textContent = v; }
-        function setHref(id, v) { const el = document.getElementById(id); if (el && v) el.href = v; }
-        async function loadFeatured() {
-            try {
-                const res = await fetch('/api/users/home-featured');
-                if (!res.ok) return;
-                const d = await res.json();
-                const a = d && d.agent;
-                if (!a) return; // แอดมินยังไม่ได้เลือก → ใช้ค่าเริ่มต้น
-                const name = `${a.first_name || ''} ${a.last_name || ''}`.trim();
-                setTextIf('feat-name', name);
-                const pos = a.position ? (a.company ? `${a.position} | ${a.company}` : a.position) : '';
-                setTextIf('feat-position', pos);
-                if (a.quote) setTextIf('feat-quote', `"${a.quote}"`);
-                setTextIf('feat-phone', a.phone);
-                setTextIf('feat-email', a.email);
-                const lineLabel = a.line_id ? (a.line_id.startsWith('@') ? a.line_id : '@' + a.line_id) : '';
-                if (lineLabel) setTextIf('feat-line', lineLabel);
-                if (a.avatar_path) document.querySelectorAll('.feat-photo').forEach(im => { im.src = a.avatar_path; });
-                // ปุ่ม CTA → ฟอร์มของตัวแทนคนนี้
-                setHref('cta-consult', '/contact/' + a.id);
-                setHref('cta-appoint', '/appointment/' + a.id);
-                setHref('cta-appoint2', '/appointment/' + a.id);
-                setHref('cta-recruit', '/recruit/' + a.id);
-                const lh = lineHref(a.line_id);
-                if (lh) setHref('cta-line-1', lh);
-                if (a.phone) setHref('cta-tel', 'tel:' + String(a.phone).replace(/[^0-9+]/g, ''));
-                if (lineLabel) document.querySelectorAll('.feat-line-text').forEach(el => { el.textContent = lineLabel; });
-                if (a.phone) document.querySelectorAll('.feat-phone-text').forEach(el => { el.textContent = a.phone; });
-            } catch (e) { /* ใช้ค่าเริ่มต้น */ }
+        function renderCta(b) {
+            const apptId = b.data.appointment_agent_id || (FEATURED && FEATURED.id) || null;
+            const apptHref = apptId ? '/appointment/' + apptId : '#';
+            const tel = 'tel:' + String(b.data.phone || '').replace(/[^0-9+]/g, '');
+            const box = 'bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-3 hover:shadow-md transition';
+            return wrap(b, `
+                <div class="gold-band">
+                    <div class="max-w-5xl mx-auto px-4 py-12">
+                        <div class="text-center mb-6">
+                            ${ed(b.id, 'title', b.data.title, 'text-2xl md:text-3xl font-extrabold text-gray-800 block', 'h2')}${hidTag}
+                            ${ed(b.id, 'subtitle', b.data.subtitle, 'text-gray-500 text-sm mt-1 block', 'p')}
+                        </div>
+                        <div class="grid sm:grid-cols-3 gap-4">
+                            <a href="${esc(lineHref(b.data.line_id))}" target="_blank" rel="noopener" class="${box}">
+                                <span class="w-11 h-11 rounded-full bg-green-500 text-white flex items-center justify-center text-xl flex-shrink-0">💬</span>
+                                <div><p class="font-bold text-gray-800">LINE Official</p>
+                                     ${ed(b.id, 'line_id', b.data.line_id, 'text-xs text-gray-500 block', 'p')}</div>
+                            </a>
+                            <a href="${esc(tel)}" class="${box}">
+                                <span class="w-11 h-11 rounded-full bg-orange-500 text-white flex items-center justify-center text-lg flex-shrink-0"><i class="ic ic-phone"></i></span>
+                                <div><p class="font-bold text-gray-800">โทรหาเรา</p>
+                                     ${ed(b.id, 'phone', b.data.phone, 'text-xs text-gray-500 block', 'p')}</div>
+                            </a>
+                            <a href="${esc(apptHref)}" class="${box}">
+                                <span class="w-11 h-11 rounded-full bg-orange-500 text-white flex items-center justify-center text-lg flex-shrink-0"><i class="ic ic-contact"></i></span>
+                                <div><p class="font-bold text-gray-800">นัดหมายปรึกษา</p>
+                                     <p class="text-xs text-gray-500">ฟรี ไม่มีค่าใช้จ่าย</p></div>
+                            </a>
+                        </div>
+                        ${IS_ADMIN && !apptId ? '<p class="adm-only text-center text-[11px] text-red-500 mt-3">⚠️ ยังไม่ได้ตั้งตัวแทนหลัก — ปุ่ม "นัดหมายปรึกษา" จะยังใช้ไม่ได้ ไปตั้งที่หน้าจัดการตัวแทน</p>' : ''}
+                    </div>
+                </div>`, 'contact');
         }
-        loadFeatured();
+
+        // ============================================================
+        //  ประกอบหน้า
+        // ============================================================
+        const RENDER = {
+            hero: renderHero,
+            plans: renderPlans,
+            features: b => renderCardBlock(b, true),
+            awards: b => renderCardBlock(b, false),
+            agents: renderAgents,
+            recruit: renderRecruit,
+            cta: renderCta,
+        };
+        function render() {
+            document.body.classList.toggle('adm', IS_ADMIN);
+            document.getElementById('root').innerHTML =
+                BLOCKS.map(b => (RENDER[b.type] ? RENDER[b.type](b) : '')).join('');
+            startSlides();
+        }
+        // hero: สไลด์ภาพวนทีละ 5 วินาที
+        let slideTimer = null;
+        function startSlides() {
+            clearInterval(slideTimer);
+            const slides = document.querySelectorAll('.hero-slide');
+            if (slides.length < 2) return;
+            let i = 0;
+            slideTimer = setInterval(() => {
+                slides[i].classList.remove('on');
+                i = (i + 1) % slides.length;
+                slides[i].classList.add('on');
+            }, 5000);
+        }
+
+        async function load() {
+            const [rb, ru, rf] = await Promise.all([
+                fetch('/api/blocks').then(r => r.json()).catch(() => null),
+                fetch('/api/users').then(r => r.json()).catch(() => null),
+                fetch('/api/users/home-featured').then(r => r.json()).catch(() => null),
+            ]);
+            if (!rb || !rb.ok) {
+                document.getElementById('root').innerHTML =
+                    '<div class="max-w-6xl mx-auto px-4 py-20 text-center text-gray-400">โหลดเนื้อหาไม่สำเร็จ กรุณารีเฟรช</div>';
+                return;
+            }
+            IS_ADMIN = !!rb.is_admin;
+            BLOCKS = rb.blocks || [];
+            AGENTS = (ru && ru.users) ? ru.users.filter(u => u.role !== 'admin') : [];
+            FEATURED = (rf && rf.agent) ? rf.agent : null;
+            render();
+        }
+
+        // ============================================================
+        //  ฝั่งแอดมิน — บันทึกทุกอย่างผ่าน /api/blocks
+        // ============================================================
+        async function api(url, opt) {
+            const r = await fetch(url, opt);
+            const j = await r.json().catch(() => ({}));
+            if (!r.ok || j.error) throw new Error(j.error || 'บันทึกไม่สำเร็จ');
+            return j;
+        }
+        const saveData = (bid, data) =>
+            api('/api/blocks/' + bid, {
+                method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data }),
+            });
+
+        // แก้ข้อความตรงๆ: เซฟตอนคลิกออก (ถ้าเปลี่ยนจริง)
+        document.addEventListener('focusin', e => {
+            const el = e.target.closest && e.target.closest('.ed[data-bid]');
+            if (el) el._was = el.innerText;
+        });
+        document.addEventListener('focusout', async e => {
+            const el = e.target.closest && e.target.closest('.ed[data-bid]');
+            if (!el) return;
+            const val = el.innerText.trim();
+            if (val === (el._was || '').trim()) return;
+            try {
+                await saveData(el.dataset.bid, { [el.dataset.key]: val });
+                const b = BLOCKS.find(x => x.id == el.dataset.bid);
+                if (b) b.data[el.dataset.key] = val;
+                else BLOCKS.forEach(p => { const c = p.children.find(x => x.id == el.dataset.bid); if (c) c.data[el.dataset.key] = val; });
+                toast('บันทึกแล้ว');
+            } catch (err) { toast(err.message, true); el.innerText = el._was || ''; }
+        });
+        // Enter = จบการแก้ (ไม่ขึ้นบรรทัดใหม่)
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && e.target.classList && e.target.classList.contains('ed')) {
+                e.preventDefault(); e.target.blur();
+            }
+        });
+
+        // คลิกปุ่มต่างๆ ในโหมดแก้ไข
+        document.addEventListener('click', async e => {
+            if (!IS_ADMIN) return;
+            const t = e.target;
+
+            // เลื่อนขึ้น/ลง + ซ่อน
+            const act = t.closest('[data-act]');
+            if (act) {
+                e.preventDefault();
+                const bid = Number(act.dataset.bid);
+                const i = BLOCKS.findIndex(b => b.id === bid);
+                try {
+                    if (act.dataset.act === 'vis') {
+                        const nv = !BLOCKS[i].is_visible;
+                        await api('/api/blocks/' + bid, {
+                            method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ is_visible: nv }),
+                        });
+                        BLOCKS[i].is_visible = nv; render(); toast(nv ? 'แสดงบลอคแล้ว' : 'ซ่อนบลอคแล้ว');
+                    } else {
+                        const j = act.dataset.act === 'up' ? i - 1 : i + 1;
+                        if (j < 0 || j >= BLOCKS.length) return;
+                        [BLOCKS[i], BLOCKS[j]] = [BLOCKS[j], BLOCKS[i]];
+                        await api('/api/blocks-reorder', {
+                            method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ ids: BLOCKS.map(b => b.id) }),
+                        });
+                        BLOCKS.forEach((b, k) => b.sort_order = k + 1);
+                        render(); toast('สลับลำดับแล้ว');
+                    }
+                } catch (err) { toast(err.message, true); load(); }
+                return;
+            }
+
+            // เพิ่มการ์ด (ข้อ 3 / ข้อ 5)
+            const ac = t.closest('[data-addcard]');
+            if (ac) {
+                try {
+                    await api('/api/blocks', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            type: 'card', parent_id: Number(ac.dataset.addcard),
+                            data: { icon: '⭐', text: 'หัวข้อใหม่', color: '#ea580c', desc: 'คำอธิบาย' },
+                        }),
+                    });
+                    await load(); toast('เพิ่มการ์ดแล้ว');
+                } catch (err) { toast(err.message, true); }
+                return;
+            }
+            // ลบการ์ด
+            const dc = t.closest('[data-delcard]');
+            if (dc) {
+                if (!confirm('ลบการ์ดนี้? ลบแล้วกู้คืนไม่ได้')) return;
+                try { await api('/api/blocks/' + dc.dataset.delcard, { method: 'DELETE' }); await load(); toast('ลบแล้ว'); }
+                catch (err) { toast(err.message, true); }
+                return;
+            }
+            // สร้างบลอค (ข้อ 2)
+            const ap = t.closest('[data-addpage]');
+            if (ap) {
+                const name = prompt('ชื่อปุ่ม/บลอคใหม่:', 'บลอคใหม่');
+                if (!name) return;
+                try {
+                    await api('/api/blocks', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ type: 'page', parent_id: Number(ap.dataset.addpage), data: { button_text: name } }),
+                    });
+                    await load(); toast('สร้างบลอคแล้ว');
+                } catch (err) { toast(err.message, true); }
+                return;
+            }
+            // ลบรูปในช่อง
+            const dl = t.closest('[data-del]');
+            if (dl) {
+                e.preventDefault(); e.stopPropagation();
+                try {
+                    await api(`/api/blocks/${dl.dataset.del}/image?slot=${dl.dataset.slot}&variant=${dl.dataset.variant}`, { method: 'DELETE' });
+                    await load(); toast('ลบรูปแล้ว');
+                } catch (err) { toast(err.message, true); }
+                return;
+            }
+            // อัปรูปเข้าช่อง
+            const up = t.closest('[data-up]');
+            if (up) {
+                const inp = document.createElement('input');
+                inp.type = 'file'; inp.accept = 'image/*';
+                inp.onchange = async () => {
+                    if (!inp.files[0]) return;
+                    const fd = new FormData();
+                    fd.append('image', inp.files[0]);
+                    fd.append('slot', up.dataset.slot);
+                    fd.append('variant', up.dataset.variant);
+                    try {
+                        await api(`/api/blocks/${up.dataset.up}/image`, { method: 'POST', body: fd });
+                        await load(); toast('อัปโหลดรูปแล้ว');
+                    } catch (err) { toast(err.message, true); }
+                };
+                inp.click();
+                return;
+            }
+            // เลือกตัวแทน (ข้อ 4)
+            const pk = t.closest('[data-pick]');
+            if (pk) { openPick(Number(pk.dataset.pick)); return; }
+        });
+
+        // เลือกสีตัวหนังสือใหญ่ (ข้อ 3 / ข้อ 5)
+        document.addEventListener('change', async e => {
+            const cp = e.target.closest && e.target.closest('[data-color]');
+            if (!cp) return;
+            try { await saveData(cp.dataset.color, { color: cp.value }); await load(); toast('เปลี่ยนสีแล้ว'); }
+            catch (err) { toast(err.message, true); }
+        });
+
+        // ===== โมดัลเลือกตัวแทน =====
+        let pickBid = null;
+        function openPick(bid) {
+            pickBid = bid;
+            const b = BLOCKS.find(x => x.id === bid);
+            const sel = new Set(b.data.agent_ids || []);
+            document.getElementById('pick-max').textContent = b.data.max_show || 5;
+            document.getElementById('pick-list').innerHTML = AGENTS.length ? AGENTS.map(a => `
+                <label class="flex items-center gap-2 border border-gray-200 rounded-xl p-2 cursor-pointer hover:bg-orange-50">
+                    <input type="checkbox" value="${a.id}" ${sel.has(a.id) ? 'checked' : ''} class="accent-orange-500">
+                    <span class="w-8 h-8 rounded-full bg-orange-100 overflow-hidden flex items-center justify-center text-xs font-bold text-orange-500 flex-shrink-0">
+                        ${a.avatar_path ? `<img src="${esc(a.avatar_path)}" class="w-full h-full object-cover">` : esc(initials(a.first_name, a.last_name))}
+                    </span>
+                    <span class="text-sm">${esc(`${a.first_name || ''} ${a.last_name || ''}`.trim())}
+                        <span class="block text-[10px] text-gray-400">${esc(a.position || '')}</span></span>
+                </label>`).join('') : '<p class="text-sm text-gray-400 col-span-full">ยังไม่มีตัวแทนในระบบ — ไปเพิ่มที่หน้าจัดการตัวแทนก่อน</p>';
+            document.getElementById('pick-modal').classList.add('on');
+        }
+        document.getElementById('pick-cancel').onclick = () => document.getElementById('pick-modal').classList.remove('on');
+        document.getElementById('pick-modal').onclick = e => {
+            if (e.target.id === 'pick-modal') e.target.classList.remove('on');
+        };
+        document.getElementById('pick-save').onclick = async () => {
+            const b = BLOCKS.find(x => x.id === pickBid);
+            const max = Number(b.data.max_show || 5);
+            const ids = [...document.querySelectorAll('#pick-list input:checked')].map(i => Number(i.value));
+            if (ids.length > max) { toast(`เลือกได้สูงสุด ${max} คน`, true); return; }
+            try {
+                await saveData(pickBid, { agent_ids: ids });
+                document.getElementById('pick-modal').classList.remove('on');
+                await load(); toast('บันทึกรายชื่อแล้ว');
+            } catch (err) { toast(err.message, true); }
+        };
+
+        // เปลี่ยนขนาดจอ → hero สลับไปใช้รูปของอุปกรณ์นั้น
+        let rz = null;
+        window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(render, 250); });
+
+        load();
     </script>
 </body>
 

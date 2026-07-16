@@ -200,6 +200,20 @@ router.get('/blocks/:id', async (req, res, next) => {
       [id]
     );
 
+    // รูปของบลอคลูก (ใช้เป็นรูปบนปุ่ม) — ต้องส่งไปด้วย ไม่งั้นปุ่มย่อยจะไม่มีรูป
+    let childImages = [];
+    if (children.length) {
+      const cids = children.map((c) => c.id);
+      const [ci] = await pool.query(
+        `SELECT id, block_id, image_path, slot, variant, caption
+           FROM block_images
+          WHERE block_id IN (${cids.map(() => '?').join(',')})
+          ORDER BY slot, variant`,
+        cids
+      );
+      childImages = ci;
+    }
+
     // breadcrumb: เดินขึ้นไปหาบลอคแม่ทีละชั้น (จำกัด 30 ชั้นกันวนไม่รู้จบ)
     const breadcrumb = [];
     let cursor = block.parent_id;
@@ -227,6 +241,9 @@ router.get('/blocks/:id', async (req, res, next) => {
       children: children.map((c) => ({
         id: c.id, type: c.type, sort_order: c.sort_order,
         is_visible: !!c.is_visible, data: parseData(c.data) || {},
+        images: childImages
+          .filter((i) => i.block_id === c.id)
+          .map((i) => ({ id: i.id, path: i.image_path, slot: i.slot, variant: i.variant, caption: i.caption })),
       })),
       breadcrumb,
     });

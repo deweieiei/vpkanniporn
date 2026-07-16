@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VP Kanniporn — FWD Insurance</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/Logo2.svg">
+    <link rel="stylesheet" href="/assets/icons.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        html { font-size: clamp(13px, 0.5vw + 11px, 16px); scroll-behavior: smooth; }
+        body { font-family: 'Prompt', sans-serif; }
+        .plan-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(255,107,0,0.16); }
+        .adm-only { display: none; }
+        .adm .adm-only { display: block; }
+        .adm .ed { outline:1.5px dotted #fdba74; outline-offset:3px; border-radius:4px; cursor:text; }
+        .adm .ed:hover { background:#fff7ed; }
+        .adm .ed:focus { outline:2px solid #f97316; background:#fffbf5; }
+        /* เนื้อหาโพสยาวๆ */
+        #content-view img { max-width:100%; height:auto; border-radius:12px; margin:10px 0; }
+        #content-view h1,#content-view h2,#content-view h3 { font-weight:800; margin:14px 0 6px; }
+        #content-view h1 { font-size:1.6rem } #content-view h2 { font-size:1.35rem } #content-view h3 { font-size:1.15rem }
+        #content-view p { margin:8px 0; line-height:1.8 }
+        #content-view ul,#content-view ol { margin:8px 0 8px 22px; list-style:disc }
+        #content-view ol { list-style:decimal }
+        #content-view a { color:#ea580c; text-decoration:underline }
+        #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:70;
+                 background:#16a34a; color:#fff; padding:8px 18px; border-radius:999px; font-size:12.5px;
+                 font-weight:600; opacity:0; transition:opacity .25s; pointer-events:none; }
+        #toast.on { opacity:1; }
+        #toast.err { background:#dc2626; }
+        .slot { position:relative; aspect-ratio:16/10; border-radius:10px; overflow:hidden;
+                border:2px dashed #fdba74; background:#fff7ed; cursor:pointer; max-width:260px; }
+        .slot img { width:100%; height:100%; object-fit:cover; }
+        .slot .x { position:absolute; top:3px; right:3px; width:20px; height:20px; border-radius:50%;
+                   background:rgba(220,38,38,.92); color:#fff; font-size:12px; line-height:20px; text-align:center; }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+    <header class="bg-white/95 backdrop-blur shadow-sm sticky top-0 z-50 border-b border-orange-100">
+        <div class="max-w-4xl mx-auto px-4 h-16 flex items-center gap-3">
+            <a href="/" class="flex items-center gap-2 flex-shrink-0">
+                <img src="/assets/Logo.png" alt="FWD" class="h-9 w-auto">
+            </a>
+            <nav id="crumb" class="flex-1 text-xs text-gray-500 truncate"></nav>
+            <a href="/" class="text-xs font-bold text-gray-500 hover:text-orange-600 flex-shrink-0">← กลับหน้าแรก</a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <div id="root" class="text-center text-gray-400 py-20">กำลังโหลด…</div>
+    </main>
+
+    <div id="toast"></div>
+
+    <script>
+        // ============================================================
+        //  หน้าเนื้อหาของบลอค (page_blocks)
+        //  โครง: บลอค 1 อัน = หัวข้อ + รูป + บลอคย่อย (กดเข้าไปได้อีก) + โพสยาวๆ
+        //  SupperAdmin แก้ได้ตรงๆ / คนทั่วไปดูอย่างเดียว
+        // ============================================================
+        const ID = Number(location.pathname.split('/').pop());
+        let BLOCK = null, CHILDREN = [], IS_ADMIN = false;
+
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+
+        function toast(msg, isErr) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.className = 'on' + (isErr ? ' err' : '');
+            clearTimeout(t._t); t._t = setTimeout(() => { t.className = ''; }, 2200);
+        }
+        async function api(url, opt) {
+            const r = await fetch(url, opt);
+            const j = await r.json().catch(() => ({}));
+            if (!r.ok || j.error) throw new Error(j.error || 'บันทึกไม่สำเร็จ');
+            return j;
+        }
+        function ed(bid, key, val, cls, tag) {
+            tag = tag || 'span';
+            const safe = esc(val || '');
+            if (!IS_ADMIN) return `<${tag} class="${cls}">${safe}</${tag}>`;
+            return `<${tag} class="${cls} ed" contenteditable="true" data-bid="${bid}" data-key="${key}">${safe}</${tag}>`;
+        }
+
+        async function load() {
+            try {
+                const j = await api('/api/blocks/' + ID);
+                IS_ADMIN = !!j.is_admin;
+                BLOCK = j.block; CHILDREN = j.children || [];
+                document.body.classList.toggle('adm', IS_ADMIN);
+                // breadcrumb
+                document.getElementById('crumb').innerHTML =
+                    (j.breadcrumb || []).map(c => c.type === 'plans'
+                        ? `<a href="/#plans" class="hover:text-orange-600">${esc(c.title || 'หน้าแรก')}</a>`
+                        : `<a href="/b/${c.id}" class="hover:text-orange-600">${esc(c.title)}</a>`
+                    ).concat(`<span class="text-gray-800 font-bold">${esc(BLOCK.data.button_text || '')}</span>`).join(' <span class="text-gray-300">›</span> ');
+                render();
+            } catch (e) {
+                document.getElementById('root').innerHTML =
+                    `<p class="text-gray-400">ไม่พบหน้านี้</p><a href="/" class="text-orange-500 font-bold text-sm">← กลับหน้าแรก</a>`;
+            }
+        }
+
+        function render() {
+            const img = BLOCK.images.find(i => i.slot === 0 && i.variant === 'web');
+            const upload = IS_ADMIN ? `
+                <div class="adm-only mb-4">
+                    <p class="text-[11px] font-bold text-gray-500 mb-1.5">รูปบนปุ่ม</p>
+                    <div class="slot" data-up="${BLOCK.id}" data-slot="0" data-variant="web">
+                        ${img ? `<img src="${esc(img.path)}"><span class="x" data-del="${BLOCK.id}">×</span>`
+                            : `<div class="w-full h-full flex flex-col items-center justify-center text-orange-400">
+                                 <span class="text-2xl">＋</span><span class="text-xs font-bold mt-1">ใส่รูป</span></div>`}
+                    </div>
+                </div>` : '';
+
+            // บลอคย่อย — กดเข้าไปได้อีกไม่จำกัดชั้น
+            const kids = CHILDREN.map(c => {
+                const ci = c.images && c.images[0];
+                return `<a href="/b/${c.id}" class="plan-card bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center transition flex flex-col ${c.is_visible ? '' : 'opacity-50'}">
+                    <div class="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-orange-400 to-orange-500 text-white flex items-center justify-center text-2xl shadow-md overflow-hidden">
+                        ${ci ? `<img src="${esc(ci.path)}" class="w-full h-full object-cover">` : '📄'}
+                    </div>
+                    <p class="font-bold text-gray-800 mt-3 flex-1">${esc(c.data.button_text || 'ปุ่มใหม่')}</p>
+                    <span class="mt-3 inline-block text-xs font-bold text-white bg-orange-500 px-3 py-1.5 rounded-full">เปิดดู</span>
+                </a>`;
+            }).join('');
+            const addKid = IS_ADMIN ? `<button id="add-kid"
+                class="plan-card bg-orange-50 rounded-2xl border-2 border-dashed border-orange-300 p-4 flex flex-col items-center justify-center text-orange-500 hover:bg-orange-100 min-h-[150px]">
+                <span class="text-3xl">＋</span><span class="font-bold text-sm mt-1">สร้างบลอคย่อย</span></button>` : '';
+
+            // โพสยาวๆ
+            const content = BLOCK.data.content || '';
+            const contentView = content
+                ? `<div id="content-view" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">${content}</div>`
+                : (IS_ADMIN ? '' : '');
+            const editor = IS_ADMIN ? `
+                <div class="adm-only bg-white rounded-2xl border border-orange-200 shadow-sm p-4 mt-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-xs font-extrabold text-gray-700">📝 เนื้อหาในหน้านี้ (โพสยาวๆ)</p>
+                        <div class="flex gap-2">
+                            <button id="ins-img" class="text-xs font-bold text-orange-600 hover:underline">＋ แทรกรูป</button>
+                            <button id="save-content" class="text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-4 py-1.5 rounded-full">บันทึกเนื้อหา</button>
+                        </div>
+                    </div>
+                    <div id="editor" contenteditable="true"
+                         class="min-h-[220px] border border-gray-200 rounded-xl p-4 focus:outline-orange-400 leading-8"></div>
+                    <p class="text-[10px] text-gray-400 mt-1.5">พิมพ์ได้เลย · กด "แทรกรูป" เพื่อใส่ภาพในเนื้อหา · กด "บันทึกเนื้อหา" เมื่อเสร็จ</p>
+                </div>` : '';
+
+            document.getElementById('root').innerHTML = `
+                <div class="mb-6">
+                    ${upload}
+                    ${ed(BLOCK.id, 'button_text', BLOCK.data.button_text, 'text-2xl md:text-3xl font-extrabold text-gray-800 block', 'h1')}
+                    ${IS_ADMIN ? `<button id="del-block" class="adm-only text-xs font-bold text-red-500 hover:underline mt-2">🗑 ลบบลอคนี้ (ลูกหลานหายทั้งหมด)</button>` : ''}
+                </div>
+                ${(CHILDREN.length || IS_ADMIN) ? `<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">${kids}${addKid}</div>` : ''}
+                ${contentView}
+                ${editor}`;
+
+            const edt = document.getElementById('editor');
+            if (edt) edt.innerHTML = content;
+        }
+
+        // ===== แก้ชื่อปุ่มตรงๆ =====
+        document.addEventListener('focusin', e => {
+            const el = e.target.closest && e.target.closest('.ed[data-bid]');
+            if (el) el._was = el.innerText;
+        });
+        document.addEventListener('focusout', async e => {
+            const el = e.target.closest && e.target.closest('.ed[data-bid]');
+            if (!el) return;
+            const val = el.innerText.trim();
+            if (val === (el._was || '').trim()) return;
+            try {
+                await api('/api/blocks/' + el.dataset.bid, {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: { [el.dataset.key]: val } }),
+                });
+                BLOCK.data[el.dataset.key] = val;
+                toast('บันทึกแล้ว');
+            } catch (err) { toast(err.message, true); el.innerText = el._was || ''; }
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && e.target.classList && e.target.classList.contains('ed')) {
+                e.preventDefault(); e.target.blur();
+            }
+        });
+
+        document.addEventListener('click', async e => {
+            if (!IS_ADMIN) return;
+
+            if (e.target.closest('#add-kid')) {
+                const name = prompt('ชื่อบลอคย่อยใหม่:', 'บลอคใหม่');
+                if (!name) return;
+                try {
+                    await api('/api/blocks', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ type: 'page', parent_id: ID, data: { button_text: name } }),
+                    });
+                    await load(); toast('สร้างบลอคย่อยแล้ว');
+                } catch (err) { toast(err.message, true); }
+                return;
+            }
+            if (e.target.closest('#del-block')) {
+                if (!confirm('ลบบลอคนี้? บลอคย่อยข้างในและรูปทั้งหมดจะหายไปด้วย กู้คืนไม่ได้')) return;
+                try {
+                    await api('/api/blocks/' + ID, { method: 'DELETE' });
+                    location.href = '/#plans';
+                } catch (err) { toast(err.message, true); }
+                return;
+            }
+            if (e.target.closest('#save-content')) {
+                try {
+                    await api('/api/blocks/' + ID, {
+                        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ data: { content: document.getElementById('editor').innerHTML } }),
+                    });
+                    await load(); toast('บันทึกเนื้อหาแล้ว');
+                } catch (err) { toast(err.message, true); }
+                return;
+            }
+            if (e.target.closest('#ins-img')) {
+                const inp = document.createElement('input');
+                inp.type = 'file'; inp.accept = 'image/*';
+                inp.onchange = async () => {
+                    if (!inp.files[0]) return;
+                    const fd = new FormData(); fd.append('image', inp.files[0]);
+                    try {
+                        const j = await api(`/api/blocks/${ID}/content-image`, { method: 'POST', body: fd });
+                        document.getElementById('editor').focus();
+                        document.execCommand('insertHTML', false, `<img src="${esc(j.url)}">`);
+                        toast('แทรกรูปแล้ว — อย่าลืมกดบันทึกเนื้อหา');
+                    } catch (err) { toast(err.message, true); }
+                };
+                inp.click();
+                return;
+            }
+            const dl = e.target.closest('[data-del]');
+            if (dl) {
+                e.preventDefault(); e.stopPropagation();
+                try {
+                    await api(`/api/blocks/${ID}/image?slot=0&variant=web`, { method: 'DELETE' });
+                    await load(); toast('ลบรูปแล้ว');
+                } catch (err) { toast(err.message, true); }
+                return;
+            }
+            const up = e.target.closest('[data-up]');
+            if (up) {
+                const inp = document.createElement('input');
+                inp.type = 'file'; inp.accept = 'image/*';
+                inp.onchange = async () => {
+                    if (!inp.files[0]) return;
+                    const fd = new FormData();
+                    fd.append('image', inp.files[0]); fd.append('slot', '0'); fd.append('variant', 'web');
+                    try {
+                        await api(`/api/blocks/${ID}/image`, { method: 'POST', body: fd });
+                        await load(); toast('อัปรูปแล้ว');
+                    } catch (err) { toast(err.message, true); }
+                };
+                inp.click();
+            }
+        });
+
+        load();
+    </script>
+</body>
+
+</html>
