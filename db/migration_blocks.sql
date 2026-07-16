@@ -23,8 +23,7 @@
 -- ============================================================
 SELECT need.t AS `ตารางที่ยังขาด`, need.fix AS `ต้องรันไฟล์นี้ก่อน`
 FROM (
-  SELECT 'users'         AS t, 'db/schema.sql'                AS fix
-  UNION ALL SELECT 'site_settings', 'db/migration_site_settings.sql'
+  SELECT 'users' AS t, 'db/schema.sql' AS fix
 ) need
 LEFT JOIN information_schema.TABLES it
        ON it.TABLE_SCHEMA = DATABASE()
@@ -158,8 +157,8 @@ WHERE NOT EXISTS (SELECT 1 FROM page_blocks
                   WHERE user_id IS NULL AND parent_id IS NULL AND type = 'features');
 
 -- ---------- ข้อ 4: agents ("รู้จักที่ปรึกษาของคุณ") ----------
---  agent_ids = ว่างไว้ก่อน → แอดมินเลือกเองว่าจะโชว์ตัวแทนคนไหนบ้าง
---  ถ้าว่าง ระบบจะ fallback ไปใช้ site_settings.home_featured_agent_id (ของเดิม)
+--  agent_ids = ว่างไว้ก่อน → แอดมินกดเลือกเองบนหน้าเว็บว่าจะโชว์ตัวแทนคนไหนบ้าง (3-5 คน)
+--  (ระบบเก่า "เลือกบัญชีที่เป็นหน้า Home" ถูกยกเลิกแล้ว — เลือกที่บลอคนี้ที่เดียว)
 INSERT INTO page_blocks (user_id, parent_id, type, sort_order, is_visible, data)
 SELECT NULL, NULL, 'agents', 4, 1,
        JSON_OBJECT('title', 'รู้จักที่ปรึกษาของคุณ',
@@ -189,9 +188,10 @@ WHERE NOT EXISTS (SELECT 1 FROM page_blocks
                   WHERE user_id IS NULL AND parent_id IS NULL AND type = 'recruit');
 
 -- ---------- ข้อ 8: cta ("พร้อมเริ่มต้นวางแผนกับเราไหม?") ----------
---  line_id / phone = แอดมินกรอกเองได้
---  appointment_agent_id = ฟอร์มนัดหมายที่กรอกเข้ามา จะเข้าเป็นรายการของตัวแทนคนไหน
---    (NULL = ใช้ site_settings.home_featured_agent_id)
+--  line_id / phone = แอดมินกรอกเองได้บนหน้าเว็บ
+--  appointment_agent_id = ฟอร์มนัดหมายที่ลูกค้ากรอก จะเข้าเป็นรายการของตัวแทนคนไหน
+--    (NULL = ยังไม่เลือก → ปุ่ม "นัดหมายปรึกษา" จะยังใช้ไม่ได้
+--     แอดมินเลือกได้บนหน้าเว็บในบลอคนี้)
 --    → ลงตาราง contact_inquiries kind='appointment' → ตัวแทนเห็นที่หน้า /inquiries
 INSERT INTO page_blocks (user_id, parent_id, type, sort_order, is_visible, data)
 SELECT NULL, NULL, 'cta', 7, 1,

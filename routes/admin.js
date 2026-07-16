@@ -120,76 +120,15 @@ router.delete('/users/:id', requireAdmin, async (req, res, next) => {
   }
 });
 
-// ===== ตั้งค่าเว็บ (เฉพาะ SupperAdmin) — เช่น ตัวแทนที่โชว์หน้า Home =====
-router.get('/settings', requireAdmin, async (_req, res, next) => {
-  try {
-    const [rows] = await pool.query('SELECT setting_key, setting_value FROM site_settings');
-    const settings = {};
-    rows.forEach(r => { settings[r.setting_key] = r.setting_value; });
-    res.json({ ok: true, settings });
-  } catch (err) { next(err); }
-});
-
-router.put('/settings', requireAdmin, express.json(), async (req, res, next) => {
-  try {
-    const b = req.body || {};
-    const ALLOWED = ['home_featured_agent_id']; // อนุญาตเฉพาะคีย์ที่รู้จัก
-    const entries = Object.entries(b).filter(([k]) => ALLOWED.includes(k));
-    if (entries.length === 0) return res.status(400).json({ error: 'ไม่มีค่าที่ต้องบันทึก' });
-    for (const [k, v] of entries) {
-      let val = (v == null || v === '') ? null : String(v);
-      if (k === 'home_featured_agent_id' && val != null) {
-        const id = Number(val);
-        if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ error: 'id ตัวแทนไม่ถูกต้อง' });
-        val = String(id);
-      }
-      await pool.query(
-        'INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)',
-        [k, val]
-      );
-    }
-    res.json({ ok: true });
-  } catch (err) { next(err); }
-});
-
-// ===== โหมดแก้ไขหน้า Home =====
-// แอดมินสวมสิทธิ์บัญชีหน้า Home ชั่วคราว เพื่อกดแก้ไข/เพิ่ม/ลบ เนื้อหาในหน้า dashboard ได้เหมือนเจ้าของ
-// เก็บ adminId ไว้ใน session เพื่อกลับมาเป็นแอดมินได้
-
-// POST /api/admin/impersonate/stop — ออกจากโหมดแก้ไข กลับเป็นแอดมิน (ต้องมาก่อน /:id)
-router.post('/impersonate/stop', async (req, res, next) => {
-  try {
-    if (!req.session || !req.session.adminId) return res.status(400).json({ error: 'ไม่ได้อยู่ในโหมดแก้ไขหน้า Home' });
-    const [rows] = await pool.query(
-      "SELECT id, email FROM users WHERE id = ? AND role = 'admin' AND is_active = 1 LIMIT 1",
-      [req.session.adminId]
-    );
-    if (rows.length === 0) {
-      return req.session.destroy(() => { res.clearCookie('fwd.sid'); res.status(403).json({ error: 'บัญชีแอดมินใช้งานไม่ได้แล้ว' }); });
-    }
-    req.session.userId = rows[0].id;
-    req.session.email = rows[0].email;
-    req.session.role = 'admin';
-    delete req.session.adminId;
-    delete req.session.adminEmail;
-    res.json({ ok: true });
-  } catch (err) { next(err); }
-});
-
-// POST /api/admin/impersonate/:id — เข้าโหมดแก้ไขในนามบัญชี :id (เฉพาะแอดมิน)
-router.post('/impersonate/:id', requireAdmin, async (req, res, next) => {
-  try {
-    const id = Number(req.params.id);
-    if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ error: 'id ไม่ถูกต้อง' });
-    const [rows] = await pool.query('SELECT id, email, role FROM users WHERE id = ? LIMIT 1', [id]);
-    if (rows.length === 0) return res.status(404).json({ error: 'ไม่พบบัญชีนี้' });
-    req.session.adminId = req.session.userId;   // จำตัวตนแอดมินไว้
-    req.session.adminEmail = req.session.email;
-    req.session.userId = rows[0].id;
-    req.session.email = rows[0].email;
-    req.session.role = rows[0].role;
-    res.json({ ok: true });
-  } catch (err) { next(err); }
-});
+// ===== เอาออกแล้ว 2026-07-16 (พี่ดิวสั่ง): ระบบ "หน้า Home — เลือกบัญชี + แก้ไขเนื้อหา" =====
+//   ของเดิมที่เอาออก:
+//     GET/PUT /api/admin/settings        → เลือกบัญชีที่เป็นหน้า Home (home_featured_agent_id)
+//     POST    /api/admin/impersonate/:id → แอดมินสวมสิทธิ์บัญชีนั้นเพื่อไปกดแก้หน้า Home
+//     POST    /api/admin/impersonate/stop
+//   ทำไมถึงไม่ต้องใช้แล้ว:
+//     หน้า Home ไม่ใช่ "โปรไฟล์ของบัญชีใดบัญชีหนึ่ง" อีกต่อไป — เป็นระบบบลอค (page_blocks)
+//     SupperAdmin แก้หน้า Home ได้ตรงๆ ที่ / ด้วยสิทธิ์ตัวเอง ผ่าน /api/blocks
+//     ไม่ต้องสวมสิทธิ์เป็นใครอีก (ปลอดภัยขึ้นด้วย — ไม่มีทางกลายเป็นผู้ใช้คนอื่นแล้ว)
+//   ตัวแทนที่จะโชว์บนหน้าแรก → เลือกในบลอค 'agents' บนหน้า / ได้เลย
 
 module.exports = router;

@@ -221,7 +221,8 @@ router.get('/me', async (req, res, next) => {
       req.session.destroy(() => {});
       return res.json({ authenticated: false });
     }
-    res.json({ authenticated: true, user: rows[0], impersonating: !!(req.session && req.session.adminId) });
+    // ไม่มี impersonating แล้ว — ระบบสวมสิทธิ์ถูกยกเลิก 2026-07-16 พร้อมระบบ "เลือกบัญชีหน้า Home"
+    res.json({ authenticated: true, user: rows[0] });
   } catch (err) {
     next(err);
   }

@@ -2225,9 +2225,8 @@
         // ===== โหมดหน้า =====
         //   /agent/:id       = ดูคนอื่น (public, read-only)
         //   /profile,/dashboard = ตัวเอง (ต้อง login, แก้ไขได้)
-        //   /                = Home = โปรไฟล์บัญชีที่แอดมินตั้งไว้ (เจ้าของแก้ได้ / ผู้เข้าชมดูอย่างเดียว) — resolve ใน boot()
+        //   (2026-07-16: ไฟล์นี้ไม่ถูกเสิร์ฟที่ "/" อีกแล้ว — "/" เป็นหน้าตาเว็บ home.html ระบบบลอค)
         const pathMatch = window.location.pathname.match(/^\/agent\/(\d+)/);
-        const isHome = window.location.pathname === '/';
         let viewingAgentId = pathMatch ? Number(pathMatch[1]) : null;
         let isViewingOther = viewingAgentId !== null;
 
@@ -2237,9 +2236,8 @@
             document.getElementById('loading-text').textContent = 'กำลังโหลดโปรไฟล์...';
             const ownerControls = document.getElementById('owner-controls');
             if (ownerControls) ownerControls.style.display = 'none';
-            const label = isHome ? '<a href="/home" style="color:var(--primary-orange); font-weight:600;">🔍 ค้นหาตัวแทน</a>'
-                : '<a href="/home" style="color:var(--primary-orange); font-weight:600;">← กลับหน้าหลัก</a>';
-            document.getElementById('header-mode-label').innerHTML = label;
+            document.getElementById('header-mode-label').innerHTML =
+                '<a href="/" style="color:var(--primary-orange); font-weight:600;">← กลับหน้าหลัก</a>';
             document.querySelectorAll('.edit-btn').forEach(b => b.style.display = 'none');
             if (window.trackView && viewingAgentId) window.trackView(viewingAgentId, 'profile', 'หน้าโปรไฟล์');
         }
@@ -2325,37 +2323,15 @@
                 }
                 currentUser = data.user;
                 renderAll();
-                if (data.impersonating) showEditHomeBar();
                 document.getElementById('loading-screen').style.display = 'none';
             } catch (e) {
                 if (!isViewingOther) window.location.href = '/login';
             }
         }
 
-        // แถบแจ้งเตือน "โหมดแก้ไขหน้า Home" (ตอนแอดมินสวมสิทธิ์บัญชีหน้า Home มาแก้)
-        function showEditHomeBar() {
-            if (document.getElementById('edit-home-bar')) return;
-            const bar = document.createElement('div');
-            bar.id = 'edit-home-bar';
-            bar.style.cssText = 'position:fixed; bottom:0; left:0; right:0; z-index:9999; background:#b91c1c; color:#fff;' +
-                'display:flex; align-items:center; justify-content:center; gap:14px; padding:10px 16px;' +
-                'font-size:14px; font-weight:600; box-shadow:0 -3px 12px rgba(0,0,0,0.25); flex-wrap:wrap;';
-            const label = document.createElement('span');
-            label.textContent = '✏️ โหมดแก้ไขหน้า Home — กดปุ่มแก้ไขในแต่ละส่วนเพื่อแก้/เพิ่ม/ลบ';
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.textContent = '← กลับหน้าแอดมิน';
-            btn.style.cssText = 'background:#fff; color:#b91c1c; border:none; border-radius:8px; padding:7px 16px;' +
-                'font-size:13px; font-weight:700; font-family:inherit; cursor:pointer;';
-            btn.addEventListener('click', async () => {
-                btn.disabled = true;
-                try { await fetch('/api/admin/impersonate/stop', { method: 'POST', credentials: 'same-origin' }); } catch (e) { /* ignore */ }
-                window.location.href = '/support-admin/users';
-            });
-            bar.appendChild(label); bar.appendChild(btn);
-            document.body.appendChild(bar);
-            document.body.style.paddingBottom = '64px';
-        }
+        // เอาแถบ "โหมดแก้ไขหน้า Home / กลับหน้าแอดมิน" ออกแล้ว 2026-07-16 (พี่ดิวสั่ง)
+        // ระบบสวมสิทธิ์ (impersonate) ถูกยกเลิกทั้งหมด — หน้า Home เป็นบลอคแล้ว
+        // แอดมินแก้หน้า Home ได้ตรงๆ ที่ / ด้วยสิทธิ์ตัวเอง ไม่ต้องสวมสิทธิ์เป็นใคร
 
         // ===== Render =====
         function renderAll() {
@@ -3532,35 +3508,10 @@
         });
 
         // ===== Init =====
-        async function boot() {
-            if (isHome) {
-                try {
-                    const [meRes, featRes] = await Promise.all([
-                        fetch('/api/auth/me', { credentials: 'same-origin' }),
-                        fetch('/api/users/home-featured'),
-                    ]);
-                    const me = await meRes.json();
-                    const feat = await featRes.json();
-                    const homeAgent = feat && feat.agent;
-                    if (homeAgent) {
-                        if (me.authenticated && me.user && me.user.id === homeAgent.id) {
-                            // เจ้าของ Home ล็อกอินอยู่ → โหมดแก้ไข (เหมือน /profile)
-                            isViewingOther = false; viewingAgentId = null;
-                        } else {
-                            // ผู้เข้าชม/คนอื่น → โหมดดูอย่างเดียว (เหมือน /agent/:id)
-                            isViewingOther = true; viewingAgentId = homeAgent.id;
-                            applyViewOtherUI();
-                        }
-                    } else {
-                        // แอดมินยังไม่ได้ตั้งบัญชีหน้า Home
-                        if (!me.authenticated) { window.location.href = '/home'; return; } // ไปหน้า landing/ค้นหา
-                        isViewingOther = false; viewingAgentId = null; // ล็อกอินอยู่ → โชว์โปรไฟล์ตัวเอง
-                    }
-                } catch (e) { window.location.href = '/home'; return; }
-            }
-            loadUser();
-        }
-        boot();
+        // เอาโค้ดโหมด "/" (Home = โปรไฟล์บัญชีที่แอดมินตั้งไว้) ออกแล้ว 2026-07-16
+        // เพราะ "/" เป็นหน้าตาเว็บ (home.html ระบบบลอค) ไม่ใช่โปรไฟล์ของใครแล้ว
+        // และ /api/users/home-featured ที่โค้ดนั้นเรียก ก็ถูกลบไปพร้อมกัน
+        loadUser();
     </script>
 
 </body>

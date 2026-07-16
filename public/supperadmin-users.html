@@ -328,23 +328,17 @@
   </header>
 
   <div class="wrap">
-    <!-- ตั้งค่า + แก้ไขหน้า Home -->
+    <!-- แก้ไขหน้าตาเว็บ (ระบบบลอค) -->
+    <!-- เอาระบบเก่าออกแล้ว 2026-07-16: "เลือกบัญชีที่เป็นหน้า Home" + "สวมสิทธิ์เข้าไปแก้"
+         หน้า Home ไม่ผูกกับบัญชีใครแล้ว — เป็นบลอคของเว็บ แก้ได้ตรงๆ ที่หน้าแรก -->
     <div class="card">
-      <div class="card-head">🏠 หน้า Home (vpkanniporn.com) — เลือกบัญชี + แก้ไขเนื้อหา</div>
+      <div class="card-head">🏠 หน้าตาเว็บ (vpkanniporn.com)</div>
       <div class="card-body">
-        <div class="grid">
-          <div class="field">
-            <label>เลือกบัญชีที่เป็นหน้า Home</label>
-            <select id="featured-agent"><option value="">— ใช้ข้อมูลค่าเริ่มต้นในไฟล์ (ไม่เลือก) —</option></select>
-          </div>
-          <div class="field" style="display:flex; align-items:flex-end;">
-            <button type="button" class="btn btn-ghost" id="save-featured">บันทึกบัญชี</button>
-          </div>
-        </div>
-        <div style="border-top:1px dashed #e5e7eb; margin-top:6px; padding-top:12px;">
-          <button type="button" class="btn" id="edit-home-btn">✏️ เข้าไปแก้ไขหน้า Home (แก้/เพิ่ม/ลบ ได้ทุกส่วน)</button>
-          <p class="muted" style="margin-top:6px;">กดแล้วจะเปิดหน้า Home ในโหมดแก้ไข — กดปุ่มแก้ไขในแต่ละส่วน (Hero / โปรไฟล์ / แผน / รางวัล / โพสต์ ฯลฯ) เพิ่ม-ลบได้ เสร็จแล้วกด "กลับหน้าแอดมิน" บนแถบด้านบน</p>
-        </div>
+        <a class="btn" href="/" target="_blank" rel="noopener">✏️ เปิดหน้าเว็บเพื่อแก้ไข</a>
+        <p class="muted" style="margin-top:6px;">
+          เปิดแล้วจะอยู่ในโหมดแก้ไขทันที (คุณล็อกอินเป็น SupperAdmin อยู่) — คลิกที่ข้อความบนหน้าเพื่อพิมพ์แก้ได้เลย
+          เลื่อนลำดับ/ซ่อนบลอคด้วยปุ่มมุมขวาบนของแต่ละส่วน · ตัวแทนที่จะโชว์บนหน้าแรกเลือกได้ที่ส่วน "รู้จักที่ปรึกษาของคุณ"
+        </p>
       </div>
     </div>
 
@@ -410,7 +404,6 @@
         if (!res.ok) throw new Error();
         const data = await res.json();
         const users = data.users || [];
-        populateFeatured(users);
 
         // ยอดผู้เข้าชมต่อ user (best-effort — ไม่ให้พังถ้ายังไม่มีตาราง page_views)
         window.__stats = {};
@@ -520,65 +513,10 @@
       window.location.href = '/support-admin';
     });
 
-    // ===== ตั้งค่าหน้า Home: เลือกตัวแทนที่โชว์ =====
-    let currentFeatured = '';
-    async function loadSettings() {
-      try {
-        const res = await fetch('/api/admin/settings', { credentials: 'same-origin' });
-        if (!res.ok) return;
-        const d = await res.json();
-        currentFeatured = (d.settings && d.settings.home_featured_agent_id) || '';
-        const sel = document.getElementById('featured-agent');
-        if (sel) sel.value = currentFeatured;
-      } catch (e) { /* ignore */ }
-    }
-    function populateFeatured(users) {
-      const sel = document.getElementById('featured-agent');
-      if (!sel) return;
-      const opts = ['<option value="">— ใช้ข้อมูลค่าเริ่มต้นในไฟล์ (ไม่เลือก) —</option>'];
-      users.forEach(u => {
-        const name = esc(`${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email);
-        opts.push(`<option value="${u.id}">${name} (${esc(u.email)})</option>`);
-      });
-      sel.innerHTML = opts.join('');
-      sel.value = currentFeatured;
-    }
-    document.getElementById('save-featured').addEventListener('click', async () => {
-      const sel = document.getElementById('featured-agent');
-      const btn = document.getElementById('save-featured');
-      btn.disabled = true;
-      try {
-        const res = await fetch('/api/admin/settings', {
-          method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
-          body: JSON.stringify({ home_featured_agent_id: sel.value || '' }),
-        });
-        if (authFail(res)) return;
-        const d = await res.json();
-        if (!res.ok) { toast(d.error || 'บันทึกไม่สำเร็จ', 'err'); return; }
-        currentFeatured = sel.value || '';
-        toast('บันทึกการตั้งค่าหน้า Home แล้ว', 'ok');
-      } catch (e) { toast('บันทึกไม่สำเร็จ', 'err'); }
-      finally { btn.disabled = false; }
-    });
+    // เอาระบบ "เลือกบัญชีหน้า Home + สวมสิทธิ์เข้าไปแก้" ออกแล้ว 2026-07-16
+    // (loadSettings / populateFeatured / save-featured / edit-home-btn / impersonate)
+    // หน้า Home เป็นระบบบลอคแล้ว → กดปุ่ม "เปิดหน้าเว็บเพื่อแก้ไข" ด้านบนไปแก้ที่หน้าจริงได้เลย
 
-    // เข้าโหมดแก้ไขหน้า Home (สวมสิทธิ์บัญชีหน้า Home ชั่วคราว → ไปหน้า / แล้วกดแก้ได้เลย)
-    document.getElementById('edit-home-btn').addEventListener('click', async () => {
-      const sel = document.getElementById('featured-agent');
-      const id = sel.value || currentFeatured;
-      if (!id) { toast('เลือกบัญชีหน้า Home ก่อน แล้วกด "บันทึกบัญชี"', 'err'); return; }
-      const btn = document.getElementById('edit-home-btn');
-      btn.disabled = true;
-      try {
-        const res = await fetch('/api/admin/impersonate/' + id, { method: 'POST', credentials: 'same-origin' });
-        if (authFail(res)) return;
-        const d = await res.json();
-        if (!res.ok) { toast(d.error || 'เข้าโหมดแก้ไขไม่สำเร็จ', 'err'); return; }
-        window.location.href = '/';
-      } catch (e) { toast('เข้าโหมดแก้ไขไม่สำเร็จ', 'err'); }
-      finally { btn.disabled = false; }
-    });
-
-    loadSettings();
     loadUsers();
   </script>
   <script src="/i18n.js"></script>

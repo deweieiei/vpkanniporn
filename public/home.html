@@ -148,7 +148,7 @@
         //  ผู้เข้าชม  → เห็นเฉยๆ
         //  SupperAdmin → คลิกแก้บนหน้าได้ตรงๆ (contenteditable + toolbar)
         // ============================================================
-        let BLOCKS = [], IS_ADMIN = false, AGENTS = [], FEATURED = null;
+        let BLOCKS = [], IS_ADMIN = false, AGENTS = [];
 
         const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
         const byType = t => BLOCKS.find(b => b.type === t);
@@ -353,16 +353,11 @@
                 </div>
             </a>`;
         }
+        // ตัวแทนที่โชว์ = ที่แอดมินเลือกไว้ในบลอคนี้เท่านั้น (เรียงตามลำดับที่เลือก)
         function shownAgents(b) {
             const ids = b.data.agent_ids || [];
             const max = Number(b.data.max_show || 5);
-            if (ids.length) {
-                // เรียงตามที่แอดมินเลือกไว้
-                return ids.map(id => AGENTS.find(a => a.id === id)).filter(Boolean).slice(0, max);
-            }
-            // ยังไม่เลือก → ใช้ตัวแทนหลักที่ตั้งไว้ (ของเดิม)
-            if (FEATURED) { const f = AGENTS.find(a => a.id === FEATURED.id); if (f) return [f]; }
-            return [];
+            return ids.map(id => AGENTS.find(a => a.id === id)).filter(Boolean).slice(0, max);
         }
         function renderAgents(b) {
             const list = shownAgents(b);
@@ -417,10 +412,21 @@
             return raw.startsWith('@') ? 'https://line.me/R/ti/p/@' + id : 'https://line.me/ti/p/~' + id;
         }
         function renderCta(b) {
-            const apptId = b.data.appointment_agent_id || (FEATURED && FEATURED.id) || null;
+            // ฟอร์มนัดหมายที่ลูกค้ากรอก จะเข้าเป็นรายการของตัวแทนคนนี้ (แอดมินเลือกเอง)
+            const apptId = b.data.appointment_agent_id || null;
             const apptHref = apptId ? '/appointment/' + apptId : '#';
             const tel = 'tel:' + String(b.data.phone || '').replace(/[^0-9+]/g, '');
             const box = 'bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-3 hover:shadow-md transition';
+            // ตัวเลือกผู้รับใบนัดหมาย (โหมดแอดมิน)
+            const apptPicker = IS_ADMIN ? `
+                <div class="adm-only mt-5 bg-white/90 border border-orange-200 rounded-xl p-3 max-w-md mx-auto text-center">
+                    <p class="text-[11px] font-extrabold text-gray-700 mb-1.5">📩 ใบนัดหมายที่ลูกค้ากรอก ส่งเข้าให้ตัวแทนคนไหน</p>
+                    <select data-appt="${b.id}" class="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm">
+                        <option value="">— ยังไม่เลือก (ปุ่มนัดหมายจะใช้ไม่ได้) —</option>
+                        ${AGENTS.map(a => `<option value="${a.id}" ${Number(apptId) === a.id ? 'selected' : ''}>${esc(`${a.first_name || ''} ${a.last_name || ''}`.trim())}</option>`).join('')}
+                    </select>
+                    <p class="text-[10px] text-gray-400 mt-1.5">ตัวแทนคนนั้นจะเห็นรายการที่หน้า "ผู้ติดต่อเข้ามา" (/inquiries)</p>
+                </div>` : '';
             return wrap(b, `
                 <div class="gold-band">
                     <div class="max-w-5xl mx-auto px-4 py-12">
@@ -445,7 +451,7 @@
                                      <p class="text-xs text-gray-500">ฟรี ไม่มีค่าใช้จ่าย</p></div>
                             </a>
                         </div>
-                        ${IS_ADMIN && !apptId ? '<p class="adm-only text-center text-[11px] text-red-500 mt-3">⚠️ ยังไม่ได้ตั้งตัวแทนหลัก — ปุ่ม "นัดหมายปรึกษา" จะยังใช้ไม่ได้ ไปตั้งที่หน้าจัดการตัวแทน</p>' : ''}
+                        ${apptPicker}
                     </div>
                 </div>`, 'contact');
         }
@@ -483,10 +489,9 @@
         }
 
         async function load() {
-            const [rb, ru, rf] = await Promise.all([
+            const [rb, ru] = await Promise.all([
                 fetch('/api/blocks').then(r => r.json()).catch(() => null),
                 fetch('/api/users').then(r => r.json()).catch(() => null),
-                fetch('/api/users/home-featured').then(r => r.json()).catch(() => null),
             ]);
             if (!rb || !rb.ok) {
                 document.getElementById('root').innerHTML =
@@ -496,7 +501,6 @@
             IS_ADMIN = !!rb.is_admin;
             BLOCKS = rb.blocks || [];
             AGENTS = (ru && ru.users) ? ru.users.filter(u => u.role !== 'admin') : [];
-            FEATURED = (rf && rf.agent) ? rf.agent : null;
             render();
         }
 
@@ -645,12 +649,22 @@
             if (pk) { openPick(Number(pk.dataset.pick)); return; }
         });
 
-        // เลือกสีตัวหนังสือใหญ่ (ข้อ 3 / ข้อ 5)
         document.addEventListener('change', async e => {
+            // เลือกสีตัวหนังสือใหญ่ (ข้อ 3 / ข้อ 5)
             const cp = e.target.closest && e.target.closest('[data-color]');
-            if (!cp) return;
-            try { await saveData(cp.dataset.color, { color: cp.value }); await load(); toast('เปลี่ยนสีแล้ว'); }
-            catch (err) { toast(err.message, true); }
+            if (cp) {
+                try { await saveData(cp.dataset.color, { color: cp.value }); await load(); toast('เปลี่ยนสีแล้ว'); }
+                catch (err) { toast(err.message, true); }
+                return;
+            }
+            // เลือกตัวแทนผู้รับใบนัดหมาย (ข้อ 8)
+            const ap = e.target.closest && e.target.closest('[data-appt]');
+            if (ap) {
+                try {
+                    await saveData(ap.dataset.appt, { appointment_agent_id: ap.value ? Number(ap.value) : null });
+                    await load(); toast(ap.value ? 'ตั้งผู้รับใบนัดหมายแล้ว' : 'ล้างผู้รับใบนัดหมายแล้ว');
+                } catch (err) { toast(err.message, true); }
+            }
         });
 
         // ===== โมดัลเลือกตัวแทน =====
