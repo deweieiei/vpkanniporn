@@ -14,10 +14,12 @@ function requireSupportAdmin(req, res, next) {
   return res.redirect('/support-admin');
 }
 
-// หน้าแรก (/) = หน้า Home = โปรไฟล์ของบัญชีที่แอดมินตั้งไว้ (dashboard.html จัดการโหมดเอง:
-// เจ้าของบัญชีที่ล็อกอินอยู่ → แก้ไขได้ทุกส่วน / ผู้เข้าชม → ดูอย่างเดียว)
+// หน้าแรก (/) = หน้าตาเว็บ (home.html) — พี่ดิวเคาะ 2026-07-16:
+// "พิมพ์ vpkanniporn.com มาแล้ว ต้องเป็นหน้านี้ มันคือหน้าตาเว็บ"
+// (เดิม / เสิร์ฟ dashboard.html = โปรไฟล์ของบัญชีที่แอดมินตั้งไว้ — เลิกใช้แล้ว
+//  ใครอยากดูโปรไฟล์ตัวแทนไปที่ /agent/:id หรือ /profile ของตัวเอง)
 router.get('/', (_req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, 'dashboard.html'));
+  res.sendFile(path.join(PUBLIC_DIR, 'home.html'));
 });
 
 router.get('/login', (req, res) => {
