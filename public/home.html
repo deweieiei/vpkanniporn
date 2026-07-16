@@ -59,10 +59,20 @@
         .adm .adm-only-f { display:flex; }
         .hid-tag { display:none; }
         .adm .blk.hid .hid-tag { display:inline-block; }
-        #adm-bar { position:fixed; bottom:14px; left:50%; transform:translateX(-50%); z-index:60;
-                   background:#1f2937; color:#fff; border-radius:999px; padding:9px 18px; font-size:12.5px;
-                   font-weight:600; box-shadow:0 8px 26px rgba(0,0,0,.3); display:none; align-items:center; gap:12px; }
+        /* ===== App bar บอกว่ากำลังอยู่ในโหมดแก้ไข (เฉพาะ SupperAdmin) ===== */
+        #adm-bar { position:fixed; top:0; left:0; right:0; z-index:60; height:44px;
+                   background:linear-gradient(90deg,#c2410c,#ea580c); color:#fff;
+                   display:none; align-items:center; gap:12px; padding:0 14px;
+                   font-size:13px; font-weight:700; box-shadow:0 2px 12px rgba(0,0,0,.25); }
         .adm #adm-bar { display:flex; }
+        /* ดันทั้งหน้าลงมา ไม่ให้ app bar ทับ nav ที่ sticky อยู่ */
+        .adm { padding-top:44px; }
+        .adm > header { top:44px !important; }
+        #adm-bar .sp { flex:1; }
+        #adm-bar a, #adm-bar button { background:rgba(255,255,255,.16); color:#fff; border-radius:8px;
+                   padding:5px 12px; font-size:12px; font-weight:700; white-space:nowrap; }
+        #adm-bar a:hover, #adm-bar button:hover { background:rgba(255,255,255,.3); }
+        @media (max-width:640px) { #adm-bar .hide-sm { display:none; } }
         #toast { position:fixed; bottom:70px; left:50%; transform:translateX(-50%); z-index:70;
                  background:#16a34a; color:#fff; padding:8px 18px; border-radius:999px; font-size:12.5px;
                  font-weight:600; opacity:0; transition:opacity .25s; pointer-events:none; }
@@ -123,9 +133,12 @@
         <div class="text-center text-[11px] text-gray-500 pb-5">© 2026 VP Kanniporn Office · สำนักงานตัวแทน FWD Insurance</div>
     </footer>
 
+    <!-- App bar: บอกชัดๆ ว่ากำลังอยู่ในโหมดแก้ไขหน้าเว็บ (โผล่เฉพาะ SupperAdmin) -->
     <div id="adm-bar">
-        <span>✏️ โหมดแก้ไขหน้าเว็บ — คลิกที่ข้อความบนหน้าเพื่อแก้ได้เลย</span>
-        <a href="/support-admin/users" class="underline text-orange-300">จัดการตัวแทน</a>
+        <span>✏️ โหมดแก้ไข — หน้าตาเว็บ</span>
+        <span class="hide-sm" style="font-weight:500; opacity:.9;">คลิกที่ข้อความบนหน้าเพื่อพิมพ์แก้ได้เลย · ปุ่ม ▲▼👁 มุมขวาบนของแต่ละส่วนไว้สลับลำดับ/ซ่อน</span>
+        <span class="sp"></span>
+        <a href="/support-admin/users">← กลับหน้าแอดมิน</a>
     </div>
     <div id="toast"></div>
 

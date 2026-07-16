@@ -1,66 +1,65 @@
 ════════════════════════════════════════════════════════════════
   Checkpoint: TODO List
-  (เมื่อทำเสร็จ ตัดออก ย้ายไปไฟล์ 05_ทำแล้ว.txt)
+  เขียนใหม่ทั้งไฟล์ 2026-07-16 โดย Claude Opus 4.8
+  (ของเดิมเป็น Phase 1-4 ตั้งแต่ มิ.ย. ซึ่งเลิกใช้ไปแล้วตั้งแต่เปลี่ยนทิศรอบ 14-16)
+
+  ★ อ่าน HANDOFF_2026-07-16.txt ก่อน — มี "5 เรื่องที่ต้องรู้ ไม่งั้นพลาดแน่นอน"
 ════════════════════════════════════════════════════════════════
 
-▌ Phase 1 — Public Pages
-  ✓ public/index.html → marketing landing (เสร็จ 2026-06-19)
-  ✓ profile.html (/agent/:id view) ตาม PDF หน้า 2 (เสร็จ 2026-06-19)
-       ✓ ลบ awards / bio sections
-       ✓ เพิ่มปุ่ม "ดูในมุมมองผู้มุ่งหวัง"
-       — ยังไม่ได้แก้สีชื่อ (รอ feedback พี่ดิว)
-  ✓ หน้าแสดงแบบประกัน public (/plans, /plans/:id) — เสร็จ 2026-07-03
-       public/plans.html (list + filter category), public/plan-detail.html
-  [ ] ฟอร์มติดต่อ 3 แบบ — รอ Phase 3 (DB contact_submissions ยังไม่ทำ)
+▌ เก็บงานระบบบลอค (เล็กๆ ทำได้เลย)
 
-▌ Phase 2 — Dashboard (รื้อรอบ 4 — sidebar → preview landing)
-  ✓ Dashboard preview เหมือน landing + nav 4 อัน (เสร็จ 2026-06-19 รอบ 4)
-  ✓ Edit modal: Hero / Profile / Awards ใช้ได้จริง
-  [ ] DB field สำหรับ hero text (ตอนนี้ใช้ localStorage local-only)
-  ✓ CRUD แบบประกัน (services section) — เสร็จ 2026-07-03
-       เปิดจากปุ่ม "✏️ จัดการแบบประกัน" ใน dashboard.html → modal data-modal="plans"
-       (list + add/edit form ในโมดัลเดียว ไม่ได้แยกเป็นหน้า /admin/plans ต่างหาก)
-       ★ services section บนหน้า preview ยังเป็น static 6 การ์ดเหมือนเดิม
-         (ไม่ได้ผูกกับข้อมูลจริงจาก DB) — ผู้เยี่ยมชมดูแบบประกันจริงผ่าน
-         /plans แยกต่างหาก ไม่ใช่จาก services section นี้
-  [ ] CRUD รีวิวลูกค้า (reviews section) — รอ DB Phase 3
-  [ ] Career section + footer แก้ได้ (ยังไม่มี edit button)
-  [ ] /admin/articles (CRUD บทความ) — รอ DB
-  [ ] /admin/contacts (ตาราง 3 หมวด) — รอ DB
-  [ ] /admin/stats — รอ DB
+  [ ] db/repair_blocks.sql — ตัด SELECT จาก information_schema ท้ายไฟล์ออก
+      เพราะ HostAtom ให้ #1044 Access denied → ใช้กับ production ไม่ได้
+      (ใช้ SHOW COLUMNS / SHOW TABLES แทน หรือตัดส่วนตรวจผลทิ้งเลย)
+  [ ] db/diagnose_blocks.sql — ปัญหาเดียวกัน (ทั้งไฟล์เป็น information_schema)
+      → แก้ให้ใช้ SHOW หรือลบไฟล์ทิ้ง
+  [ ] db/migration_blocks.sql — ไฟล์เก่าที่พังแล้ว พิจารณาลบทิ้ง
+      (ตัวที่ใช้จริงคือ insert_blocks_only.sql)
 
-▌ SupperAdmin + เปลี่ยนทิศเว็บ (รอบ 14, 2026-07-06 — เขียนโค้ดเสร็จ รอ DB ทดสอบ)
-  ✓ Index = ค้นหาตัวแทนล้วนๆ / Admin = จัดการตัวแทน (เพิ่ม/ปิด/ลบ) / ตัดหน้าสมัคร / เลิก CMS
-  ✓ บัญชี admin/1234 อยู่ใน db/seed_admin.sql + migration (bcrypt)
-  [ ] รัน SQL บน DB: db/seed_admin.sql (หรือ migration_supperadmin.sql) เพื่อสร้างบัญชี admin
-  [ ] ทดสอบ flow จริงเมื่อมี DB:
-        - login SupperAdmin (admin/1234) ที่ /support-admin → /support-admin/users
-        - เพิ่มตัวแทน → ตัวแทนนั้น login /login → เห็นหน้าโปรไฟล์ตัวเอง
-        - หน้า index แสดงรายชื่อตัวแทน + ค้นหาได้
-  [ ] (ควรทำ) หลัง deploy เปลี่ยนรหัส admin: node scripts/create_supperadmin.js admin <รหัสใหม่>
+▌ ของที่พี่ดิวยังไม่ได้กรอก/อัป บนเว็บจริง (ไม่ใช่บั๊ก — แค่ยังไม่ได้ทำ)
 
-▌ *** ยกไปทำต่อ: แต่งหน้าโปรไฟล์ (dashboard.html) ให้สวยเหมือน index (รอบ 14 ยังไม่ทำ) ***
-  - พี่ดิวขอ "เปลี่ยนสีและความสวยงามให้เหมือน index"
-  - dashboard.html = 1583 บรรทัด (โปรไฟล์ตัวแทน + โมดัลแก้ไข hero/plans/awards + อัปรูป)
-  - ใช้ธีมส้มเดียวกับ index เดิมอยู่แล้ว — ต้องดูของจริงตอนมี DB ว่าพี่อยากปรับตรงไหน
-  - หมายเหตุ: index เปลี่ยนเป็นหน้าค้นหาแล้ว "เหมือน index" ควรเช็คกับพี่ว่าหมายถึงโทน/สไตล์ไหน
+  [ ] hero: อัปรูป 18 ช่อง (6 ภาพ × 3 อุปกรณ์) — ตอนนี้มีแต่ข้อความ ยังไม่มีภาพเลย
+  [ ] agents: เลือกตัวแทน 3-5 คน (data.agent_ids ยังว่าง → ส่วนนี้ยังไม่โชว์การ์ด)
+      กดปุ่ม "👥 เลือกตัวแทนที่จะโชว์" บนหน้าเว็บตอนล็อกอินเป็น admin
+  [ ] cta: ตั้ง appointment_agent_id (ยังว่าง → ปุ่ม "นัดหมายปรึกษา" ยังกดไม่ได้)
+      เลือกจาก dropdown ในบลอค cta บนหน้าเว็บ
+  [ ] recruit: ใส่ภาพ (พี่ดิวสั่งว่าบลอคนี้ใส่ภาพอย่างเดียว) — ยังไม่มีภาพ
 
-▌ Phase 3 — Backend
-  ✓ DB migration: insurance_categories, insurance_plans (เสร็จ 2026-07-03)
-       — ยังไม่ได้รันบน production DB จริง! เขียนโค้ดเสร็จในเครื่อง dev เท่านั้น
-       ดู db/migration_insurance_plans.sql + README "รัน schema ครั้งแรก"
-  [ ] articles, contact_submissions, page_views (ยังไม่ทำ)
-  ✓ /api/plans/* CRUD (เสร็จ 2026-07-03 — routes/plans.js)
-  ✓ /api/categories (เสร็จ 2026-07-03)
-  [ ] /api/articles/* CRUD
-  [ ] /api/contacts/* (POST จากผู้เยี่ยม, GET ดู, PATCH mark-read)
-  [ ] /api/stats/*
+▌ ฟีเจอร์ที่ API พร้อมแล้ว แต่ยังไม่มีปุ่มบนหน้าเว็บ
 
-▌ Phase 4 — Cleanup + Deploy
-  [ ] ลบ packages.html (เก่า)
-  [ ] ย้าย index.html (root) → AI_Memory/reference_design.html
-  [ ] อัปเดต README.md
-  [ ] Test mobile + desktop
-  [ ] Deploy HostAtom
+  [ ] บลอค type='text' (ข้อความอิสระ) — BLOCK_TYPES รองรับแล้ว ขาด UI ปุ่ม "เพิ่มบลอค"
+  [ ] บลอค type='image' (รูปอิสระ) — เหมือนกัน
+  [ ] ลากสลับลำดับบลอค — ตอนนี้ใช้ปุ่ม ▲▼ (ใช้ได้ปกติ) ถ้าอยากได้ลากต้องทำเพิ่ม
+
+▌ หน้าโปรไฟล์ตัวแทน (dashboard.html) — ยังเป็นระบบเก่า
+
+  [ ] ยังใช้ users columns (~35 คอลัมน์) + ปุ่ม ✏️ → โมดัล — ยังไม่ได้รื้อเป็นบลอค
+      ★ ถ้าจะรื้อ: ใช้ page_blocks ต่อได้เลย ใส่ user_id = id ตัวแทน แทน NULL
+        (ออกแบบเผื่อไว้แล้ว ไม่ต้องทำ schema ใหม่)
+      ★ ถามพี่ดิวก่อนว่าจะรื้อไหม — 16 ก.ค. พี่บอกว่า "ไม่ต้องแล้ว ทำใหญ่โตเดี๋ยวเหนื่อย"
+        อย่าเริ่มเองโดยไม่ถาม
+  [ ] ถ้ารื้อแล้ว ค่อยลบคอลัมน์เนื้อหาออกจาก users (hero_*, cover_images, awards,
+      quote, bio, recruit_visible, consult_order, social urls ฯลฯ) — สำรอง DB ก่อน
+
+▌ เอกสาร / ความสะอาด
+
+  [ ] README.md ล้าสมัยหนัก — ยังเขียนว่า / = หน้าค้นหา, ไม่มีเรื่องระบบบลอคเลย
+      และยังบอกว่า DB เป็น MySQL (ผิด — เป็น MariaDB)
+  [ ] AI_Memory/02_สถานะปัจจุบัน.txt ล้าสมัย (เขียนตั้งแต่ 3 ก.ค.)
+  [ ] AI_Memory/01,03,04 เขียนตั้งแต่ มิ.ย. ก่อนเปลี่ยนทิศ — พิจารณาเก็บเป็นประวัติ
+  [ ] docker-compose.yml เขียน mysql:8.0 ซึ่งไม่ตรงกับ production (MariaDB)
+      → แก้เป็น mariadb หรือใส่คอมเมนต์เตือนไว้ ไม่งั้น AI ตัวถัดไปจะหลงเหมือนผม
+  [ ] site_settings + home_featured_agent_id ค้างใน DB ไม่มีโค้ดใช้แล้ว — ลบได้
+  [ ] /search ซ้ำกับ /home — พิจารณาลบ
+  [ ] /plans, /plans/:id (Phase 3 แบบประกัน) อาจไม่ใช้แล้วในทิศทางใหม่ — ถามพี่ดิว
+  [ ] รูป S__12566769.jpg ยัง hardcode อยู่ใน home.html (hero ฝั่งขวา)
+      → ถ้าจะให้แอดมินเปลี่ยนเองต้องทำเป็นบลอค/ช่องอัป
+
+▌ ความปลอดภัย (ทำแล้วบางส่วน)
+
+  ✓ เขียนบลอคได้เฉพาะ role 'admin' (403 ทุกเส้นถ้าไม่ใช่) — เทสต์แล้ว
+  ✓ XSS: sanitize content + escape ตอนแสดง — เทสต์บน DOM จริงแล้ว
+  ✓ ระบบ impersonate (สวมสิทธิ์เป็น user คนอื่น) ถูกลบทิ้งแล้ว
+  [ ] เปลี่ยนรหัส SupperAdmin จาก 1234 (ยังไม่ได้เปลี่ยน — ค้างมาตั้งแต่รอบ 14)
 
 ════════════════════════════════════════════════════════════════

@@ -1,6 +1,16 @@
 version: '3.9'
 
-# MySQL local สำหรับ dev — ตรงกับโครงสร้าง HostAtom
+# ⚠️⚠️ คำเตือน (16 ก.ค. 2569) ⚠️⚠️
+# ไฟล์นี้ใช้ image `mysql:8.0` แต่ **production บน HostAtom รัน MariaDB**
+# ไม่ใช่ MySQL — ตรวจสอบแล้วจาก error ของ phpMyAdmin ที่ขึ้นว่า
+# "check the manual that corresponds to your MariaDB server version"
+#
+# เคยทำให้พลาดมาแล้ว: โค้ดใช้ CAST(? AS JSON) ซึ่ง MySQL ผ่านแต่ MariaDB พัง (ERROR 1064)
+# → ถ้าจะเทสต์ให้ตรงกับของจริง ควรเปลี่ยน image เป็น mariadb
+#   (ยังไม่เปลี่ยนให้ เพราะไม่รู้ว่า HostAtom ใช้ MariaDB เวอร์ชันไหนแน่)
+# ดู AI_Memory/HANDOFF_2026-07-16.txt หัวข้อ "5 เรื่องที่ต้องรู้ก่อน"
+#
+# MySQL local สำหรับ dev — (หมายเหตุ: ไม่ตรงกับ HostAtom จริง ดูคำเตือนด้านบน)
 # วิธีใช้:
 #   docker compose up -d        # เริ่มฐานข้อมูล (background)
 #   docker compose logs -f      # ดู log
