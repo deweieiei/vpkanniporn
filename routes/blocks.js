@@ -286,10 +286,13 @@ router.post('/blocks', requireAdmin, express.json(), async (req, res, next) => {
       parentId == null ? (userId == null ? [] : [userId]) : [parentId]
     );
 
+    // ส่ง JSON เป็น string ธรรมดา — ห้ามใช้ CAST(? AS JSON)
+    // เพราะ production รัน MariaDB ซึ่งไม่รองรับ CAST AS JSON (ERROR 1064)
+    // MySQL แปลง string → JSON column ให้เอง / MariaDB มองว่า JSON = LONGTEXT อยู่แล้ว
     const data = cleanData(b.data) || {};
     const [result] = await pool.query(
       `INSERT INTO page_blocks (user_id, parent_id, type, sort_order, is_visible, data)
-       VALUES (?, ?, ?, ?, 1, CAST(? AS JSON))`,
+       VALUES (?, ?, ?, ?, 1, ?)`,
       [userId, parentId, type, maxOrder + 1, JSON.stringify(data)]
     );
     res.json({ ok: true, id: result.insertId });
@@ -315,7 +318,7 @@ router.put('/blocks/:id', requireAdmin, express.json(), async (req, res, next) =
       const incoming = cleanData(b.data);
       if (incoming == null) return res.status(400).json({ error: 'data ต้องเป็น object' });
       const merged = { ...(parseData(rows[0].data) || {}), ...incoming };
-      updates.push('data = CAST(? AS JSON)');
+      updates.push('data = ?');   // ไม่ใช้ CAST(? AS JSON) — MariaDB ไม่รองรับ
       values.push(JSON.stringify(merged));
     }
     if ('is_visible' in b) { updates.push('is_visible = ?'); values.push(b.is_visible ? 1 : 0); }
