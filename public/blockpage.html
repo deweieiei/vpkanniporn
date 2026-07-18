@@ -31,6 +31,8 @@
         .adm .ed { outline:1.5px dotted #fdba74; outline-offset:3px; border-radius:4px; cursor:text; }
         .adm .ed:hover { background:#fff7ed; }
         .adm .ed:focus { outline:2px solid #f97316; background:#fffbf5; }
+        /* ข้อความโพส — ขึ้นบรรทัดใหม่ตามที่พิมพ์ (เหมือนโพสของตัวแทน) */
+        .post-body { white-space:pre-wrap; line-height:1.9; font-size:.95rem; word-break:break-word; }
         /* เนื้อหาโพสยาวๆ */
         #content-view img { max-width:100%; height:auto; border-radius:12px; margin:10px 0; }
         #content-view h1,#content-view h2,#content-view h3 { font-weight:800; margin:14px 0 6px; }
@@ -86,6 +88,8 @@
         // ============================================================
         const ID = Number(location.pathname.split('/').pop());
         let BLOCK = null, CHILDREN = [], IS_ADMIN = false, CRUMB = [];
+        // รูปของโพสระหว่างที่กำลังแก้ (ยังไม่กดบันทึก) — แยกจาก BLOCK.data.post_images ที่เซฟแล้ว
+        let POST_IMGS = [];
 
         // ===== ความลึกของหน้า =====
         //   breadcrumb = บลอคแม่ทั้งสาย (ไม่รวมตัวเอง)
@@ -118,6 +122,7 @@
                 const j = await api('/api/blocks/' + ID);
                 IS_ADMIN = !!j.is_admin;
                 BLOCK = j.block; CHILDREN = j.children || []; CRUMB = j.breadcrumb || [];
+                POST_IMGS = Array.isArray(BLOCK.data.post_images) ? BLOCK.data.post_images.slice() : [];
                 document.body.classList.toggle('adm', IS_ADMIN);
                 // breadcrumb
                 document.getElementById('crumb').innerHTML =
@@ -165,39 +170,81 @@
                 class="plan-card bg-orange-50 rounded-2xl border-2 border-dashed border-orange-300 p-4 flex flex-col items-center justify-center text-orange-500 hover:bg-orange-100 min-h-[150px]">
                 <span class="text-3xl">＋</span><span class="font-bold text-sm mt-1">สร้างบลอคย่อย</span></button>` : '';
 
-            // โพสยาวๆ
-            const content = BLOCK.data.content || '';
-            const contentView = content
-                ? `<div id="content-view" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">${content}</div>`
-                : (IS_ADMIN ? '' : '');
+            // ===== โพส — ทำให้เหมือนหน้าที่ตัวแทน (user) เขียนโพส (พี่ดิวสั่ง 19 ก.ค.) =====
+            //   ของตัวแทน = ข้อความล้วน (textarea) + รูปหลายรูป — ไม่ใช่ rich text
+            //   เก็บที่ data.post_text / data.post_images (array ของ url)
+            //   ★ data.content ของเดิม (rich text) ยังแสดงอยู่ ไม่ลบทิ้ง จะได้ไม่หายเงียบ
+            const postText = BLOCK.data.post_text || '';
+            const savedImgs = Array.isArray(BLOCK.data.post_images) ? BLOCK.data.post_images : [];
+            const legacy = BLOCK.data.content || '';
+
+            const parts = [];
+            if (savedImgs.length) parts.push(postImagesHtml(savedImgs));
+            if (postText) parts.push(`<div class="post-body">${esc(postText)}</div>`);
+            if (legacy) parts.push(`<div id="content-view">${legacy}</div>`);
+            const contentView = parts.length
+                ? `<div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">${parts.join('')}</div>` : '';
+
             // ★ กล่องเขียนโพสโผล่เฉพาะ "หน้าสุดท้าย" (ชั้นที่สร้างบลอคย่อยต่อไม่ได้แล้ว)
-            //   ชั้นบนๆ เป็นหน้ารวมปุ่มอย่างเดียว ไม่ต้องมีกล่องเขียนโพสให้รก (พี่ดิวสั่ง 19 ก.ค.)
+            //   ชั้นบนๆ เป็นหน้ารวมปุ่มอย่างเดียว ไม่ต้องมีกล่องเขียนโพสให้รก
             const editor = (IS_ADMIN && !canAddKid()) ? `
                 <div class="adm-only bg-white rounded-2xl border border-orange-200 shadow-sm p-4 mt-4">
-                    <div class="flex items-center justify-between mb-2">
-                        <p class="text-xs font-extrabold text-gray-700">📝 เขียนโพส</p>
-                        <div class="flex gap-2">
-                            <button id="ins-img" class="text-xs font-bold text-orange-600 hover:underline">＋ แทรกรูป</button>
-                            <button id="save-content" class="text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-4 py-1.5 rounded-full">บันทึกเนื้อหา</button>
-                        </div>
+                    <p class="text-xs font-extrabold text-gray-700 mb-0.5">📝 เขียนโพส</p>
+                    <p class="text-[10px] text-gray-400 mb-3">ใส่ข้อความและรูป (ไม่บังคับ) — เหมือนหน้าเขียนโพสของตัวแทน</p>
+
+                    <label class="block text-[11px] font-bold text-gray-500 mb-1">ข้อความ</label>
+                    <textarea id="post-text" rows="6"
+                        class="w-full border border-gray-200 rounded-xl p-3 text-sm leading-7 focus:outline-orange-400"
+                        placeholder="เขียนอะไรสักหน่อย... เช่น ข่าวสาร โปรโมชั่น หรือเกร็ดความรู้">${esc(postText)}</textarea>
+
+                    <label class="block text-[11px] font-bold text-gray-500 mt-3 mb-1">รูปประกอบ (ไม่บังคับ — ใส่ได้หลายรูป)</label>
+                    <div id="post-images-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-2"></div>
+                    <button id="add-post-img" class="text-xs font-bold text-orange-600 hover:underline">＋ เพิ่มรูป</button>
+                    <p class="text-[10px] text-gray-400 mt-1">เพิ่มได้เรื่อยๆ · กด × บนรูปเพื่อเอาออก · jpg/png/webp สูงสุด 5MB/รูป</p>
+
+                    <div class="flex justify-end mt-3">
+                        <button id="save-content" class="text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-5 py-2 rounded-full">บันทึกโพส</button>
                     </div>
-                    <div id="editor" contenteditable="true"
-                         class="min-h-[220px] border border-gray-200 rounded-xl p-4 focus:outline-orange-400 leading-8"></div>
-                    <p class="text-[10px] text-gray-400 mt-1.5">พิมพ์ได้เลย · กด "แทรกรูป" เพื่อใส่ภาพในเนื้อหา · กด "บันทึกเนื้อหา" เมื่อเสร็จ</p>
                 </div>` : '';
 
             document.getElementById('root').innerHTML = `
                 <div class="mb-6">
                     ${upload}
                     ${ed(BLOCK.id, 'button_text', BLOCK.data.button_text, 'text-2xl md:text-3xl font-extrabold text-gray-800 block', 'h1')}
-                    ${IS_ADMIN ? `<button id="del-block" class="adm-only text-xs font-bold text-red-500 hover:underline mt-2">🗑 ลบบลอคนี้ (ลูกหลานหายทั้งหมด)</button>` : ''}
+                    ${!BLOCK.is_visible ? '<span class="inline-block text-[10px] font-bold text-white bg-gray-500 px-2 py-0.5 rounded-full mt-1">ซ่อนอยู่</span>' : ''}
+                    ${IS_ADMIN ? `<div class="adm-only flex items-center gap-3 mt-2">
+                        <button id="vis-block" class="text-xs font-bold ${BLOCK.is_visible ? 'text-gray-600' : 'text-orange-600'} hover:underline">
+                            ${BLOCK.is_visible ? '👁 กำลังแสดงอยู่ — กดเพื่อซ่อน' : '🚫 ซ่อนอยู่ — กดเพื่อแสดง'}</button>
+                        <button id="del-block" class="text-xs font-bold text-red-500 hover:underline">🗑 ลบบลอคนี้</button>
+                    </div>` : ''}
                 </div>
                 ${(CHILDREN.length || addKid) ? `<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">${kids}${addKid}</div>` : ''}
                 ${contentView}
                 ${editor}`;
 
-            const edt = document.getElementById('editor');
-            if (edt) edt.innerHTML = content;
+            renderPostGrid();
+        }
+
+        // ===== รูปของโพส =====
+        // ที่แสดงให้คนอ่าน (โครงเดียวกับโพสของตัวแทน: รูปเดียวเต็ม / หลายรูปเรียงเป็นตาราง)
+        function postImagesHtml(imgs) {
+            if (!imgs || !imgs.length) return '';
+            if (imgs.length === 1)
+                return `<img src="${esc(imgs[0])}" alt="" loading="lazy" class="w-full rounded-xl mb-3">`;
+            return `<div class="grid grid-cols-2 gap-2 mb-3">${imgs.map(u =>
+                `<img src="${esc(u)}" alt="" loading="lazy" class="w-full h-44 object-cover rounded-xl">`).join('')}</div>`;
+        }
+        // ช่องรูปในกล่องแก้ไข (มี × เอาออก)
+        function renderPostGrid() {
+            const g = document.getElementById('post-images-grid');
+            if (!g) return;
+            g.innerHTML = POST_IMGS.length
+                ? POST_IMGS.map((u, i) => `<div class="relative">
+                       <img src="${esc(u)}" alt="" class="w-full h-20 object-cover rounded-lg border border-gray-200">
+                       <button data-rmimg="${i}" title="เอารูปนี้ออก"
+                         class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white text-[11px] leading-5">×</button>
+                   </div>`).join('')
+                : '<p class="col-span-full text-[11px] text-gray-400">ยังไม่มีรูป</p>';
         }
 
         // ===== แก้ชื่อปุ่มตรงๆ =====
@@ -248,28 +295,56 @@
                 } catch (err) { toast(err.message, true); }
                 return;
             }
+            // ปิด/เปิดการแสดงบลอคนี้
+            if (e.target.closest('#vis-block')) {
+                try {
+                    await api('/api/blocks/' + ID, {
+                        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ is_visible: !BLOCK.is_visible }),
+                    });
+                    await load();
+                    toast(BLOCK.is_visible ? 'แสดงบลอคนี้แล้ว' : 'ซ่อนบลอคนี้แล้ว');
+                } catch (err) { toast(err.message, true); }
+                return;
+            }
             if (e.target.closest('#save-content')) {
                 try {
                     await api('/api/blocks/' + ID, {
                         method: 'PUT', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ data: { content: document.getElementById('editor').innerHTML } }),
+                        body: JSON.stringify({ data: {
+                            post_text: document.getElementById('post-text').value,
+                            post_images: POST_IMGS,
+                        } }),
                     });
-                    await load(); toast('บันทึกเนื้อหาแล้ว');
+                    await load(); toast('บันทึกโพสแล้ว');
                 } catch (err) { toast(err.message, true); }
                 return;
             }
-            if (e.target.closest('#ins-img')) {
+            // เอารูปออกจากโพส (ยังไม่ลบไฟล์บนดิสก์ — จะหายจริงตอนกดบันทึก)
+            const rm = e.target.closest('[data-rmimg]');
+            if (rm) {
+                POST_IMGS.splice(Number(rm.dataset.rmimg), 1);
+                renderPostGrid();
+                toast('เอารูปออกแล้ว — อย่าลืมกดบันทึกโพส');
+                return;
+            }
+            // เพิ่มรูปเข้าโพส (ทีละหลายรูปได้ เหมือนหน้าเขียนโพสของตัวแทน)
+            if (e.target.closest('#add-post-img')) {
                 const inp = document.createElement('input');
-                inp.type = 'file'; inp.accept = 'image/*';
+                inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = true;
                 inp.onchange = async () => {
-                    if (!inp.files[0]) return;
-                    const fd = new FormData(); fd.append('image', inp.files[0]);
-                    try {
-                        const j = await api(`/api/blocks/${ID}/content-image`, { method: 'POST', body: fd });
-                        document.getElementById('editor').focus();
-                        document.execCommand('insertHTML', false, `<img src="${esc(j.url)}">`);
-                        toast('แทรกรูปแล้ว — อย่าลืมกดบันทึกเนื้อหา');
-                    } catch (err) { toast(err.message, true); }
+                    const files = [...(inp.files || [])];
+                    if (!files.length) return;
+                    let done = 0;
+                    for (const f of files) {
+                        const fd = new FormData(); fd.append('image', f);
+                        try {
+                            const j = await api(`/api/blocks/${ID}/content-image`, { method: 'POST', body: fd });
+                            POST_IMGS.push(j.url); done++;
+                        } catch (err) { toast(err.message, true); }
+                    }
+                    renderPostGrid();
+                    if (done) toast(`เพิ่มรูป ${done} รูปแล้ว — อย่าลืมกดบันทึกโพส`);
                 };
                 inp.click();
                 return;
