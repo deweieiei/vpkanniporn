@@ -28,6 +28,31 @@
                 linear-gradient(135deg, #fffdf8, #fdf4e3);
         }
         .plan-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(255,107,0,0.16); }
+        /* ===== การ์ด "เลือกแผน" — ยกหน้าตาชุดเดียวกับหน้า /page/:id ของตัวแทน (พี่ดิวเลือกแบบนี้) ===== */
+        .lf-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:12px; }
+        .lf-card { position:relative; min-height:150px; border-radius:14px; overflow:hidden; cursor:pointer;
+                   background-size:cover; background-position:center; display:flex; align-items:center;
+                   justify-content:center; box-shadow:0 1px 5px rgba(0,0,0,.10);
+                   transition:box-shadow .15s, transform .15s; }
+        .lf-card:hover { box-shadow:0 8px 22px rgba(0,0,0,.16); transform:translateY(-2px); }
+        .lf-card.lf-noimg { background:linear-gradient(135deg,#ff9a4d,#ff6b00); }
+        .lf-shade { position:absolute; inset:0; background:rgba(0,0,0,.34); }
+        .lf-card.lf-noimg .lf-shade { background:transparent; }
+        .lf-label { position:relative; z-index:1; padding:14px 12px; color:#fff; font-weight:700; font-size:16px;
+                    text-align:center; line-height:1.35; text-shadow:0 1px 6px rgba(0,0,0,.55); }
+        .lf-tools { position:absolute; top:8px; right:8px; display:flex; gap:6px; z-index:2; }
+        .lf-tools button { width:28px; height:28px; border:none; border-radius:50%; background:rgba(255,255,255,.92);
+                           font-size:13px; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,.2);
+                           display:flex; align-items:center; justify-content:center; }
+        .lf-edit { color:#ea580c; } .lf-edit:hover { background:#ffedd5; }
+        .lf-del { color:#ef4444; }  .lf-del:hover { background:#fee2e2; }
+        .lf-add { cursor:pointer; border:2px dashed #f0b787; background:#fff8f2; display:flex; flex-direction:column;
+                  align-items:center; justify-content:center; min-height:150px; border-radius:14px;
+                  color:#ea580c; font-weight:700; gap:6px; transition:background .15s; }
+        .lf-add:hover { background:#fff2e6; }
+        .lf-add .plus { font-size:30px; line-height:1; }
+        .inactive-tag { display:inline-block; margin-left:6px; font-size:10px; font-weight:600; color:#fff;
+                        background:rgba(0,0,0,.45); padding:1px 6px; border-radius:8px; vertical-align:middle; }
         .nav-link { display:flex; flex-direction:column; align-items:center; gap:2px; color:#4b5563; font-size:12px; font-weight:600; white-space:nowrap; transition:color .15s; }
         .nav-link:hover { color:#FF6B00; }
         .nav-link .ic, .nav-link .emo { font-size:17px; }
@@ -141,6 +166,36 @@
         <a href="/support-admin/users">← กลับหน้าแอดมิน</a>
     </div>
     <div id="toast"></div>
+
+    <!-- โมดัลแก้การ์ด "เลือกแผน" (โครงเดียวกับโมดัลบลอคย่อยในหน้า /page/:id) -->
+    <div class="modal" id="page-modal">
+        <div class="modal-card" style="max-width:440px;">
+            <h3 class="font-extrabold text-lg mb-1">✏️ แก้ไขการ์ด</h3>
+            <p class="text-xs text-gray-500 mb-5">กดที่การ์ดบนหน้าเว็บเพื่อเข้าไปหน้าเนื้อหา</p>
+            <label class="block text-xs font-bold text-gray-600 mb-1">ชื่อรายการ *</label>
+            <input type="text" id="pg-text" maxlength="120"
+                class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-orange-500 mb-4"
+                placeholder="เช่น ประกันสุขภาพ">
+            <label class="block text-xs font-bold text-gray-600 mb-1">รูปการ์ด (ไม่ใส่ก็ได้ — ใช้เป็นพื้นหลังการ์ด)</label>
+            <div class="flex items-center gap-2.5">
+                <div class="w-[88px] h-14 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
+                    <img id="pg-preview" class="hidden w-full h-full object-cover" src="" alt="">
+                    <span id="pg-ph" class="text-[11px] text-gray-400">ไม่มีรูป</span>
+                </div>
+                <input type="file" id="pg-image" accept="image/*" class="text-xs">
+            </div>
+            <p class="text-[11px] text-gray-400 mt-1.5">แนะนำขนาด <b>800 × 800 px</b> • jpg/png/webp สูงสุด 5MB</p>
+            <button id="pg-rmimg" class="text-[11px] font-bold text-red-500 hover:underline mt-1 hidden">เอารูปออก</button>
+            <label class="flex items-center gap-2 text-sm mt-4 mb-5 cursor-pointer text-gray-600">
+                <input type="checkbox" id="pg-visible" checked>
+                แสดงการ์ดนี้ให้ผู้เข้าชมเห็น <span class="text-[11px] text-gray-400">(เอาติ๊กออก = ซ่อน)</span>
+            </label>
+            <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
+                <button id="pg-cancel" class="px-5 py-2 rounded-full text-sm font-bold text-gray-500 hover:bg-gray-100">ยกเลิก</button>
+                <button id="pg-save" class="px-5 py-2 rounded-full text-sm font-bold text-white bg-orange-500 hover:bg-orange-600">บันทึก</button>
+            </div>
+        </div>
+    </div>
 
     <!-- โมดัลเลือกตัวแทน (ข้อ 4) -->
     <div class="modal" id="pick-modal">
@@ -291,40 +346,25 @@
         //  ข้อ 2 — PLANS : ปุ่ม/บลอคซ้อนชั้น (กดเข้าไปมีบลอคย่อยอีก)
         // ============================================================
         function renderPlans(b) {
-            // ★ แอดมินแก้ชื่อปุ่ม + ใส่รูปได้ "ที่ปุ่มเลย" ไม่ต้องกดเข้าไปข้างใน (พี่ดิวสั่ง 19 ก.ค.)
-            //   คนทั่วไป: ทั้งใบเป็นลิงก์ <a> เหมือนเดิม
-            //   แอดมิน  : ทำเป็น <div> แล้วมีลิงก์ "เปิดดู" แยกต่างหาก
-            //             เพราะถ้าเอาช่องพิมพ์ไปใส่ใน <a> คลิกจะเด้งออกจากหน้าทันที พิมพ์ไม่ได้
+            // ★ หน้าตาการ์ด = ชุดเดียวกับหน้า /page/:id ของตัวแทน (พี่ดิวเลือกแบบนี้ 19 ก.ค.)
+            //   รูปเป็นพื้นหลังเต็มใบ + ชื่อทับบนรูป · แอดมินได้ปุ่ม ✏️ (แก้ในโมดัล) กับ 🗑 (ลบ)
+            //   กดที่ตัวการ์ด = เข้าไปหน้าเนื้อหา — ทั้งแอดมินและคนทั่วไปเห็นหน้าตาเหมือนกัน
             const cards = b.children.map(c => {
                 const img = (c.images || []).find(i => i.slot === 0 && i.variant === 'web') || (c.images || [])[0];
-                const circle = `<div class="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-orange-400 to-orange-500 text-white flex items-center justify-center text-2xl shadow-md overflow-hidden relative">
-                        ${img ? `<img src="${esc(img.path)}" class="w-full h-full object-cover">` : '📄'}
-                        ${IS_ADMIN && img ? `<span data-del="${c.id}" data-slot="0" data-variant="web" title="ลบรูป"
-                             class="adm-only absolute top-0 right-0 w-5 h-5 rounded-full bg-red-500 text-white text-[11px] leading-5 text-center cursor-pointer">×</span>` : ''}
-                    </div>`;
-                const box = `plan-card bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center transition flex flex-col ${c.is_visible ? '' : 'opacity-50'}`;
-
-                if (!IS_ADMIN) {
-                    return `<a href="/b/${c.id}" class="${box}">
-                        ${circle}
-                        <p class="font-bold text-gray-800 mt-3 flex-1">${esc(c.data.button_text || 'ปุ่มใหม่')}</p>
-                        <span class="mt-3 inline-block text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-3 py-1.5 rounded-full">ดูรายละเอียด</span>
-                    </a>`;
-                }
-                // หมายเหตุ: ตั้งใจไม่ใส่ปุ่มลบตรงนี้ — ลบปุ่มนี้ = หน้าย่อย+โพสข้างในหายทั้งสาย
-                //   ให้ไปกด "🗑 ลบบลอคนี้" ในหน้าข้างในแทน จะได้ไม่พลาดมือ
-                return `<div class="${box} relative">
-                    ${circle}
-                    <button data-up="${c.id}" data-slot="0" data-variant="web"
-                        class="adm-only mx-auto mt-1 block text-[10px] font-bold text-orange-600 hover:underline">
-                        🖼️ ${img ? 'เปลี่ยนรูป' : 'ใส่รูป'}</button>
-                    ${ed(c.id, 'button_text', c.data.button_text || 'ปุ่มใหม่', 'font-bold text-gray-800 mt-2 flex-1 block', 'p')}
-                    <a href="/b/${c.id}" class="mt-3 inline-block text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-3 py-1.5 rounded-full">เปิดดู</a>
+                const style = img ? ` style="background-image:url('${esc(img.path)}')"` : '';
+                const hidden = IS_ADMIN && !c.is_visible ? '<span class="inactive-tag">ซ่อนอยู่</span>' : '';
+                const tools = IS_ADMIN ? `<div class="lf-tools">
+                        <button type="button" class="lf-edit" data-editpage="${c.id}" title="แก้ไข">✏️</button>
+                        <button type="button" class="lf-del" data-delpage="${c.id}" title="ลบ">🗑</button>
+                    </div>` : '';
+                return `<div class="lf-card${img ? '' : ' lf-noimg'}" data-openpage="${c.id}"${style}>
+                    ${tools}
+                    <div class="lf-shade"></div>
+                    <div class="lf-label">${esc(c.data.button_text || 'ปุ่มใหม่')}${hidden}</div>
                 </div>`;
             }).join('');
-            const addBtn = IS_ADMIN ? `<button data-addpage="${b.id}"
-                class="plan-card bg-orange-50 rounded-2xl border-2 border-dashed border-orange-300 p-4 text-center flex flex-col items-center justify-center text-orange-500 hover:bg-orange-100 transition min-h-[150px]">
-                <span class="text-3xl">＋</span><span class="font-bold text-sm mt-1">สร้างบลอค</span></button>` : '';
+            const addBtn = IS_ADMIN ? `<div class="lf-add" data-addpage="${b.id}">
+                <span class="plus">＋</span><span class="text-sm">สร้างบลอค</span></div>` : '';
             const empty = (!b.children.length && !IS_ADMIN)
                 ? '<p class="col-span-full text-center text-gray-400 text-sm py-6">ยังไม่มีรายการ</p>' : '';
 
@@ -334,7 +374,7 @@
                         ${ed(b.id, 'title', b.data.title, 'text-2xl md:text-3xl font-extrabold text-gray-800 block', 'h2')}${hidTag}
                         ${ed(b.id, 'subtitle', b.data.subtitle, 'text-gray-500 mt-1 block', 'p')}
                     </div>
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">${cards}${addBtn}${empty}</div>
+                    <div class="lf-grid">${cards}${addBtn}${empty}</div>
                 </div>`);
         }
 
@@ -609,10 +649,30 @@
             }
         });
 
+        // กดที่การ์ด "เลือกแผน" = เข้าไปหน้าเนื้อหา (ทุกคนกดได้ ไม่ใช่เฉพาะแอดมิน)
+        //   ยกเว้นกดโดนปุ่ม ✏️ / 🗑 มุมขวาบน — อันนั้นเป็นเครื่องมือของแอดมิน
+        document.addEventListener('click', e => {
+            const card = e.target.closest && e.target.closest('[data-openpage]');
+            if (!card || e.target.closest('.lf-tools')) return;
+            location.href = '/b/' + card.dataset.openpage;
+        });
+
         // คลิกปุ่มต่างๆ ในโหมดแก้ไข
         document.addEventListener('click', async e => {
             if (!IS_ADMIN) return;
             const t = e.target;
+
+            // ✏️ แก้การ์ด "เลือกแผน" — เปิดโมดัล (ไม่ต้องกดเข้าไปในหน้า)
+            const ep = t.closest('[data-editpage]');
+            if (ep) { openPageModal(Number(ep.dataset.editpage)); return; }
+            // 🗑 ลบการ์ด "เลือกแผน"
+            const dp = t.closest('[data-delpage]');
+            if (dp) {
+                if (!confirm('ลบการ์ดนี้? หน้าเนื้อหาข้างใน บลอคย่อย และรูปทั้งหมดจะหายไปด้วย กู้คืนไม่ได้')) return;
+                try { await api('/api/blocks/' + dp.dataset.delpage, { method: 'DELETE' }); await load(); toast('ลบการ์ดแล้ว'); }
+                catch (err) { toast(err.message, true); }
+                return;
+            }
 
             // เลื่อนขึ้น/ลง + ซ่อน
             const act = t.closest('[data-act]');
@@ -731,6 +791,70 @@
                 } catch (err) { toast(err.message, true); }
             }
         });
+
+        // ===== โมดัลแก้การ์ด "เลือกแผน" =====
+        let pgId = null, pgHadImg = false, pgRemove = false;
+        function findChild(id) {
+            for (const b of BLOCKS) { const c = (b.children || []).find(x => x.id === id); if (c) return c; }
+            return null;
+        }
+        function openPageModal(id) {
+            const c = findChild(id);
+            if (!c) return;
+            pgId = id; pgRemove = false;
+            const img = (c.images || []).find(i => i.slot === 0 && i.variant === 'web') || (c.images || [])[0];
+            pgHadImg = !!img;
+            document.getElementById('pg-text').value = c.data.button_text || '';
+            document.getElementById('pg-visible').checked = !!c.is_visible;
+            document.getElementById('pg-image').value = '';
+            const pv = document.getElementById('pg-preview'), ph = document.getElementById('pg-ph');
+            if (img) { pv.src = img.path; pv.classList.remove('hidden'); ph.classList.add('hidden'); }
+            else { pv.src = ''; pv.classList.add('hidden'); ph.classList.remove('hidden'); }
+            document.getElementById('pg-rmimg').classList.toggle('hidden', !img);
+            document.getElementById('page-modal').classList.add('on');
+        }
+        // เลือกไฟล์แล้วโชว์ตัวอย่างทันที (ยังไม่อัป รออกดบันทึก)
+        document.getElementById('pg-image').addEventListener('change', e => {
+            const f = e.target.files && e.target.files[0];
+            if (!f) return;
+            pgRemove = false;
+            const pv = document.getElementById('pg-preview');
+            pv.src = URL.createObjectURL(f); pv.classList.remove('hidden');
+            document.getElementById('pg-ph').classList.add('hidden');
+            document.getElementById('pg-rmimg').classList.remove('hidden');
+        });
+        document.getElementById('pg-rmimg').onclick = () => {
+            pgRemove = true;
+            document.getElementById('pg-image').value = '';
+            document.getElementById('pg-preview').classList.add('hidden');
+            document.getElementById('pg-ph').classList.remove('hidden');
+            document.getElementById('pg-rmimg').classList.add('hidden');
+        };
+        document.getElementById('pg-cancel').onclick = () => document.getElementById('page-modal').classList.remove('on');
+        document.getElementById('page-modal').onclick = e => {
+            if (e.target.id === 'page-modal') e.target.classList.remove('on');
+        };
+        document.getElementById('pg-save').onclick = async () => {
+            const name = document.getElementById('pg-text').value.trim();
+            if (!name) { toast('ใส่ชื่อรายการก่อน', true); return; }
+            const vis = document.getElementById('pg-visible').checked;
+            const file = document.getElementById('pg-image').files[0];
+            try {
+                await api('/api/blocks/' + pgId, {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: { button_text: name }, is_visible: vis }),
+                });
+                if (file) {
+                    const fd = new FormData();
+                    fd.append('image', file); fd.append('slot', '0'); fd.append('variant', 'web');
+                    await api(`/api/blocks/${pgId}/image`, { method: 'POST', body: fd });
+                } else if (pgRemove && pgHadImg) {
+                    await api(`/api/blocks/${pgId}/image?slot=0&variant=web`, { method: 'DELETE' });
+                }
+                document.getElementById('page-modal').classList.remove('on');
+                await load(); toast('บันทึกแล้ว');
+            } catch (err) { toast(err.message, true); }
+        };
 
         // ===== โมดัลเลือกตัวแทน =====
         //   ไม่แสดงตัวแทนทั้งหมดแล้ว — เริ่มต้นโชว์เฉพาะคนที่เลือกไว้ ที่เหลือให้ค้นหาเอา

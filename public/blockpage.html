@@ -31,16 +31,42 @@
         .adm .ed { outline:1.5px dotted #fdba74; outline-offset:3px; border-radius:4px; cursor:text; }
         .adm .ed:hover { background:#fff7ed; }
         .adm .ed:focus { outline:2px solid #f97316; background:#fffbf5; }
-        /* ข้อความโพส — ขึ้นบรรทัดใหม่ตามที่พิมพ์ (เหมือนโพสของตัวแทน) */
-        .post-body { white-space:pre-wrap; line-height:1.9; font-size:.95rem; word-break:break-word; }
-        /* เนื้อหาโพสยาวๆ */
-        #content-view img { max-width:100%; height:auto; border-radius:12px; margin:10px 0; }
-        #content-view h1,#content-view h2,#content-view h3 { font-weight:800; margin:14px 0 6px; }
-        #content-view h1 { font-size:1.6rem } #content-view h2 { font-size:1.35rem } #content-view h3 { font-size:1.15rem }
-        #content-view p { margin:8px 0; line-height:1.8 }
-        #content-view ul,#content-view ol { margin:8px 0 8px 22px; list-style:disc }
-        #content-view ol { list-style:decimal }
-        #content-view a { color:#ea580c; text-decoration:underline }
+        /* ===== Rich text — ยกชุดเดียวกับหน้าเขียนของตัวแทน (page.html /page/:id) ===== */
+        .rt-content h2, .rt-content h3 { font-weight:700; color:#374151; margin:.9em 0 .4em; }
+        .rt-content h2 { font-size:1.35rem; } .rt-content h3 { font-size:1.15rem; }
+        .rt-content p { margin:0 0 .8em; }
+        .rt-content ul { list-style:disc; padding-left:1.5em; margin:0 0 .8em; }
+        .rt-content ol { list-style:decimal; padding-left:1.5em; margin:0 0 .8em; }
+        .rt-content li { margin:.2em 0; }
+        .rt-content a { color:#ea580c; text-decoration:underline; }
+        .rt-content img { max-width:100%; height:auto; border-radius:12px; margin:.6em 0; }
+        .rt-content b, .rt-content strong { font-weight:700; }
+        .rt-editor { min-height:320px; outline:none; }
+        .rt-editor:empty:before { content:attr(data-placeholder); color:#9ca3af; }
+        .rt-btn { min-width:34px; height:32px; padding:0 8px; border:1px solid #e5e7eb; background:#fff;
+                  border-radius:8px; font-size:13px; color:#374151; cursor:pointer;
+                  display:inline-flex; align-items:center; justify-content:center; }
+        .rt-btn:hover { background:#fff7ed; border-color:#fdba74; color:#ea580c; }
+        .rt-sep { width:1px; align-self:stretch; background:#e5e7eb; margin:2px 4px; }
+        /* ===== การ์ดบลอคย่อย — ชุดเดียวกับหน้าแรกและหน้า /page/:id ===== */
+        .lf-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:12px; }
+        .lf-card { position:relative; min-height:150px; border-radius:14px; overflow:hidden; cursor:pointer;
+                   background-size:cover; background-position:center; display:flex; align-items:center;
+                   justify-content:center; box-shadow:0 1px 5px rgba(0,0,0,.10);
+                   transition:box-shadow .15s, transform .15s; }
+        .lf-card:hover { box-shadow:0 8px 22px rgba(0,0,0,.16); transform:translateY(-2px); }
+        .lf-card.lf-noimg { background:linear-gradient(135deg,#ff9a4d,#ff6b00); }
+        .lf-shade { position:absolute; inset:0; background:rgba(0,0,0,.34); }
+        .lf-card.lf-noimg .lf-shade { background:transparent; }
+        .lf-label { position:relative; z-index:1; padding:14px 12px; color:#fff; font-weight:700; font-size:16px;
+                    text-align:center; line-height:1.35; text-shadow:0 1px 6px rgba(0,0,0,.55); }
+        .lf-add { cursor:pointer; border:2px dashed #f0b787; background:#fff8f2; display:flex; flex-direction:column;
+                  align-items:center; justify-content:center; min-height:150px; border-radius:14px;
+                  color:#ea580c; font-weight:700; gap:6px; transition:background .15s; }
+        .lf-add:hover { background:#fff2e6; }
+        .lf-add .plus { font-size:30px; line-height:1; }
+        .inactive-tag { display:inline-block; margin-left:6px; font-size:10px; font-weight:600; color:#fff;
+                        background:rgba(0,0,0,.45); padding:1px 6px; border-radius:8px; vertical-align:middle; }
         #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:70;
                  background:#16a34a; color:#fff; padding:8px 18px; border-radius:999px; font-size:12.5px;
                  font-weight:600; opacity:0; transition:opacity .25s; pointer-events:none; }
@@ -88,8 +114,6 @@
         // ============================================================
         const ID = Number(location.pathname.split('/').pop());
         let BLOCK = null, CHILDREN = [], IS_ADMIN = false, CRUMB = [];
-        // รูปของโพสระหว่างที่กำลังแก้ (ยังไม่กดบันทึก) — แยกจาก BLOCK.data.post_images ที่เซฟแล้ว
-        let POST_IMGS = [];
 
         // ===== ความลึกของหน้า =====
         //   breadcrumb = บลอคแม่ทั้งสาย (ไม่รวมตัวเอง)
@@ -122,7 +146,6 @@
                 const j = await api('/api/blocks/' + ID);
                 IS_ADMIN = !!j.is_admin;
                 BLOCK = j.block; CHILDREN = j.children || []; CRUMB = j.breadcrumb || [];
-                POST_IMGS = Array.isArray(BLOCK.data.post_images) ? BLOCK.data.post_images.slice() : [];
                 document.body.classList.toggle('adm', IS_ADMIN);
                 // breadcrumb
                 document.getElementById('crumb').innerHTML =
@@ -155,55 +178,62 @@
                     </div>
                 </div>` : '';
 
-            // บลอคย่อย — กดเข้าไปได้อีกไม่จำกัดชั้น
+            // บลอคย่อย — หน้าตาการ์ดชุดเดียวกับหน้าแรกและหน้า /page/:id ของตัวแทน
             const kids = CHILDREN.map(c => {
-                const ci = c.images && c.images[0];
-                return `<a href="/b/${c.id}" class="plan-card bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center transition flex flex-col ${c.is_visible ? '' : 'opacity-50'}">
-                    <div class="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-orange-400 to-orange-500 text-white flex items-center justify-center text-2xl shadow-md overflow-hidden">
-                        ${ci ? `<img src="${esc(ci.path)}" class="w-full h-full object-cover">` : '📄'}
-                    </div>
-                    <p class="font-bold text-gray-800 mt-3 flex-1">${esc(c.data.button_text || 'ปุ่มใหม่')}</p>
-                    <span class="mt-3 inline-block text-xs font-bold text-white bg-orange-500 px-3 py-1.5 rounded-full">เปิดดู</span>
+                const ci = (c.images || []).find(i => i.slot === 0 && i.variant === 'web') || (c.images || [])[0];
+                const style = ci ? ` style="background-image:url('${esc(ci.path)}')"` : '';
+                const hid = IS_ADMIN && !c.is_visible ? '<span class="inactive-tag">ซ่อนอยู่</span>' : '';
+                return `<a href="/b/${c.id}" class="lf-card${ci ? '' : ' lf-noimg'}"${style}>
+                    <div class="lf-shade"></div>
+                    <div class="lf-label">${esc(c.data.button_text || 'ปุ่มใหม่')}${hid}</div>
                 </a>`;
             }).join('');
-            const addKid = (IS_ADMIN && canAddKid()) ? `<button id="add-kid"
-                class="plan-card bg-orange-50 rounded-2xl border-2 border-dashed border-orange-300 p-4 flex flex-col items-center justify-center text-orange-500 hover:bg-orange-100 min-h-[150px]">
-                <span class="text-3xl">＋</span><span class="font-bold text-sm mt-1">สร้างบลอคย่อย</span></button>` : '';
+            const addKid = (IS_ADMIN && canAddKid()) ? `<div id="add-kid" class="lf-add">
+                <span class="plus">＋</span><span class="text-sm">สร้างบลอคย่อย</span></div>` : '';
 
-            // ===== โพส — ทำให้เหมือนหน้าที่ตัวแทน (user) เขียนโพส (พี่ดิวสั่ง 19 ก.ค.) =====
-            //   ของตัวแทน = ข้อความล้วน (textarea) + รูปหลายรูป — ไม่ใช่ rich text
-            //   เก็บที่ data.post_text / data.post_images (array ของ url)
-            //   ★ data.content ของเดิม (rich text) ยังแสดงอยู่ ไม่ลบทิ้ง จะได้ไม่หายเงียบ
-            const postText = BLOCK.data.post_text || '';
-            const savedImgs = Array.isArray(BLOCK.data.post_images) ? BLOCK.data.post_images : [];
-            const legacy = BLOCK.data.content || '';
-
-            const parts = [];
-            if (savedImgs.length) parts.push(postImagesHtml(savedImgs));
-            if (postText) parts.push(`<div class="post-body">${esc(postText)}</div>`);
-            if (legacy) parts.push(`<div id="content-view">${legacy}</div>`);
-            const contentView = parts.length
-                ? `<div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">${parts.join('')}</div>` : '';
+            // ===== โพส — ใช้ตัวแก้ไขชุดเดียวกับหน้า /page/:id ของตัวแทน (พี่ดิวสั่ง 19 ก.ค.) =====
+            //   B I U / H2 H3 / ขนาดตัวอักษร / รายการ / จัดชิด / ลิงก์ / แทรกรูป
+            //   เก็บเป็น HTML ที่ data.content เหมือนเดิม (เซิร์ฟเวอร์ sanitize ให้อยู่แล้ว)
+            const content = BLOCK.data.content || '';
+            const contentView = content
+                ? `<div id="content-view" class="rt-content bg-white rounded-2xl border border-gray-100 shadow-sm p-6">${content}</div>` : '';
 
             // ★ กล่องเขียนโพสโผล่เฉพาะ "หน้าสุดท้าย" (ชั้นที่สร้างบลอคย่อยต่อไม่ได้แล้ว)
             //   ชั้นบนๆ เป็นหน้ารวมปุ่มอย่างเดียว ไม่ต้องมีกล่องเขียนโพสให้รก
             const editor = (IS_ADMIN && !canAddKid()) ? `
-                <div class="adm-only bg-white rounded-2xl border border-orange-200 shadow-sm p-4 mt-4">
-                    <p class="text-xs font-extrabold text-gray-700 mb-0.5">📝 เขียนโพส</p>
-                    <p class="text-[10px] text-gray-400 mb-3">ใส่ข้อความและรูป (ไม่บังคับ) — เหมือนหน้าเขียนโพสของตัวแทน</p>
-
-                    <label class="block text-[11px] font-bold text-gray-500 mb-1">ข้อความ</label>
-                    <textarea id="post-text" rows="6"
-                        class="w-full border border-gray-200 rounded-xl p-3 text-sm leading-7 focus:outline-orange-400"
-                        placeholder="เขียนอะไรสักหน่อย... เช่น ข่าวสาร โปรโมชั่น หรือเกร็ดความรู้">${esc(postText)}</textarea>
-
-                    <label class="block text-[11px] font-bold text-gray-500 mt-3 mb-1">รูปประกอบ (ไม่บังคับ — ใส่ได้หลายรูป)</label>
-                    <div id="post-images-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-2"></div>
-                    <button id="add-post-img" class="text-xs font-bold text-orange-600 hover:underline">＋ เพิ่มรูป</button>
-                    <p class="text-[10px] text-gray-400 mt-1">เพิ่มได้เรื่อยๆ · กด × บนรูปเพื่อเอาออก · jpg/png/webp สูงสุด 5MB/รูป</p>
-
-                    <div class="flex justify-end mt-3">
-                        <button id="save-content" class="text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-5 py-2 rounded-full">บันทึกโพส</button>
+                <div class="adm-only bg-white rounded-2xl border border-orange-200 shadow-sm p-4 md:p-6 mt-4">
+                    <p class="text-xs font-extrabold text-gray-700 mb-3">📝 เขียนโพส</p>
+                    <div id="rt-toolbar" class="flex flex-wrap items-center gap-1 mb-3 pb-3 border-b border-gray-100">
+                        <button type="button" class="rt-btn" data-cmd="bold" title="ตัวหนา"><b>B</b></button>
+                        <button type="button" class="rt-btn" data-cmd="italic" title="ตัวเอียง"><i>I</i></button>
+                        <button type="button" class="rt-btn" data-cmd="underline" title="ขีดเส้นใต้"><u>U</u></button>
+                        <span class="rt-sep"></span>
+                        <button type="button" class="rt-btn" data-block="h2" title="หัวข้อใหญ่">H2</button>
+                        <button type="button" class="rt-btn" data-block="h3" title="หัวข้อรอง">H3</button>
+                        <button type="button" class="rt-btn" data-block="p" title="ข้อความปกติ">ข้อความ</button>
+                        <span class="rt-sep"></span>
+                        <span class="inline-flex items-center gap-1" title="เลือกข้อความก่อน แล้วพิมพ์ขนาด (px)">
+                            <span class="text-[11px] text-gray-500">ขนาด</span>
+                            <input type="number" id="rt-fontsize" min="8" max="120" placeholder="เช่น 24"
+                                class="w-16 h-8 px-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-500">
+                            <button type="button" class="rt-btn" id="rt-fontsize-apply" title="ตั้งขนาดตัวอักษร">ตั้ง</button>
+                        </span>
+                        <span class="rt-sep"></span>
+                        <button type="button" class="rt-btn" data-cmd="insertUnorderedList" title="รายการหัวข้อ">• รายการ</button>
+                        <button type="button" class="rt-btn" data-cmd="insertOrderedList" title="รายการตัวเลข">1. รายการ</button>
+                        <span class="rt-sep"></span>
+                        <button type="button" class="rt-btn" data-cmd="justifyLeft" title="ชิดซ้าย">⬅</button>
+                        <button type="button" class="rt-btn" data-cmd="justifyCenter" title="กึ่งกลาง">↔</button>
+                        <span class="rt-sep"></span>
+                        <button type="button" class="rt-btn" id="rt-link" title="ใส่ลิงก์">🔗 ลิงก์</button>
+                        <button type="button" class="rt-btn" id="rt-image" title="ใส่รูปในเนื้อหา">🖼️ รูป</button>
+                        <button type="button" class="rt-btn" data-cmd="removeFormat" title="ล้างรูปแบบ">✖ ล้าง</button>
+                    </div>
+                    <div id="rt-editor" class="rt-editor rt-content border border-gray-200 rounded-lg p-4"
+                         contenteditable="true" data-placeholder="พิมพ์เนื้อหาที่นี่... ใช้ปุ่มด้านบนจัดตัวหนา หัวข้อ ใส่รูปได้"></div>
+                    <div class="flex items-center justify-between mt-2">
+                        <p class="text-[11px] text-gray-400">💡 เลือกข้อความก่อนกดปุ่มจัดรูปแบบ • กด 🖼️ เพื่อแทรกรูปในเนื้อหา</p>
+                        <button id="save-content" class="text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-5 py-2 rounded-full flex-shrink-0">บันทึกโพส</button>
                     </div>
                 </div>` : '';
 
@@ -218,33 +248,54 @@
                         <button id="del-block" class="text-xs font-bold text-red-500 hover:underline">🗑 ลบบลอคนี้</button>
                     </div>` : ''}
                 </div>
-                ${(CHILDREN.length || addKid) ? `<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">${kids}${addKid}</div>` : ''}
+                ${(CHILDREN.length || addKid) ? `<div class="lf-grid mb-6">${kids}${addKid}</div>` : ''}
                 ${contentView}
                 ${editor}`;
 
-            renderPostGrid();
+            const rt = document.getElementById('rt-editor');
+            if (rt) rt.innerHTML = content;
         }
 
-        // ===== รูปของโพส =====
-        // ที่แสดงให้คนอ่าน (โครงเดียวกับโพสของตัวแทน: รูปเดียวเต็ม / หลายรูปเรียงเป็นตาราง)
-        function postImagesHtml(imgs) {
-            if (!imgs || !imgs.length) return '';
-            if (imgs.length === 1)
-                return `<img src="${esc(imgs[0])}" alt="" loading="lazy" class="w-full rounded-xl mb-3">`;
-            return `<div class="grid grid-cols-2 gap-2 mb-3">${imgs.map(u =>
-                `<img src="${esc(u)}" alt="" loading="lazy" class="w-full h-44 object-cover rounded-xl">`).join('')}</div>`;
+        // ============================================================
+        //  Rich text toolbar — ยกวิธีเดียวกับหน้า /page/:id ของตัวแทน
+        //  ★ ผูก listener ไว้ที่ document เพราะ render() วาดกล่องใหม่ทุกครั้งที่ load()
+        //    (ถ้าไปผูกที่ปุ่มตรงๆ แบบ page.html ปุ่มจะตายทันทีที่หน้าวาดใหม่)
+        // ============================================================
+        const rtEd = () => document.getElementById('rt-editor');
+        function exec(cmd, val) { document.execCommand(cmd, false, val || null); const e = rtEd(); if (e) e.focus(); }
+
+        // จำตำแหน่ง cursor ไว้ เผื่อโฟกัสหลุดตอนกดปุ่ม/เลือกไฟล์
+        let savedRange = null;
+        function saveSel() {
+            const ed = rtEd(); if (!ed) return;
+            const sel = window.getSelection();
+            if (sel.rangeCount && ed.contains(sel.anchorNode)) savedRange = sel.getRangeAt(0);
         }
-        // ช่องรูปในกล่องแก้ไข (มี × เอาออก)
-        function renderPostGrid() {
-            const g = document.getElementById('post-images-grid');
-            if (!g) return;
-            g.innerHTML = POST_IMGS.length
-                ? POST_IMGS.map((u, i) => `<div class="relative">
-                       <img src="${esc(u)}" alt="" class="w-full h-20 object-cover rounded-lg border border-gray-200">
-                       <button data-rmimg="${i}" title="เอารูปนี้ออก"
-                         class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white text-[11px] leading-5">×</button>
-                   </div>`).join('')
-                : '<p class="col-span-full text-[11px] text-gray-400">ยังไม่มีรูป</p>';
+        function restoreSel() {
+            const ed = rtEd(); if (!ed) return;
+            ed.focus();
+            if (savedRange) { const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(savedRange); }
+        }
+        document.addEventListener('keyup', e => { if (e.target.id === 'rt-editor') saveSel(); });
+        document.addEventListener('mouseup', e => { if (e.target.closest && e.target.closest('#rt-editor')) saveSel(); });
+
+        function applyFontSize(px) {
+            const p = parseInt(px, 10);
+            if (!p || p < 6 || p > 200) { toast('ใส่ตัวเลขขนาด 6–200', true); return; }
+            restoreSel();
+            const sel = window.getSelection();
+            if (!sel.rangeCount || sel.isCollapsed) { toast('เลือกข้อความที่จะปรับขนาดก่อน', true); return; }
+            // ใช้ fontSize=7 เป็นตัวจับ แล้วแปลง <font size=7> เป็น <span style="font-size:...">
+            document.execCommand('styleWithCSS', false, false);
+            document.execCommand('fontSize', false, '7');
+            rtEd().querySelectorAll('font[size="7"]').forEach(f => {
+                const span = document.createElement('span');
+                span.style.fontSize = p + 'px';
+                while (f.firstChild) span.appendChild(f.firstChild);
+                f.replaceWith(span);
+            });
+            rtEd().focus(); saveSel();
+            toast('ตั้งขนาด ' + p + 'px แล้ว');
         }
 
         // ===== แก้ชื่อปุ่มตรงๆ =====
@@ -269,6 +320,10 @@
         document.addEventListener('keydown', e => {
             if (e.key === 'Enter' && e.target.classList && e.target.classList.contains('ed')) {
                 e.preventDefault(); e.target.blur();
+            }
+            // กด Enter ในช่องขนาดตัวอักษร = กดปุ่ม "ตั้ง"
+            if (e.key === 'Enter' && e.target.id === 'rt-fontsize') {
+                e.preventDefault(); applyFontSize(e.target.value);
             }
         });
 
@@ -311,42 +366,43 @@
                 try {
                     await api('/api/blocks/' + ID, {
                         method: 'PUT', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ data: {
-                            post_text: document.getElementById('post-text').value,
-                            post_images: POST_IMGS,
-                        } }),
+                        body: JSON.stringify({ data: { content: rtEd().innerHTML } }),
                     });
                     await load(); toast('บันทึกโพสแล้ว');
                 } catch (err) { toast(err.message, true); }
                 return;
             }
-            // เอารูปออกจากโพส (ยังไม่ลบไฟล์บนดิสก์ — จะหายจริงตอนกดบันทึก)
-            const rm = e.target.closest('[data-rmimg]');
-            if (rm) {
-                POST_IMGS.splice(Number(rm.dataset.rmimg), 1);
-                renderPostGrid();
-                toast('เอารูปออกแล้ว — อย่าลืมกดบันทึกโพส');
+            // ===== ปุ่มบนแถบเครื่องมือ =====
+            if (e.target.closest('#rt-fontsize-apply')) {
+                applyFontSize(document.getElementById('rt-fontsize').value); return;
+            }
+            if (e.target.closest('#rt-link')) {
+                const url = prompt('ใส่ลิงก์ (เช่น https://...)');
+                if (!url) return;
+                restoreSel(); exec('createLink', url); saveSel();
                 return;
             }
-            // เพิ่มรูปเข้าโพส (ทีละหลายรูปได้ เหมือนหน้าเขียนโพสของตัวแทน)
-            if (e.target.closest('#add-post-img')) {
+            if (e.target.closest('#rt-image')) {
                 const inp = document.createElement('input');
-                inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = true;
+                inp.type = 'file'; inp.accept = 'image/*';
                 inp.onchange = async () => {
-                    const files = [...(inp.files || [])];
-                    if (!files.length) return;
-                    let done = 0;
-                    for (const f of files) {
-                        const fd = new FormData(); fd.append('image', f);
-                        try {
-                            const j = await api(`/api/blocks/${ID}/content-image`, { method: 'POST', body: fd });
-                            POST_IMGS.push(j.url); done++;
-                        } catch (err) { toast(err.message, true); }
-                    }
-                    renderPostGrid();
-                    if (done) toast(`เพิ่มรูป ${done} รูปแล้ว — อย่าลืมกดบันทึกโพส`);
+                    if (!inp.files[0]) return;
+                    const fd = new FormData(); fd.append('image', inp.files[0]);
+                    try {
+                        const j = await api(`/api/blocks/${ID}/content-image`, { method: 'POST', body: fd });
+                        restoreSel();
+                        document.execCommand('insertHTML', false, `<img src="${esc(j.url)}" alt="">`);
+                        saveSel();
+                        toast('แทรกรูปแล้ว — อย่าลืมกดบันทึกโพส');
+                    } catch (err) { toast(err.message, true); }
                 };
                 inp.click();
+                return;
+            }
+            const rtb = e.target.closest('#rt-toolbar button');
+            if (rtb) {
+                if (rtb.dataset.cmd) { exec(rtb.dataset.cmd); saveSel(); return; }
+                if (rtb.dataset.block) { exec('formatBlock', '<' + rtb.dataset.block + '>'); saveSel(); return; }
                 return;
             }
             const dl = e.target.closest('[data-del]');
