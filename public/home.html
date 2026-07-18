@@ -268,8 +268,8 @@
                 <div class="hero-bg relative overflow-hidden">
                     <div class="hero-slides">${bg}</div>
                     ${slides.length ? '<div class="absolute inset-0 bg-white/55 z-0"></div>' : ''}
-                    <div class="max-w-6xl mx-auto px-4 py-10 md:py-16 grid md:grid-cols-2 gap-8 items-center relative z-10">
-                        <div>
+                    <div class="max-w-6xl mx-auto px-4 py-10 md:py-16 relative z-10">
+                        <div class="max-w-3xl">
                             ${ed(b.id, 'tagline', b.data.tagline, 'script text-3xl md:text-4xl text-orange-500 mb-1 block', 'p')}
                             ${ed(b.id, 'heading', b.data.heading, 'text-3xl md:text-5xl font-extrabold leading-tight text-gray-800 block', 'h1')}
                             ${ed(b.id, 'sub', b.data.sub, 'text-gray-600 mt-4 text-sm md:text-base leading-relaxed block', 'p')}
@@ -281,9 +281,6 @@
                                     <i class="ic ic-contact"></i> นัดหมายออนไลน์
                                 </a>
                             </div>
-                        </div>
-                        <div class="relative flex justify-center md:justify-end">
-                            <img src="/src/S__12566769.jpg" alt="ที่ปรึกษาการเงิน" class="feat-photo w-64 md:w-full max-w-sm rounded-3xl shadow-2xl object-cover" style="aspect-ratio:3/4;">
                         </div>
                     </div>
                     ${uploader}
@@ -333,11 +330,28 @@
                 ? `<button data-delcard="${c.id}" title="ลบการ์ดนี้"
                      class="adm-only absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[11px] leading-5">×</button>`
                 : '';
+            // ★ วงกลมหัวการ์ด: ใส่ "รูป" แทนการพิมพ์อีโมจิได้ (พี่ดิวสั่ง 19 ก.ค.)
+            //   มีรูป → โชว์รูป · ยังไม่มีรูป → ถอยไปใช้อีโมจิเดิม
+            //   (ที่ต้องถอยเพราะการ์ดเก่าบนเว็บจริงมีแต่อีโมจิ ถ้าตัดทิ้งเลยจะกลายเป็นวงกลมว่าง)
+            const img = (c.images || []).find(i => i.slot === 0 && i.variant === 'web');
+            const circle = img
+                ? `<div class="w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden shadow-sm relative">
+                       <img src="${esc(img.path)}" alt="" class="w-full h-full object-cover">
+                       ${IS_ADMIN ? `<span data-del="${c.id}" data-slot="0" data-variant="web" title="ลบรูป (กลับไปใช้ไอคอน)"
+                            class="adm-only absolute top-0 right-0 w-5 h-5 rounded-full bg-red-500 text-white text-[11px] leading-5 text-center cursor-pointer">×</span>` : ''}
+                   </div>`
+                : `<div class="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center text-3xl">
+                       ${ed(c.id, 'icon', c.data.icon, 'leading-none')}
+                   </div>`;
+            const upBtn = IS_ADMIN
+                ? `<button data-up="${c.id}" data-slot="0" data-variant="web"
+                     class="adm-only mx-auto -mt-1 mb-2 block text-[10px] font-bold text-orange-600 hover:underline">
+                     🖼️ ${img ? 'เปลี่ยนรูป' : 'ใส่รูปแทนไอคอน'}</button>`
+                : '';
             return `<div class="relative ${c.is_visible ? '' : 'opacity-50'}">
                 ${del}
-                <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center text-3xl">
-                    ${ed(c.id, 'icon', c.data.icon, 'leading-none')}
-                </div>
+                ${circle}
+                ${upBtn}
                 ${ed(c.id, 'text', c.data.text, 'text-2xl font-extrabold block', 'p').replace('<p ', `<p style="color:${esc(color)}" `)}
                 ${pick}
                 ${ed(c.id, 'desc', c.data.desc, 'text-sm text-gray-500 mt-0.5 block', 'p')}
