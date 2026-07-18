@@ -291,15 +291,36 @@
         //  ข้อ 2 — PLANS : ปุ่ม/บลอคซ้อนชั้น (กดเข้าไปมีบลอคย่อยอีก)
         // ============================================================
         function renderPlans(b) {
+            // ★ แอดมินแก้ชื่อปุ่ม + ใส่รูปได้ "ที่ปุ่มเลย" ไม่ต้องกดเข้าไปข้างใน (พี่ดิวสั่ง 19 ก.ค.)
+            //   คนทั่วไป: ทั้งใบเป็นลิงก์ <a> เหมือนเดิม
+            //   แอดมิน  : ทำเป็น <div> แล้วมีลิงก์ "เปิดดู" แยกต่างหาก
+            //             เพราะถ้าเอาช่องพิมพ์ไปใส่ใน <a> คลิกจะเด้งออกจากหน้าทันที พิมพ์ไม่ได้
             const cards = b.children.map(c => {
-                const img = c.images && c.images[0];
-                return `<a href="/b/${c.id}" class="plan-card bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center transition flex flex-col ${c.is_visible ? '' : 'opacity-50'}">
-                    <div class="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-orange-400 to-orange-500 text-white flex items-center justify-center text-2xl shadow-md overflow-hidden">
+                const img = (c.images || []).find(i => i.slot === 0 && i.variant === 'web') || (c.images || [])[0];
+                const circle = `<div class="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-orange-400 to-orange-500 text-white flex items-center justify-center text-2xl shadow-md overflow-hidden relative">
                         ${img ? `<img src="${esc(img.path)}" class="w-full h-full object-cover">` : '📄'}
-                    </div>
-                    <p class="font-bold text-gray-800 mt-3 flex-1">${esc(c.data.button_text || 'ปุ่มใหม่')}</p>
-                    <span class="mt-3 inline-block text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-3 py-1.5 rounded-full">ดูรายละเอียด</span>
-                </a>`;
+                        ${IS_ADMIN && img ? `<span data-del="${c.id}" data-slot="0" data-variant="web" title="ลบรูป"
+                             class="adm-only absolute top-0 right-0 w-5 h-5 rounded-full bg-red-500 text-white text-[11px] leading-5 text-center cursor-pointer">×</span>` : ''}
+                    </div>`;
+                const box = `plan-card bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center transition flex flex-col ${c.is_visible ? '' : 'opacity-50'}`;
+
+                if (!IS_ADMIN) {
+                    return `<a href="/b/${c.id}" class="${box}">
+                        ${circle}
+                        <p class="font-bold text-gray-800 mt-3 flex-1">${esc(c.data.button_text || 'ปุ่มใหม่')}</p>
+                        <span class="mt-3 inline-block text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-3 py-1.5 rounded-full">ดูรายละเอียด</span>
+                    </a>`;
+                }
+                // หมายเหตุ: ตั้งใจไม่ใส่ปุ่มลบตรงนี้ — ลบปุ่มนี้ = หน้าย่อย+โพสข้างในหายทั้งสาย
+                //   ให้ไปกด "🗑 ลบบลอคนี้" ในหน้าข้างในแทน จะได้ไม่พลาดมือ
+                return `<div class="${box} relative">
+                    ${circle}
+                    <button data-up="${c.id}" data-slot="0" data-variant="web"
+                        class="adm-only mx-auto mt-1 block text-[10px] font-bold text-orange-600 hover:underline">
+                        🖼️ ${img ? 'เปลี่ยนรูป' : 'ใส่รูป'}</button>
+                    ${ed(c.id, 'button_text', c.data.button_text || 'ปุ่มใหม่', 'font-bold text-gray-800 mt-2 flex-1 block', 'p')}
+                    <a href="/b/${c.id}" class="mt-3 inline-block text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-3 py-1.5 rounded-full">เปิดดู</a>
+                </div>`;
             }).join('');
             const addBtn = IS_ADMIN ? `<button data-addpage="${b.id}"
                 class="plan-card bg-orange-50 rounded-2xl border-2 border-dashed border-orange-300 p-4 text-center flex flex-col items-center justify-center text-orange-500 hover:bg-orange-100 transition min-h-[150px]">

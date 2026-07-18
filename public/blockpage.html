@@ -170,10 +170,12 @@
             const contentView = content
                 ? `<div id="content-view" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">${content}</div>`
                 : (IS_ADMIN ? '' : '');
-            const editor = IS_ADMIN ? `
+            // ★ กล่องเขียนโพสโผล่เฉพาะ "หน้าสุดท้าย" (ชั้นที่สร้างบลอคย่อยต่อไม่ได้แล้ว)
+            //   ชั้นบนๆ เป็นหน้ารวมปุ่มอย่างเดียว ไม่ต้องมีกล่องเขียนโพสให้รก (พี่ดิวสั่ง 19 ก.ค.)
+            const editor = (IS_ADMIN && !canAddKid()) ? `
                 <div class="adm-only bg-white rounded-2xl border border-orange-200 shadow-sm p-4 mt-4">
                     <div class="flex items-center justify-between mb-2">
-                        <p class="text-xs font-extrabold text-gray-700">📝 ${canAddKid() ? 'เนื้อหาในหน้านี้ (โพสยาวๆ)' : 'เขียนโพส'}</p>
+                        <p class="text-xs font-extrabold text-gray-700">📝 เขียนโพส</p>
                         <div class="flex gap-2">
                             <button id="ins-img" class="text-xs font-bold text-orange-600 hover:underline">＋ แทรกรูป</button>
                             <button id="save-content" class="text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-4 py-1.5 rounded-full">บันทึกเนื้อหา</button>
