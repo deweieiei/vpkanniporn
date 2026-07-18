@@ -56,8 +56,8 @@
 
     <!-- App bar: บอกว่ากำลังอยู่ในโหมดแก้ไข (โผล่เฉพาะ SupperAdmin) -->
     <div id="adm-bar">
-        <span>✏️ โหมดแก้ไข — หน้าเนื้อหาบลอค</span>
-        <span class="hide-sm" style="font-weight:500; opacity:.9;">คลิกที่หัวข้อเพื่อพิมพ์แก้ · เขียนโพสในกล่องด้านล่างแล้วกดบันทึก</span>
+        <span id="adm-title">✏️ โหมดแก้ไข — หน้าเนื้อหาบลอค</span>
+        <span id="adm-hint" class="hide-sm" style="font-weight:500; opacity:.9;">คลิกที่หัวข้อเพื่อพิมพ์แก้ · เขียนโพสในกล่องด้านล่างแล้วกดบันทึก</span>
         <span class="sp"></span>
         <a href="/">← กลับหน้าเว็บ</a>
     </div>
@@ -85,7 +85,13 @@
         //  SupperAdmin แก้ได้ตรงๆ / คนทั่วไปดูอย่างเดียว
         // ============================================================
         const ID = Number(location.pathname.split('/').pop());
-        let BLOCK = null, CHILDREN = [], IS_ADMIN = false;
+        let BLOCK = null, CHILDREN = [], IS_ADMIN = false, CRUMB = [];
+
+        // ===== ความลึกของหน้า =====
+        //   breadcrumb = บลอคแม่ทั้งสาย (ไม่รวมตัวเอง)
+        //   ชั้น 1 = ลูกของ "เลือกแผนที่เหมาะกับคุณ" → breadcrumb = [plans]        → สร้างบลอคย่อยได้
+        //   ชั้น 2 = ลูกของชั้น 1                     → breadcrumb = [plans, ชั้น1] → หน้าเขียนโพส ไม่มีปุ่มสร้างแล้ว
+        const canAddKid = () => CRUMB.length <= 1;
 
         const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 
@@ -111,14 +117,20 @@
             try {
                 const j = await api('/api/blocks/' + ID);
                 IS_ADMIN = !!j.is_admin;
-                BLOCK = j.block; CHILDREN = j.children || [];
+                BLOCK = j.block; CHILDREN = j.children || []; CRUMB = j.breadcrumb || [];
                 document.body.classList.toggle('adm', IS_ADMIN);
                 // breadcrumb
                 document.getElementById('crumb').innerHTML =
-                    (j.breadcrumb || []).map(c => c.type === 'plans'
+                    CRUMB.map(c => c.type === 'plans'
                         ? `<a href="/#plans" class="hover:text-orange-600">${esc(c.title || 'หน้าแรก')}</a>`
                         : `<a href="/b/${c.id}" class="hover:text-orange-600">${esc(c.title)}</a>`
                     ).concat(`<span class="text-gray-800 font-bold">${esc(BLOCK.data.button_text || '')}</span>`).join(' <span class="text-gray-300">›</span> ');
+                // ชั้นในสุด = หน้าเขียนโพส → บอกให้ชัดว่าที่นี่ไม่มีปุ่มสร้างบลอคแล้ว
+                document.getElementById('adm-title').textContent =
+                    canAddKid() ? '✏️ โหมดแก้ไข — หน้าเนื้อหาบลอค' : '📝 โหมดแก้ไข — หน้าเขียนโพส';
+                document.getElementById('adm-hint').textContent =
+                    canAddKid() ? 'คลิกที่หัวข้อเพื่อพิมพ์แก้ · กด ＋ เพื่อสร้างบลอคย่อย (สร้างได้อีกชั้นเดียว)'
+                                : 'คลิกที่หัวข้อเพื่อพิมพ์แก้ · เขียนโพสในกล่องด้านล่างแล้วกดบันทึก';
                 render();
             } catch (e) {
                 document.getElementById('root').innerHTML =
@@ -149,7 +161,7 @@
                     <span class="mt-3 inline-block text-xs font-bold text-white bg-orange-500 px-3 py-1.5 rounded-full">เปิดดู</span>
                 </a>`;
             }).join('');
-            const addKid = IS_ADMIN ? `<button id="add-kid"
+            const addKid = (IS_ADMIN && canAddKid()) ? `<button id="add-kid"
                 class="plan-card bg-orange-50 rounded-2xl border-2 border-dashed border-orange-300 p-4 flex flex-col items-center justify-center text-orange-500 hover:bg-orange-100 min-h-[150px]">
                 <span class="text-3xl">＋</span><span class="font-bold text-sm mt-1">สร้างบลอคย่อย</span></button>` : '';
 
@@ -161,7 +173,7 @@
             const editor = IS_ADMIN ? `
                 <div class="adm-only bg-white rounded-2xl border border-orange-200 shadow-sm p-4 mt-4">
                     <div class="flex items-center justify-between mb-2">
-                        <p class="text-xs font-extrabold text-gray-700">📝 เนื้อหาในหน้านี้ (โพสยาวๆ)</p>
+                        <p class="text-xs font-extrabold text-gray-700">📝 ${canAddKid() ? 'เนื้อหาในหน้านี้ (โพสยาวๆ)' : 'เขียนโพส'}</p>
                         <div class="flex gap-2">
                             <button id="ins-img" class="text-xs font-bold text-orange-600 hover:underline">＋ แทรกรูป</button>
                             <button id="save-content" class="text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-4 py-1.5 rounded-full">บันทึกเนื้อหา</button>
@@ -178,7 +190,7 @@
                     ${ed(BLOCK.id, 'button_text', BLOCK.data.button_text, 'text-2xl md:text-3xl font-extrabold text-gray-800 block', 'h1')}
                     ${IS_ADMIN ? `<button id="del-block" class="adm-only text-xs font-bold text-red-500 hover:underline mt-2">🗑 ลบบลอคนี้ (ลูกหลานหายทั้งหมด)</button>` : ''}
                 </div>
-                ${(CHILDREN.length || IS_ADMIN) ? `<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">${kids}${addKid}</div>` : ''}
+                ${(CHILDREN.length || addKid) ? `<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">${kids}${addKid}</div>` : ''}
                 ${contentView}
                 ${editor}`;
 

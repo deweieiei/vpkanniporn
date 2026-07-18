@@ -146,7 +146,9 @@
     <div class="modal" id="pick-modal">
         <div class="modal-card">
             <h3 class="font-extrabold text-lg mb-1">เลือกตัวแทนที่จะโชว์บนหน้าแรก</h3>
-            <p class="text-xs text-gray-500 mb-4">เลือกได้สูงสุด <b id="pick-max">5</b> คน — ถ้าไม่เลือกเลย ระบบจะใช้ตัวแทนหลักที่ตั้งไว้</p>
+            <p class="text-xs text-gray-500 mb-3">เลือกได้สูงสุด <b id="pick-max">5</b> คน — พิมพ์ชื่อเพื่อค้นหา</p>
+            <input id="pick-search" type="search" autocomplete="off" placeholder="🔍 พิมพ์ชื่อ / นามสกุล / ตำแหน่ง…"
+                   class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm mb-3 focus:outline-orange-400">
             <div id="pick-list" class="grid sm:grid-cols-2 gap-2 mb-4"></div>
             <div class="flex justify-end gap-2">
                 <button id="pick-cancel" class="px-4 py-2 rounded-full text-sm font-bold text-gray-500 hover:bg-gray-100">ยกเลิก</button>
@@ -217,8 +219,8 @@
             const slides = heroSlides(b);
             const bg = slides.map((p, i) =>
                 `<div class="hero-slide ${i === 0 ? 'on' : ''}" style="background-image:url('${esc(p)}')"></div>`).join('');
-            const tags = (b.data.tags || []).map(t =>
-                `<span class="inline-flex items-center gap-1.5 bg-white border border-orange-200 rounded-full px-3.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm">${esc(t)}</span>`).join('');
+            // หมายเหตุ: ป้าย tags (❤️ ประกันชีวิต / ➕ สุขภาพ / 🐷 การออม / 🎁 มรดก)
+            //   พี่ดิวสั่งเอาออก 19 ก.ค. — data.tags ยังค้างใน DB แต่ไม่ได้แสดงแล้ว
 
             // แอดมิน: ช่องอัปรูป — โผล่ทีละภาพ ไม่โชว์ 18 ช่องรวดเดียวให้รก
             //   ภาพที่ 1 ขึ้นก่อน → พอใส่รูปแล้ว ภาพที่ 2 ค่อยโผล่ → ไปเรื่อยๆ จนครบ 6
@@ -271,7 +273,6 @@
                             ${ed(b.id, 'tagline', b.data.tagline, 'script text-3xl md:text-4xl text-orange-500 mb-1 block', 'p')}
                             ${ed(b.id, 'heading', b.data.heading, 'text-3xl md:text-5xl font-extrabold leading-tight text-gray-800 block', 'h1')}
                             ${ed(b.id, 'sub', b.data.sub, 'text-gray-600 mt-4 text-sm md:text-base leading-relaxed block', 'p')}
-                            <div class="flex flex-wrap gap-2 mt-6">${tags}</div>
                             <div class="flex flex-wrap gap-3 mt-7">
                                 <a id="cta-consult" href="${esc(b.data.cta_line_url || '#contact')}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold px-6 py-3 rounded-full shadow-lg shadow-orange-500/30 hover:shadow-xl transition">
                                     <span class="text-lg">🤝</span> รับคำปรึกษาฟรี
@@ -697,23 +698,69 @@
         });
 
         // ===== โมดัลเลือกตัวแทน =====
-        let pickBid = null;
+        //   ไม่แสดงตัวแทนทั้งหมดแล้ว — เริ่มต้นโชว์เฉพาะคนที่เลือกไว้ ที่เหลือให้ค้นหาเอา
+        //   ที่ติ๊กไว้เก็บใน pickSel (ไม่ได้อ่านจาก DOM) → ค้นหาใหม่แล้วตัวที่เลือกไม่หลุด
+        let pickBid = null, pickSel = new Set();
+
+        function pickRow(a) {
+            const name = `${a.first_name || ''} ${a.last_name || ''}`.trim();
+            return `<label class="flex items-center gap-2 border ${pickSel.has(a.id) ? 'border-orange-300 bg-orange-50' : 'border-gray-200'} rounded-xl p-2 cursor-pointer hover:bg-orange-50">
+                <input type="checkbox" value="${a.id}" ${pickSel.has(a.id) ? 'checked' : ''} class="accent-orange-500">
+                <span class="w-8 h-8 rounded-full bg-orange-100 overflow-hidden flex items-center justify-center text-xs font-bold text-orange-500 flex-shrink-0">
+                    ${a.avatar_path ? `<img src="${esc(a.avatar_path)}" class="w-full h-full object-cover">` : esc(initials(a.first_name, a.last_name))}
+                </span>
+                <span class="text-sm">${esc(name)}
+                    <span class="block text-[10px] text-gray-400">${esc(a.position || '')}</span></span>
+            </label>`;
+        }
+
+        function renderPickList() {
+            const box = document.getElementById('pick-list');
+            if (!AGENTS.length) {
+                box.innerHTML = '<p class="text-sm text-gray-400 col-span-full">ยังไม่มีตัวแทนในระบบ — ไปเพิ่มที่หน้าจัดการตัวแทนก่อน</p>';
+                return;
+            }
+            const q = document.getElementById('pick-search').value.trim().toLowerCase();
+            const chosen = AGENTS.filter(a => pickSel.has(a.id));
+
+            if (!q) {
+                // ยังไม่พิมพ์ค้นหา → โชว์แค่คนที่เลือกไว้
+                box.innerHTML = chosen.length
+                    ? `<p class="col-span-full text-[11px] font-bold text-gray-500">เลือกไว้ ${chosen.length} คน</p>` + chosen.map(pickRow).join('')
+                    : '<p class="text-sm text-gray-400 col-span-full py-4 text-center">พิมพ์ชื่อตัวแทนในช่องด้านบนเพื่อค้นหา</p>';
+                return;
+            }
+            const hit = AGENTS.filter(a =>
+                `${a.first_name || ''} ${a.last_name || ''} ${a.position || ''}`.toLowerCase().includes(q));
+            // คนที่เลือกไว้แต่ไม่เข้าคำค้น → ต้องคงอยู่ ไม่งั้นดูเหมือนหลุดการเลือก
+            const rest = chosen.filter(a => !hit.includes(a));
+            box.innerHTML = (hit.length
+                ? hit.map(pickRow).join('')
+                : '<p class="text-sm text-gray-400 col-span-full py-4 text-center">ไม่พบตัวแทนที่ชื่อตรงกับคำค้น</p>')
+                + (rest.length
+                    ? `<p class="col-span-full text-[11px] font-bold text-gray-500 mt-2">เลือกไว้แล้ว (ไม่ตรงคำค้น)</p>` + rest.map(pickRow).join('')
+                    : '');
+        }
+
         function openPick(bid) {
             pickBid = bid;
             const b = BLOCKS.find(x => x.id === bid);
-            const sel = new Set(b.data.agent_ids || []);
+            pickSel = new Set(b.data.agent_ids || []);
             document.getElementById('pick-max').textContent = b.data.max_show || 5;
-            document.getElementById('pick-list').innerHTML = AGENTS.length ? AGENTS.map(a => `
-                <label class="flex items-center gap-2 border border-gray-200 rounded-xl p-2 cursor-pointer hover:bg-orange-50">
-                    <input type="checkbox" value="${a.id}" ${sel.has(a.id) ? 'checked' : ''} class="accent-orange-500">
-                    <span class="w-8 h-8 rounded-full bg-orange-100 overflow-hidden flex items-center justify-center text-xs font-bold text-orange-500 flex-shrink-0">
-                        ${a.avatar_path ? `<img src="${esc(a.avatar_path)}" class="w-full h-full object-cover">` : esc(initials(a.first_name, a.last_name))}
-                    </span>
-                    <span class="text-sm">${esc(`${a.first_name || ''} ${a.last_name || ''}`.trim())}
-                        <span class="block text-[10px] text-gray-400">${esc(a.position || '')}</span></span>
-                </label>`).join('') : '<p class="text-sm text-gray-400 col-span-full">ยังไม่มีตัวแทนในระบบ — ไปเพิ่มที่หน้าจัดการตัวแทนก่อน</p>';
+            document.getElementById('pick-search').value = '';
+            renderPickList();
             document.getElementById('pick-modal').classList.add('on');
         }
+
+        document.getElementById('pick-search').addEventListener('input', renderPickList);
+        document.getElementById('pick-list').addEventListener('change', e => {
+            const cb = e.target.closest('input[type=checkbox]');
+            if (!cb) return;
+            const id = Number(cb.value);
+            if (cb.checked) pickSel.add(id); else pickSel.delete(id);
+            renderPickList();
+        });
+
         document.getElementById('pick-cancel').onclick = () => document.getElementById('pick-modal').classList.remove('on');
         document.getElementById('pick-modal').onclick = e => {
             if (e.target.id === 'pick-modal') e.target.classList.remove('on');
@@ -721,7 +768,7 @@
         document.getElementById('pick-save').onclick = async () => {
             const b = BLOCKS.find(x => x.id === pickBid);
             const max = Number(b.data.max_show || 5);
-            const ids = [...document.querySelectorAll('#pick-list input:checked')].map(i => Number(i.value));
+            const ids = [...pickSel];
             if (ids.length > max) { toast(`เลือกได้สูงสุด ${max} คน`, true); return; }
             try {
                 await saveData(pickBid, { agent_ids: ids });
