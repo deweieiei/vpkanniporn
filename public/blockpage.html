@@ -84,11 +84,6 @@
                  font-weight:600; opacity:0; transition:opacity .25s; pointer-events:none; }
         #toast.on { opacity:1; }
         #toast.err { background:#dc2626; }
-        .slot { position:relative; aspect-ratio:16/10; border-radius:10px; overflow:hidden;
-                border:2px dashed #fdba74; background:#fff7ed; cursor:pointer; max-width:260px; }
-        .slot img { width:100%; height:100%; object-fit:cover; }
-        .slot .x { position:absolute; top:3px; right:3px; width:20px; height:20px; border-radius:50%;
-                   background:rgba(220,38,38,.92); color:#fff; font-size:12px; line-height:20px; text-align:center; }
     </style>
 </head>
 
@@ -209,16 +204,8 @@
         }
 
         function render() {
-            const img = BLOCK.images.find(i => i.slot === 0 && i.variant === 'web');
-            const upload = IS_ADMIN ? `
-                <div class="adm-only mb-4">
-                    <p class="text-[11px] font-bold text-gray-500 mb-1.5">รูปบนปุ่ม</p>
-                    <div class="slot" data-up="${BLOCK.id}" data-slot="0" data-variant="web">
-                        ${img ? `<img src="${esc(img.path)}"><span class="x" data-del="${BLOCK.id}">×</span>`
-                            : `<div class="w-full h-full flex flex-col items-center justify-center text-orange-400">
-                                 <span class="text-2xl">＋</span><span class="text-xs font-bold mt-1">ใส่รูป</span></div>`}
-                    </div>
-                </div>` : '';
+            // หมายเหตุ: ช่อง "รูปบนปุ่ม" เดิมตรงนี้เอาออกแล้ว (พี่ดิวสั่ง 19 ก.ค.)
+            //   ไม่จำเป็นแล้ว เพราะรูปของการ์ดแก้ได้จากปุ่ม ✏️ บนการ์ดในหน้าแม่โดยตรง
 
             // บลอคย่อย — การ์ด + เครื่องมือ ชุดเดียวกับหน้าแรกเป๊ะ (พี่ดิวสั่ง: /b/29 ขอแบบเดียวกัน)
             const kids = CHILDREN.map(c => {
@@ -286,7 +273,6 @@
 
             document.getElementById('root').innerHTML = `
                 <div class="mb-6">
-                    ${upload}
                     ${ed(BLOCK.id, 'button_text', BLOCK.data.button_text, 'text-2xl md:text-3xl font-extrabold text-gray-800 block', 'h1')}
                     ${!BLOCK.is_visible ? '<span class="inline-block text-[10px] font-bold text-white bg-gray-500 px-2 py-0.5 rounded-full mt-1">ซ่อนอยู่</span>' : ''}
                     ${IS_ADMIN ? `<div class="adm-only flex items-center gap-3 mt-2">
@@ -529,30 +515,6 @@
                 if (rtb.dataset.cmd) { exec(rtb.dataset.cmd); saveSel(); return; }
                 if (rtb.dataset.block) { exec('formatBlock', '<' + rtb.dataset.block + '>'); saveSel(); return; }
                 return;
-            }
-            const dl = e.target.closest('[data-del]');
-            if (dl) {
-                e.preventDefault(); e.stopPropagation();
-                try {
-                    await api(`/api/blocks/${ID}/image?slot=0&variant=web`, { method: 'DELETE' });
-                    await load(); toast('ลบรูปแล้ว');
-                } catch (err) { toast(err.message, true); }
-                return;
-            }
-            const up = e.target.closest('[data-up]');
-            if (up) {
-                const inp = document.createElement('input');
-                inp.type = 'file'; inp.accept = 'image/*';
-                inp.onchange = async () => {
-                    if (!inp.files[0]) return;
-                    const fd = new FormData();
-                    fd.append('image', inp.files[0]); fd.append('slot', '0'); fd.append('variant', 'web');
-                    try {
-                        await api(`/api/blocks/${ID}/image`, { method: 'POST', body: fd });
-                        await load(); toast('อัปรูปแล้ว');
-                    } catch (err) { toast(err.message, true); }
-                };
-                inp.click();
             }
         });
 
