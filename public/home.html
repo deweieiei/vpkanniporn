@@ -53,9 +53,27 @@
         .lf-add .plus { font-size:30px; line-height:1; }
         .inactive-tag { display:inline-block; margin-left:6px; font-size:10px; font-weight:600; color:#fff;
                         background:rgba(0,0,0,.45); padding:1px 6px; border-radius:8px; vertical-align:middle; }
+        /* ===== แถวการ์ดที่ปรึกษา — เลื่อนซ้าย-ขวา (โชว์ได้ไม่จำกัดจำนวน) ===== */
+        .ag-wrap { position:relative; }
+        .ag-row { display:flex; gap:12px; overflow-x:auto; overscroll-behavior-x:contain;
+                  scroll-behavior:smooth; scroll-snap-type:x proximity;
+                  padding:6px 2px 12px; -webkit-overflow-scrolling:touch; }
+        .ag-row .ag-card { flex:0 0 auto; width:152px; scroll-snap-align:start; }
+        @media (min-width:768px) { .ag-row .ag-card { width:176px; } }
+        .ag-row::-webkit-scrollbar { height:6px; }
+        .ag-row::-webkit-scrollbar-thumb { background:#fed7aa; border-radius:99px; }
+        .ag-row::-webkit-scrollbar-track { background:transparent; }
+        .ag-nav { position:absolute; top:calc(50% - 26px); z-index:5; width:36px; height:36px; border-radius:50%;
+                  background:#fff; color:#ea580c; font-size:22px; line-height:1; font-weight:700;
+                  box-shadow:0 3px 12px rgba(0,0,0,.18); display:none; align-items:center; justify-content:center; }
+        .ag-nav.prev { left:-6px; } .ag-nav.next { right:-6px; }
+        .ag-nav:hover { background:#fff7ed; }
+        @media (min-width:1024px) { .ag-wrap:hover .ag-nav { display:flex; } }
+
         .nav-link { display:flex; flex-direction:column; align-items:center; gap:2px; color:#4b5563; font-size:12px; font-weight:600; white-space:nowrap; transition:color .15s; }
         .nav-link:hover { color:#FF6B00; }
         .nav-link .ic, .nav-link .emo { font-size:17px; }
+        .nav-link .nav-ico { width:22px; height:22px; object-fit:cover; border-radius:6px; }
         .no-scrollbar::-webkit-scrollbar { display:none; }
         .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
         /* เมนูที่ถูกปิดไว้ / ลิงก์ที่ปลายทางถูกซ่อน — คนทั่วไปไม่เห็น แอดมินเห็นจางๆ */
@@ -77,12 +95,21 @@
         .nav-icbox .pv { width:26px; height:26px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
                          font-size:16px; border-radius:7px; background:#fff7ed; cursor:pointer; }
         .nav-icbox .pv .ic { width:20px; height:20px; vertical-align:0; }
+        .nav-icbox .pv .nav-ico { width:22px; height:22px; object-fit:cover; border-radius:6px; }
+        .nav-icbox .imgtag { display:flex; align-items:center; gap:2px; font-size:10px; font-weight:700;
+                             color:#c2410c; background:#fff7ed; border-radius:7px; padding:3px 4px; white-space:nowrap; }
+        .nav-icbox .imgtag button { color:#ef4444; font-size:11px; padding:0 2px; }
         .nav-pal { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:4px; padding:6px; margin-top:4px;
                    background:#fff7ed; border-radius:9px; }
         .nav-pal button { width:30px; height:30px; border-radius:7px; font-size:17px; background:#fff;
                           display:flex; align-items:center; justify-content:center; }
         .nav-pal button:hover { background:#ffedd5; }
         .nav-pal .ic { width:19px; height:19px; vertical-align:0; }
+        .nav-pal .nav-ico { width:22px; height:22px; object-fit:cover; border-radius:6px; }
+        .nav-pal .up { width:auto; padding:0 10px; font-size:11px; font-weight:800; color:#ea580c;
+                       background:#fff; border:1px dashed #f0b787; gap:4px; }
+        /* หน้าตัดรูปต้องอยู่เหนือโมดัลอื่น (เปิดซ้อนจากโมดัลแก้เมนู/แก้การ์ด) */
+        #crop-modal { z-index:90; }
         @media (max-width:640px) {
             .nav-row { grid-template-columns:22px 62px 1fr 30px 30px; }
             .nav-row .href-in { grid-column:2/-1; }
@@ -109,13 +136,18 @@
         .adm .blk { position:relative; outline:1.5px dashed transparent; outline-offset:6px; transition:outline-color .15s; }
         .adm .blk:hover { outline-color:#fdba74; }
         .adm .blk.hid { opacity:.55; }
-        .blk-bar { position:absolute; top:6px; right:6px; z-index:30; display:none; gap:4px;
-                   background:rgba(255,255,255,.97); border:1px solid #fed7aa; border-radius:9px;
-                   padding:3px; box-shadow:0 4px 14px rgba(0,0,0,.13); }
-        .adm .blk:hover > .blk-bar { display:flex; }
-        .blk-bar button { width:26px; height:26px; border-radius:6px; font-size:13px; line-height:1;
+        /* ★ 20 ก.ค. ย้ายมาไว้มุมซ้ายบน + โชว์ตลอดเวลา
+           ของเดิมโผล่ตอน :hover เท่านั้น → บนมือถือไม่มี hover เลยเหมือนปุ่มหายไป */
+        .blk-bar { position:absolute; top:8px; left:8px; z-index:30; display:none; gap:5px; align-items:center;
+                   background:rgba(255,255,255,.97); border:1px solid #fed7aa; border-radius:11px;
+                   padding:4px; box-shadow:0 4px 14px rgba(0,0,0,.13); }
+        .adm .blk > .blk-bar { display:flex; }
+        .blk-bar button { width:34px; height:34px; border-radius:8px; font-size:15px; line-height:1;
                           display:flex; align-items:center; justify-content:center; color:#6b7280; }
         .blk-bar button:hover { background:#fff7ed; color:#ea580c; }
+        .blk-bar button:active { background:#ffedd5; }
+        .blk-bar .lbl { font-size:10px; font-weight:800; color:#c2410c; padding:0 5px 0 2px; white-space:nowrap; }
+        @media (max-width:640px) { .blk-bar .lbl { display:none; } }
         .adm .ed { outline:1.5px dotted #fdba74; outline-offset:3px; border-radius:4px; cursor:text; transition:background .15s; }
         .adm .ed:hover { background:#fff7ed; }
         .adm .ed:focus { outline:2px solid #f97316; background:#fffbf5; }
@@ -234,13 +266,20 @@
     <div class="modal" id="pick-modal">
         <div class="modal-card">
             <h3 class="font-extrabold text-lg mb-1">เลือกตัวแทนที่จะโชว์บนหน้าแรก</h3>
-            <p class="text-xs text-gray-500 mb-3">เลือกได้สูงสุด <b id="pick-max">5</b> คน — พิมพ์ชื่อเพื่อค้นหา หรือกด "แสดงทั้งหมด"</p>
+            <p class="text-xs text-gray-500 mb-3">ติ๊กคนที่จะโชว์บนหน้าแรก — <b>เลือกกี่คนก็ได้ ไม่จำกัด</b> ·
+                พิมพ์ชื่อเพื่อค้นหา หรือกด "แสดงทั้งหมด" แล้วติ๊กทีละคน</p>
             <div class="flex gap-2 mb-3">
                 <input id="pick-search" type="search" autocomplete="off" placeholder="🔍 พิมพ์ชื่อ / นามสกุล / ตำแหน่ง…"
                        class="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-orange-400">
                 <button id="pick-all" type="button"
                         class="flex-shrink-0 px-3 py-2 rounded-xl text-xs font-bold border border-orange-300 text-orange-600 hover:bg-orange-50">
                     👥 แสดงทั้งหมด</button>
+            </div>
+            <!-- โชว์ 99 จาก 100 คน: กด "ติ๊กทุกคน" แล้วค่อยเอาติ๊กออกคนที่ไม่เอา -->
+            <div class="flex items-center gap-2 mb-3 text-xs">
+                <button id="pick-every" type="button" class="px-3 py-1.5 rounded-lg font-bold bg-orange-50 text-orange-600 hover:bg-orange-100">✅ ติ๊กทุกคน</button>
+                <button id="pick-none" type="button" class="px-3 py-1.5 rounded-lg font-bold bg-gray-100 text-gray-500 hover:bg-gray-200">🧹 ล้างที่ติ๊กไว้</button>
+                <span id="pick-count" class="ml-auto text-gray-400"></span>
             </div>
             <div id="pick-list" class="grid sm:grid-cols-2 gap-2 mb-4"></div>
             <div class="flex justify-end gap-2">
@@ -253,8 +292,8 @@
     <!-- โมดัลตัดรูปเป็นจัตุรัส 800×800 — โผล่เมื่อรูปที่เลือกไม่ใช่ 800×800 -->
     <div class="modal" id="crop-modal">
         <div class="modal-card" style="max-width:380px;">
-            <h3 class="font-extrabold text-lg mb-1">✂️ จัดรูปให้พอดี 800 × 800</h3>
-            <p class="text-xs text-gray-500 mb-3">รูปที่เลือกไม่ใช่ 800 × 800 — <b>ลากรูปเพื่อเลื่อน</b> และเลื่อนแถบด้านล่างเพื่อย่อ/ขยาย ให้ได้ส่วนที่ต้องการก่อนบันทึก</p>
+            <h3 class="font-extrabold text-lg mb-1" id="crop-title">✂️ จัดรูปให้พอดี 800 × 800</h3>
+            <p class="text-xs text-gray-500 mb-3">รูปที่เลือกไม่ได้เป็นสี่เหลี่ยมจัตุรัส — <b>ลากรูปเพื่อเลื่อน</b> และเลื่อนแถบด้านล่างเพื่อย่อ/ขยาย เลือกส่วนที่จะเก็บไว้ในกรอบ <b id="crop-size">800 × 800</b></p>
             <div id="crop-stage">
                 <img id="crop-img" alt="">
                 <div id="crop-grid"></div>
@@ -277,7 +316,8 @@
         <div class="modal-card" style="max-width:760px;">
             <h3 class="font-extrabold text-lg mb-1">🧭 เมนูด้านบน</h3>
             <p class="text-xs text-gray-500 mb-4">
-                ใส่ <b>ไอคอน</b> · <b>ชื่อเมนู</b> · <b>ลิงก์เมื่อกด</b> — กดที่ช่องไอคอนเพื่อเลือกจากรายการ ·
+                ใส่ <b>ไอคอน</b> · <b>ชื่อเมนู</b> · <b>ลิงก์เมื่อกด</b> — กดที่รูปไอคอนเพื่อเลือกจากรายการ
+                หรือ <b>🖼️ อัปโหลดรูปของตัวเอง</b> ·
                 ปุ่ม 👁 = ปิด/เปิดเมนูนั้น · 🗑 = ลบทิ้ง · ▲▼ = สลับลำดับ
             </p>
             <div id="nav-rows"></div>
@@ -322,12 +362,18 @@
         }
 
         // ===== แถบเครื่องมือของบลอค (เลื่อนขึ้น/ลง/ซ่อน) =====
+        //   โชว์ตลอดเวลาในโหมดแก้ไข ไม่ต้อง hover — บนมือถือ hover ไม่มี ปุ่มเลยเหมือนหายไป
+        const BLK_NAME = {
+            hero: 'หัวเว็บ', plans: 'เลือกแผน', features: 'ทำไมต้องวางแผน',
+            agents: 'ที่ปรึกษา', awards: 'รางวัล', recruit: 'ร่วมงาน', cta: 'ติดต่อ',
+        };
         function bar(b) {
             if (!IS_ADMIN) return '';
             return `<div class="blk-bar">
-                <button data-act="up" data-bid="${b.id}" title="เลื่อนขึ้น">▲</button>
-                <button data-act="down" data-bid="${b.id}" title="เลื่อนลง">▼</button>
-                <button data-act="vis" data-bid="${b.id}" title="${b.is_visible ? 'ซ่อนบลอคนี้' : 'แสดงบลอคนี้'}">${b.is_visible ? '👁' : '🚫'}</button>
+                <span class="lbl">${esc(BLK_NAME[b.type] || b.type)}</span>
+                <button data-act="up" data-bid="${b.id}" title="เลื่อนส่วนนี้ขึ้น">▲</button>
+                <button data-act="down" data-bid="${b.id}" title="เลื่อนส่วนนี้ลง">▼</button>
+                <button data-act="vis" data-bid="${b.id}" title="${b.is_visible ? 'ซ่อนส่วนนี้' : 'แสดงส่วนนี้'}">${b.is_visible ? '👁' : '🚫'}</button>
             </div>`;
         }
         const hidTag = '<span class="hid-tag text-[10px] font-bold text-white bg-gray-500 px-2 py-0.5 rounded-full align-middle ml-2">ซ่อนอยู่</span>';
@@ -516,7 +562,9 @@
         }
 
         // ============================================================
-        //  ข้อ 4 — AGENTS : popcard ตัวแทน 3-5 คน (แบบหน้าค้นหา)
+        //  ข้อ 4 — AGENTS : popcard ตัวแทน (แบบหน้าค้นหา)
+        //  ★ 20 ก.ค. เอาเพดาน max_show ออก — เลือกกี่คนก็โชว์เท่านั้น (100 คนก็ได้)
+        //    เยอะแล้วไม่ล้นหน้า เพราะเปลี่ยนจาก grid เป็นแถวเลื่อนซ้าย-ขวา
         // ============================================================
         function initials(f, l) { return ((f || '?')[0] + (l || '')[0] || '').toUpperCase(); }
         function agentCard(u) {
@@ -524,7 +572,7 @@
             const avatar = u.avatar_path
                 ? `<img src="${esc(u.avatar_path)}" alt="${fullName}" class="w-full h-full object-cover">`
                 : `<span class="text-2xl font-bold text-orange-500">${esc(initials(u.first_name, u.last_name))}</span>`;
-            return `<a href="/agent/${u.id}" class="group bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center text-center relative overflow-hidden">
+            return `<a href="/agent/${u.id}" class="ag-card group bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center text-center relative overflow-hidden">
                 <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-orange-600"></div>
                 <div class="w-20 h-20 rounded-full border-4 border-amber-300 bg-orange-50 overflow-hidden flex items-center justify-center mt-2 mb-3 shadow-md group-hover:scale-105 transition">${avatar}</div>
                 <h4 class="font-bold text-sm text-gray-800">${fullName}</h4>
@@ -540,11 +588,10 @@
                 </div>
             </a>`;
         }
-        // ตัวแทนที่โชว์ = ที่แอดมินเลือกไว้ในบลอคนี้เท่านั้น (เรียงตามลำดับที่เลือก)
+        // ตัวแทนที่โชว์ = ที่แอดมินเลือกไว้ในบลอคนี้เท่านั้น (เรียงตามลำดับที่เลือก) — ไม่จำกัดจำนวน
         function shownAgents(b) {
             const ids = b.data.agent_ids || [];
-            const max = Number(b.data.max_show || 5);
-            return ids.map(id => AGENTS.find(a => a.id === id)).filter(Boolean).slice(0, max);
+            return ids.map(id => AGENTS.find(a => a.id === id)).filter(Boolean);
         }
         function renderAgents(b) {
             const list = shownAgents(b);
@@ -553,14 +600,24 @@
                 ? `<button data-pick="${b.id}" class="adm-only mx-auto mt-5 px-5 py-2 rounded-full text-sm font-bold text-white bg-orange-500 hover:bg-orange-600">
                      👥 เลือกตัวแทนที่จะโชว์ (${list.length} คน)</button>` : '';
             const empty = (!list.length && !IS_ADMIN)
-                ? '<p class="col-span-full text-center text-gray-400 text-sm py-6">ยังไม่ได้เลือกตัวแทน</p>' : '';
+                ? '<p class="text-center text-gray-400 text-sm py-6">ยังไม่ได้เลือกตัวแทน</p>' : '';
+            // ปุ่ม ‹ › โผล่บนจอใหญ่ (จอเล็กปัดนิ้วเลื่อนเอา)
+            const arrows = list.length > 2 ? `
+                <button type="button" class="ag-nav prev" data-agscroll="-1" aria-label="เลื่อนซ้าย">‹</button>
+                <button type="button" class="ag-nav next" data-agscroll="1" aria-label="เลื่อนขวา">›</button>` : '';
+            const hint = list.length > 3
+                ? '<p class="text-center text-[11px] text-gray-400 mt-1">← ปัดเพื่อดูที่ปรึกษาทั้งหมด →</p>' : '';
             return wrap(b, `
                 <div class="max-w-6xl mx-auto px-4 py-12">
                     <div class="text-center mb-8">
                         ${ed(b.id, 'title', b.data.title, 'text-2xl md:text-3xl font-extrabold text-gray-800 block', 'h2')}${hidTag}
                         ${ed(b.id, 'subtitle', b.data.subtitle, 'text-gray-500 mt-1 block', 'p')}
                     </div>
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">${cards}${empty}</div>
+                    <div class="ag-wrap">
+                        <div class="ag-row">${cards}</div>
+                        ${arrows}
+                    </div>
+                    ${empty}${hint}
                     <div class="text-center">${pickBtn}</div>
                 </div>`, 'bg-white');
         }
@@ -673,9 +730,11 @@
             (NAVBLOCK && Array.isArray(NAVBLOCK.data.items) && NAVBLOCK.data.items.length)
                 ? NAVBLOCK.data.items : DEFAULT_NAV;
 
+        // ไอคอนเมนูมี 3 แบบ: รูปที่อัปเอง (/uploads/…) · ไอคอนระบบ (ic-*) · อีโมจิ
         function navIcon(icon) {
             const v = String(icon || '').trim();
             if (!v) return '';
+            if (v.startsWith('/uploads/')) return `<img src="${esc(v)}" alt="" class="nav-ico">`;
             if (/^ic-[a-z0-9-]+$/i.test(v)) return `<i class="ic ${esc(v)}"></i>`;
             return `<span class="emo">${esc(v)}</span>`;
         }
@@ -719,9 +778,13 @@
         }
         function navRow(it, i) {
             const off = it.visible === false;
+            const isImg = String(it.icon || '').startsWith('/uploads/');
             const pal = navPalOpen === i
-                ? `<div class="nav-pal">${ICON_PALETTE.map(ic =>
-                       `<button type="button" data-nic="${i}" data-icv="${esc(ic)}" title="${esc(ic)}">${navIcon(ic)}</button>`).join('')}</div>`
+                ? `<div class="nav-pal">
+                       <button type="button" class="up" data-nicup="${i}" title="อัปโหลดรูปมาทำไอคอน">🖼️ อัปโหลดรูป</button>
+                       ${ICON_PALETTE.map(ic =>
+                       `<button type="button" data-nic="${i}" data-icv="${esc(ic)}" title="${esc(ic)}">${navIcon(ic)}</button>`).join('')}
+                   </div>`
                 : '';
             return `<div class="nav-row ${off ? 'off' : ''}" data-i="${i}">
                 <div class="ord">
@@ -729,8 +792,10 @@
                     <button type="button" data-ndn="${i}" title="เลื่อนลง">▼</button>
                 </div>
                 <div class="nav-icbox">
-                    <span class="pv" data-npal="${i}" title="เลือกไอคอน">${navIcon(it.icon) || '＋'}</span>
-                    <input data-nf="icon" data-i="${i}" value="${esc(it.icon || '')}" maxlength="24" placeholder="ไอคอน">
+                    <span class="pv" data-npal="${i}" title="เลือก/อัปโหลดไอคอน">${navIcon(it.icon) || '＋'}</span>
+                    ${isImg
+                        ? `<span class="imgtag">รูปที่อัป<button type="button" data-nicclr="${i}" title="เอารูปออก">✖</button></span>`
+                        : `<input data-nf="icon" data-i="${i}" value="${esc(it.icon || '')}" maxlength="24" placeholder="ไอคอน">`}
                 </div>
                 <input data-nf="label" data-i="${i}" value="${esc(it.label || '')}" maxlength="40" placeholder="ชื่อเมนู">
                 <input class="href-in" data-nf="href" data-i="${i}" value="${esc(it.href || '')}" maxlength="255"
@@ -774,6 +839,12 @@
             const pal = hit('npal');
             if (pal !== null) { navPalOpen = navPalOpen === pal ? -1 : pal; renderNavRows(); return; }
 
+            const upi = hit('nicup');
+            if (upi !== null) { uploadNavIcon(upi); return; }
+
+            const clr = hit('nicclr');
+            if (clr !== null) { NAVDRAFT[clr].icon = '⭐'; navPalOpen = -1; renderNavRows(); return; }
+
             const ic = t.closest('[data-nic]');
             if (ic) {
                 NAVDRAFT[Number(ic.dataset.nic)].icon = ic.dataset.icv;
@@ -798,6 +869,30 @@
                 navPalOpen = -1; renderNavRows(); return;
             }
         });
+        // อัปรูปมาทำไอคอนเมนู — ตัดเป็นจัตุรัส 256×256 ก่อน แล้วเก็บ path ไว้ใน items[i].icon
+        //   ใช้ /content-image เพราะไม่ผูกกับ slot (block_images จำกัด slot 0-5 = ได้แค่ 6 เมนู)
+        function uploadNavIcon(i) {
+            const inp = document.createElement('input');
+            inp.type = 'file'; inp.accept = 'image/*';
+            inp.onchange = async () => {
+                const f = inp.files && inp.files[0];
+                if (!f) return;
+                let ready = null;
+                try { ready = await toSquare(f, ICON_SIZE); }
+                catch (err) { toast(err.message || 'อ่านไฟล์รูปไม่ได้', true); return; }
+                if (!ready) return;                       // กดยกเลิกในหน้าตัดรูป
+                try {
+                    const nb = await ensureNavBlock();
+                    const fd = new FormData();
+                    fd.append('image', ready);
+                    const r = await api(`/api/blocks/${nb.id}/content-image`, { method: 'POST', body: fd });
+                    NAVDRAFT[i].icon = r.url;
+                    navPalOpen = -1; renderNavRows();
+                    toast('ใส่รูปไอคอนแล้ว — อย่าลืมกด "บันทึกเมนู"');
+                } catch (err) { toast(err.message, true); }
+            };
+            inp.click();
+        }
         document.getElementById('nav-add').onclick = () => {
             NAVDRAFT.push({ icon: '⭐', label: 'เมนูใหม่', href: '#plans', visible: true });
             navPalOpen = -1; renderNavRows();
@@ -934,6 +1029,14 @@
             const card = e.target.closest && e.target.closest('[data-openpage]');
             if (!card || e.target.closest('.lf-tools')) return;
             location.href = '/b/' + card.dataset.openpage;
+        });
+
+        // ปุ่ม ‹ › เลื่อนแถวการ์ดที่ปรึกษา (ทุกคนใช้ได้ ไม่ใช่เฉพาะแอดมิน)
+        document.addEventListener('click', e => {
+            const nav = e.target.closest && e.target.closest('[data-agscroll]');
+            if (!nav) return;
+            const row = nav.closest('.ag-wrap').querySelector('.ag-row');
+            row.scrollBy({ left: Number(nav.dataset.agscroll) * Math.max(160, row.clientWidth * 0.8), behavior: 'smooth' });
         });
 
         // คลิกปุ่มต่างๆ ในโหมดแก้ไข
@@ -1074,11 +1177,13 @@
         });
 
         // ============================================================
-        //  ตัดรูปเป็นจัตุรัส 800 × 800 (ลากเลื่อน/ย่อขยายแบบ LINE)
-        //  รูปที่พอดี 800×800 อยู่แล้ว → อัปตรงๆ ไม่ต้องเปิดหน้าตัด
-        //  รูปอื่น → เปิดโมดัลให้จัดตำแหน่งก่อน แล้ววาดลงแคนวาส 800×800 ส่งขึ้นเซิร์ฟเวอร์
+        //  ตัดรูปเป็นจัตุรัส (ลากเลื่อน/ย่อขยายแบบ LINE)
+        //  รูปจัตุรัสอยู่แล้ว → ไม่ต้องเลือกอะไร ย่อให้ได้ขนาดเป้าหมายเลย
+        //  รูปไม่จัตุรัส → เปิดโมดัลให้จัดตำแหน่งก่อน แล้ววาดลงแคนวาสส่งขึ้นเซิร์ฟเวอร์
+        //  ใช้ 2 ที่: การ์ด "เลือกแผน" 800×800 · ไอคอนเมนูด้านบน 256×256
         // ============================================================
-        const CROP_SIZE = 800;
+        const CROP_SIZE = 800;      // ขนาดเริ่มต้น (การ์ด "เลือกแผน")
+        const ICON_SIZE = 256;      // ไอคอนเมนู
         const cropEl = {
             modal: document.getElementById('crop-modal'),
             stage: document.getElementById('crop-stage'),
@@ -1109,12 +1214,14 @@
                 `translate(calc(-50% + ${crop.tx}px), calc(-50% + ${crop.ty}px)) scale(${crop.zoom})`;
         }
         // เปิดหน้าตัด → คืน File ที่ตัดแล้ว หรือ null ถ้ากดยกเลิก
-        function openCrop(img) {
+        function openCrop(img, out) {
             return new Promise(resolve => {
                 cropEl.modal.classList.add('on');
+                document.getElementById('crop-title').textContent = `✂️ จัดรูปให้พอดี ${out} × ${out}`;
+                document.getElementById('crop-size').textContent = `${out} × ${out}`;
                 const S = cropEl.stage.clientWidth || 300;
                 const base = Math.max(S / img.naturalWidth, S / img.naturalHeight);  // เริ่มที่ "เต็มกรอบ"
-                crop = { img, S, base, zoom: 1, tx: 0, ty: 0, done: resolve };
+                crop = { img, S, base, out, zoom: 1, tx: 0, ty: 0, done: resolve };
                 cropEl.img.src = img.src;
                 cropEl.img.style.width = (img.naturalWidth * base) + 'px';
                 cropEl.img.style.height = (img.naturalHeight * base) + 'px';
@@ -1129,20 +1236,24 @@
             cropEl.img.removeAttribute('src');
             if (done) done(file || null);
         }
+        // วาดจัตุรัสลงแคนวาส out×out แล้วคืนเป็นไฟล์ JPEG
+        function squareBlob(img, sx, sy, sw, out) {
+            const cv = document.createElement('canvas');
+            cv.width = cv.height = out;
+            const ctx = cv.getContext('2d');
+            ctx.fillStyle = '#fff';                      // กัน PNG โปร่งใสกลายเป็นดำใน JPEG
+            ctx.fillRect(0, 0, out, out);
+            ctx.drawImage(img, sx, sy, sw, sw, 0, 0, out, out);
+            return new Promise(res => cv.toBlob(
+                b => res(b ? new File([b], `sq-${out}.jpg`, { type: 'image/jpeg' }) : null), 'image/jpeg', 0.9));
+        }
         function cropResult() {
-            const { img, S, base, zoom, tx, ty } = crop;
+            const { img, S, base, zoom, tx, ty, out } = crop;
             const s = base * zoom;                       // 1 พิกเซลต้นฉบับ = s พิกเซลบนจอ
             const sw = S / s;                            // ความกว้างของกรอบเมื่อวัดบนรูปต้นฉบับ
             const sx = (img.naturalWidth * s / 2 - S / 2 - tx) / s;
             const sy = (img.naturalHeight * s / 2 - S / 2 - ty) / s;
-            const cv = document.createElement('canvas');
-            cv.width = cv.height = CROP_SIZE;
-            const ctx = cv.getContext('2d');
-            ctx.fillStyle = '#fff';                      // กัน PNG โปร่งใสกลายเป็นดำใน JPEG
-            ctx.fillRect(0, 0, CROP_SIZE, CROP_SIZE);
-            ctx.drawImage(img, sx, sy, sw, sw, 0, 0, CROP_SIZE, CROP_SIZE);
-            return new Promise(res => cv.toBlob(
-                b => res(b ? new File([b], 'card-800.jpg', { type: 'image/jpeg' }) : null), 'image/jpeg', 0.9));
+            return squareBlob(img, sx, sy, sw, out);
         }
 
         // ลากด้วยนิ้ว/เมาส์ + หนีบ 2 นิ้วเพื่อย่อขยาย
@@ -1215,12 +1326,18 @@
             closeCrop(f);
         };
 
-        // ไฟล์ที่ผู้ใช้เลือก → คืนไฟล์ที่พร้อมอัป (null = ผู้ใช้ยกเลิก)
-        async function toSquare800(file) {
+        // ไฟล์ที่ผู้ใช้เลือก → คืนไฟล์จัตุรัสที่พร้อมอัป (null = ผู้ใช้ยกเลิก)
+        //   ได้ขนาดพอดีอยู่แล้ว → ใช้ไฟล์เดิม
+        //   จัตุรัสแต่คนละขนาด → ย่อ/ขยายให้พอดี ไม่ต้องถามอะไร (ไม่มีอะไรให้เลือกตัด)
+        //   ไม่จัตุรัส → เปิดหน้าตัดให้เลื่อนเอง
+        async function toSquare(file, out) {
+            out = out || CROP_SIZE;
             const { img, url } = await readImage(file);
             try {
-                if (img.naturalWidth === CROP_SIZE && img.naturalHeight === CROP_SIZE) return file;
-                return await openCrop(img);
+                const w = img.naturalWidth, h = img.naturalHeight;
+                if (w === out && h === out) return file;
+                if (w === h) return await squareBlob(img, 0, 0, w, out);
+                return await openCrop(img, out);
             } finally { URL.revokeObjectURL(url); }
         }
 
@@ -1251,7 +1368,7 @@
             const f = e.target.files && e.target.files[0];
             if (!f) return;
             let ready = null;
-            try { ready = await toSquare800(f); }
+            try { ready = await toSquare(f, CROP_SIZE); }
             catch (err) { toast(err.message || 'อ่านไฟล์รูปไม่ได้', true); }
             e.target.value = '';                       // ใช้ pgFile แทนค่าใน input
             if (!ready) return;
@@ -1325,14 +1442,13 @@
             if (!q && pickAll) {
                 // กด "แสดงทั้งหมด" → เห็นทุกคน (คนที่เลือกไว้ลอยขึ้นบนสุด)
                 const rest = AGENTS.filter(a => !pickSel.has(a.id));
-                box.innerHTML = `<p class="col-span-full text-[11px] font-bold text-gray-500">ทั้งหมด ${AGENTS.length} คน · เลือกไว้ ${chosen.length} คน</p>`
-                    + chosen.map(pickRow).join('') + rest.map(pickRow).join('');
+                box.innerHTML = chosen.map(pickRow).join('') + rest.map(pickRow).join('');
                 return;
             }
             if (!q) {
                 // ยังไม่พิมพ์ค้นหา → โชว์แค่คนที่เลือกไว้
                 box.innerHTML = chosen.length
-                    ? `<p class="col-span-full text-[11px] font-bold text-gray-500">เลือกไว้ ${chosen.length} คน</p>` + chosen.map(pickRow).join('')
+                    ? chosen.map(pickRow).join('')
                     : '<p class="text-sm text-gray-400 col-span-full py-4 text-center">พิมพ์ชื่อตัวแทนในช่องด้านบน หรือกดปุ่ม "👥 แสดงทั้งหมด"</p>';
                 return;
             }
@@ -1352,10 +1468,9 @@
             pickBid = bid;
             const b = BLOCKS.find(x => x.id === bid);
             pickSel = new Set(b.data.agent_ids || []);
-            document.getElementById('pick-max').textContent = b.data.max_show || 5;
             document.getElementById('pick-search').value = '';
             pickAll = false; syncPickAllBtn();
-            renderPickList();
+            renderPickList(); syncPickCount();
             document.getElementById('pick-modal').classList.add('on');
         }
         function syncPickAllBtn() {
@@ -1363,19 +1478,37 @@
             btn.textContent = pickAll ? '🔙 แสดงเฉพาะที่เลือก' : '👥 แสดงทั้งหมด';
             btn.classList.toggle('bg-orange-50', pickAll);
         }
+        function syncPickCount() {
+            document.getElementById('pick-count').textContent =
+                `ติ๊กไว้ ${pickSel.size} / ${AGENTS.length} คน`;
+        }
         document.getElementById('pick-all').onclick = () => {
             pickAll = !pickAll;
             document.getElementById('pick-search').value = '';   // ค้นหาอยู่ = คำค้นชนะ → ล้างก่อน
             syncPickAllBtn(); renderPickList();
         };
+        document.getElementById('pick-every').onclick = () => {
+            AGENTS.forEach(a => pickSel.add(a.id));
+            pickAll = true; syncPickAllBtn();
+            document.getElementById('pick-search').value = '';
+            renderPickList(); syncPickCount();
+        };
+        document.getElementById('pick-none').onclick = () => {
+            pickSel.clear(); renderPickList(); syncPickCount();
+        };
 
         document.getElementById('pick-search').addEventListener('input', renderPickList);
+        // ติ๊กแล้วแค่แต้มสีแถวนั้น ไม่ render ใหม่ทั้งกอง — รายชื่อ 100 คนจะได้ไม่กระตุก/ไม่เด้งกลับหัวรายการ
         document.getElementById('pick-list').addEventListener('change', e => {
             const cb = e.target.closest('input[type=checkbox]');
             if (!cb) return;
             const id = Number(cb.value);
             if (cb.checked) pickSel.add(id); else pickSel.delete(id);
-            renderPickList();
+            const lab = cb.closest('label');
+            lab.classList.toggle('border-orange-300', cb.checked);
+            lab.classList.toggle('bg-orange-50', cb.checked);
+            lab.classList.toggle('border-gray-200', !cb.checked);
+            syncPickCount();
         });
 
         document.getElementById('pick-cancel').onclick = () => document.getElementById('pick-modal').classList.remove('on');
@@ -1383,10 +1516,7 @@
             if (e.target.id === 'pick-modal') e.target.classList.remove('on');
         };
         document.getElementById('pick-save').onclick = async () => {
-            const b = BLOCKS.find(x => x.id === pickBid);
-            const max = Number(b.data.max_show || 5);
-            const ids = [...pickSel];
-            if (ids.length > max) { toast(`เลือกได้สูงสุด ${max} คน`, true); return; }
+            const ids = [...pickSel];   // ไม่จำกัดจำนวนแล้ว (ของเดิมตัดที่ max_show 5 คน)
             try {
                 await saveData(pickBid, { agent_ids: ids });
                 document.getElementById('pick-modal').classList.remove('on');
